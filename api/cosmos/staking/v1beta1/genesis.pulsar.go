@@ -10,8 +10,10 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoiface "google.golang.org/protobuf/runtime/protoiface"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	io "io"
 	reflect "reflect"
+	sort "sort"
 	sync "sync"
 )
 
@@ -280,6 +282,7 @@ var (
 	fd_GenesisState_unbonding_delegations protoreflect.FieldDescriptor
 	fd_GenesisState_redelegations         protoreflect.FieldDescriptor
 	fd_GenesisState_exported              protoreflect.FieldDescriptor
+	fd_GenesisState_periods               protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -293,6 +296,7 @@ func init() {
 	fd_GenesisState_unbonding_delegations = md_GenesisState.Fields().ByName("unbonding_delegations")
 	fd_GenesisState_redelegations = md_GenesisState.Fields().ByName("redelegations")
 	fd_GenesisState_exported = md_GenesisState.Fields().ByName("exported")
+	fd_GenesisState_periods = md_GenesisState.Fields().ByName("periods")
 }
 
 var _ protoreflect.Message = (*fastReflection_GenesisState)(nil)
@@ -408,6 +412,12 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
+	if x.Periods != nil {
+		value := protoreflect.ValueOfMessage(x.Periods.ProtoReflect())
+		if !f(fd_GenesisState_periods, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -439,6 +449,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return len(x.Redelegations) != 0
 	case "cosmos.staking.v1beta1.GenesisState.exported":
 		return x.Exported != false
+	case "cosmos.staking.v1beta1.GenesisState.periods":
+		return x.Periods != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.GenesisState"))
@@ -471,6 +483,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.Redelegations = nil
 	case "cosmos.staking.v1beta1.GenesisState.exported":
 		x.Exported = false
+	case "cosmos.staking.v1beta1.GenesisState.periods":
+		x.Periods = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.GenesisState"))
@@ -526,6 +540,9 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 	case "cosmos.staking.v1beta1.GenesisState.exported":
 		value := x.Exported
 		return protoreflect.ValueOfBool(value)
+	case "cosmos.staking.v1beta1.GenesisState.periods":
+		value := x.Periods
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.GenesisState"))
@@ -572,6 +589,8 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		x.Redelegations = *clv.list
 	case "cosmos.staking.v1beta1.GenesisState.exported":
 		x.Exported = value.Bool()
+	case "cosmos.staking.v1beta1.GenesisState.periods":
+		x.Periods = value.Message().Interface().(*Periods)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.GenesisState"))
@@ -627,6 +646,11 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		}
 		value := &_GenesisState_7_list{list: &x.Redelegations}
 		return protoreflect.ValueOfList(value)
+	case "cosmos.staking.v1beta1.GenesisState.periods":
+		if x.Periods == nil {
+			x.Periods = new(Periods)
+		}
+		return protoreflect.ValueOfMessage(x.Periods.ProtoReflect())
 	case "cosmos.staking.v1beta1.GenesisState.last_total_power":
 		panic(fmt.Errorf("field last_total_power of message cosmos.staking.v1beta1.GenesisState is not mutable"))
 	case "cosmos.staking.v1beta1.GenesisState.exported":
@@ -666,6 +690,9 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 		return protoreflect.ValueOfList(&_GenesisState_7_list{list: &list})
 	case "cosmos.staking.v1beta1.GenesisState.exported":
 		return protoreflect.ValueOfBool(false)
+	case "cosmos.staking.v1beta1.GenesisState.periods":
+		m := new(Periods)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.GenesisState"))
@@ -776,6 +803,10 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.Exported {
 			n += 2
 		}
+		if x.Periods != nil {
+			l = options.Size(x.Periods)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -804,6 +835,20 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Periods != nil {
+			encoded, err := options.Marshal(x.Periods)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x4a
 		}
 		if x.Exported {
 			i--
@@ -1225,6 +1270,42 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.Exported = bool(v != 0)
+			case 9:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Periods", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Periods == nil {
+					x.Periods = &Periods{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Periods); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -1728,6 +1809,1221 @@ func (x *fastReflection_LastValidatorPower) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var (
+	md_Period                    protoreflect.MessageDescriptor
+	fd_Period_type               protoreflect.FieldDescriptor
+	fd_Period_duration           protoreflect.FieldDescriptor
+	fd_Period_rewards_multiplier protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_staking_v1beta1_genesis_proto_init()
+	md_Period = File_cosmos_staking_v1beta1_genesis_proto.Messages().ByName("Period")
+	fd_Period_type = md_Period.Fields().ByName("type")
+	fd_Period_duration = md_Period.Fields().ByName("duration")
+	fd_Period_rewards_multiplier = md_Period.Fields().ByName("rewards_multiplier")
+}
+
+var _ protoreflect.Message = (*fastReflection_Period)(nil)
+
+type fastReflection_Period Period
+
+func (x *Period) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_Period)(x)
+}
+
+func (x *Period) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_staking_v1beta1_genesis_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_Period_messageType fastReflection_Period_messageType
+var _ protoreflect.MessageType = fastReflection_Period_messageType{}
+
+type fastReflection_Period_messageType struct{}
+
+func (x fastReflection_Period_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_Period)(nil)
+}
+func (x fastReflection_Period_messageType) New() protoreflect.Message {
+	return new(fastReflection_Period)
+}
+func (x fastReflection_Period_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_Period
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_Period) Descriptor() protoreflect.MessageDescriptor {
+	return md_Period
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_Period) Type() protoreflect.MessageType {
+	return _fastReflection_Period_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_Period) New() protoreflect.Message {
+	return new(fastReflection_Period)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_Period) Interface() protoreflect.ProtoMessage {
+	return (*Period)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_Period) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Type_ != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.Type_))
+		if !f(fd_Period_type, value) {
+			return
+		}
+	}
+	if x.Duration != nil {
+		value := protoreflect.ValueOfMessage(x.Duration.ProtoReflect())
+		if !f(fd_Period_duration, value) {
+			return
+		}
+	}
+	if x.RewardsMultiplier != "" {
+		value := protoreflect.ValueOfString(x.RewardsMultiplier)
+		if !f(fd_Period_rewards_multiplier, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_Period) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Period.type":
+		return x.Type_ != 0
+	case "cosmos.staking.v1beta1.Period.duration":
+		return x.Duration != nil
+	case "cosmos.staking.v1beta1.Period.rewards_multiplier":
+		return x.RewardsMultiplier != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Period"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Period does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Period) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Period.type":
+		x.Type_ = 0
+	case "cosmos.staking.v1beta1.Period.duration":
+		x.Duration = nil
+	case "cosmos.staking.v1beta1.Period.rewards_multiplier":
+		x.RewardsMultiplier = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Period"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Period does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_Period) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.staking.v1beta1.Period.type":
+		value := x.Type_
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "cosmos.staking.v1beta1.Period.duration":
+		value := x.Duration
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "cosmos.staking.v1beta1.Period.rewards_multiplier":
+		value := x.RewardsMultiplier
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Period"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Period does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Period) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Period.type":
+		x.Type_ = (PeriodType)(value.Enum())
+	case "cosmos.staking.v1beta1.Period.duration":
+		x.Duration = value.Message().Interface().(*durationpb.Duration)
+	case "cosmos.staking.v1beta1.Period.rewards_multiplier":
+		x.RewardsMultiplier = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Period"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Period does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Period) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Period.duration":
+		if x.Duration == nil {
+			x.Duration = new(durationpb.Duration)
+		}
+		return protoreflect.ValueOfMessage(x.Duration.ProtoReflect())
+	case "cosmos.staking.v1beta1.Period.type":
+		panic(fmt.Errorf("field type of message cosmos.staking.v1beta1.Period is not mutable"))
+	case "cosmos.staking.v1beta1.Period.rewards_multiplier":
+		panic(fmt.Errorf("field rewards_multiplier of message cosmos.staking.v1beta1.Period is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Period"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Period does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_Period) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Period.type":
+		return protoreflect.ValueOfEnum(0)
+	case "cosmos.staking.v1beta1.Period.duration":
+		m := new(durationpb.Duration)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "cosmos.staking.v1beta1.Period.rewards_multiplier":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Period"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Period does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_Period) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.staking.v1beta1.Period", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_Period) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Period) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_Period) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_Period) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*Period)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Type_ != 0 {
+			n += 1 + runtime.Sov(uint64(x.Type_))
+		}
+		if x.Duration != nil {
+			l = options.Size(x.Duration)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.RewardsMultiplier)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*Period)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.RewardsMultiplier) > 0 {
+			i -= len(x.RewardsMultiplier)
+			copy(dAtA[i:], x.RewardsMultiplier)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RewardsMultiplier)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.Duration != nil {
+			encoded, err := options.Marshal(x.Duration)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if x.Type_ != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Type_))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*Period)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Period: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Period: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Type_", wireType)
+				}
+				x.Type_ = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Type_ |= PeriodType(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Duration", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Duration == nil {
+					x.Duration = &durationpb.Duration{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Duration); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RewardsMultiplier", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.RewardsMultiplier = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.Map = (*_Periods_1_map)(nil)
+
+type _Periods_1_map struct {
+	m *map[int32]*Period
+}
+
+func (x *_Periods_1_map) Len() int {
+	if x.m == nil {
+		return 0
+	}
+	return len(*x.m)
+}
+
+func (x *_Periods_1_map) Range(f func(protoreflect.MapKey, protoreflect.Value) bool) {
+	if x.m == nil {
+		return
+	}
+	for k, v := range *x.m {
+		mapKey := (protoreflect.MapKey)(protoreflect.ValueOfInt32(k))
+		mapValue := protoreflect.ValueOfMessage(v.ProtoReflect())
+		if !f(mapKey, mapValue) {
+			break
+		}
+	}
+}
+
+func (x *_Periods_1_map) Has(key protoreflect.MapKey) bool {
+	if x.m == nil {
+		return false
+	}
+	keyUnwrapped := key.Int()
+	concreteValue := (int32)(keyUnwrapped)
+	_, ok := (*x.m)[concreteValue]
+	return ok
+}
+
+func (x *_Periods_1_map) Clear(key protoreflect.MapKey) {
+	if x.m == nil {
+		return
+	}
+	keyUnwrapped := key.Int()
+	concreteKey := (int32)(keyUnwrapped)
+	delete(*x.m, concreteKey)
+}
+
+func (x *_Periods_1_map) Get(key protoreflect.MapKey) protoreflect.Value {
+	if x.m == nil {
+		return protoreflect.Value{}
+	}
+	keyUnwrapped := key.Int()
+	concreteKey := (int32)(keyUnwrapped)
+	v, ok := (*x.m)[concreteKey]
+	if !ok {
+		return protoreflect.Value{}
+	}
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_Periods_1_map) Set(key protoreflect.MapKey, value protoreflect.Value) {
+	if !key.IsValid() || !value.IsValid() {
+		panic("invalid key or value provided")
+	}
+	keyUnwrapped := key.Int()
+	concreteKey := (int32)(keyUnwrapped)
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*Period)
+	(*x.m)[concreteKey] = concreteValue
+}
+
+func (x *_Periods_1_map) Mutable(key protoreflect.MapKey) protoreflect.Value {
+	keyUnwrapped := key.Int()
+	concreteKey := (int32)(keyUnwrapped)
+	v, ok := (*x.m)[concreteKey]
+	if ok {
+		return protoreflect.ValueOfMessage(v.ProtoReflect())
+	}
+	newValue := new(Period)
+	(*x.m)[concreteKey] = newValue
+	return protoreflect.ValueOfMessage(newValue.ProtoReflect())
+}
+
+func (x *_Periods_1_map) NewValue() protoreflect.Value {
+	v := new(Period)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_Periods_1_map) IsValid() bool {
+	return x.m != nil
+}
+
+var (
+	md_Periods            protoreflect.MessageDescriptor
+	fd_Periods_period_map protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_cosmos_staking_v1beta1_genesis_proto_init()
+	md_Periods = File_cosmos_staking_v1beta1_genesis_proto.Messages().ByName("Periods")
+	fd_Periods_period_map = md_Periods.Fields().ByName("period_map")
+}
+
+var _ protoreflect.Message = (*fastReflection_Periods)(nil)
+
+type fastReflection_Periods Periods
+
+func (x *Periods) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_Periods)(x)
+}
+
+func (x *Periods) slowProtoReflect() protoreflect.Message {
+	mi := &file_cosmos_staking_v1beta1_genesis_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_Periods_messageType fastReflection_Periods_messageType
+var _ protoreflect.MessageType = fastReflection_Periods_messageType{}
+
+type fastReflection_Periods_messageType struct{}
+
+func (x fastReflection_Periods_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_Periods)(nil)
+}
+func (x fastReflection_Periods_messageType) New() protoreflect.Message {
+	return new(fastReflection_Periods)
+}
+func (x fastReflection_Periods_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_Periods
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_Periods) Descriptor() protoreflect.MessageDescriptor {
+	return md_Periods
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_Periods) Type() protoreflect.MessageType {
+	return _fastReflection_Periods_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_Periods) New() protoreflect.Message {
+	return new(fastReflection_Periods)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_Periods) Interface() protoreflect.ProtoMessage {
+	return (*Periods)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_Periods) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.PeriodMap) != 0 {
+		value := protoreflect.ValueOfMap(&_Periods_1_map{m: &x.PeriodMap})
+		if !f(fd_Periods_period_map, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_Periods) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Periods.period_map":
+		return len(x.PeriodMap) != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Periods"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Periods does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Periods) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Periods.period_map":
+		x.PeriodMap = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Periods"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Periods does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_Periods) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "cosmos.staking.v1beta1.Periods.period_map":
+		if len(x.PeriodMap) == 0 {
+			return protoreflect.ValueOfMap(&_Periods_1_map{})
+		}
+		mapValue := &_Periods_1_map{m: &x.PeriodMap}
+		return protoreflect.ValueOfMap(mapValue)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Periods"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Periods does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Periods) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Periods.period_map":
+		mv := value.Map()
+		cmv := mv.(*_Periods_1_map)
+		x.PeriodMap = *cmv.m
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Periods"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Periods does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Periods) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Periods.period_map":
+		if x.PeriodMap == nil {
+			x.PeriodMap = make(map[int32]*Period)
+		}
+		value := &_Periods_1_map{m: &x.PeriodMap}
+		return protoreflect.ValueOfMap(value)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Periods"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Periods does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_Periods) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "cosmos.staking.v1beta1.Periods.period_map":
+		m := make(map[int32]*Period)
+		return protoreflect.ValueOfMap(&_Periods_1_map{m: &m})
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.Periods"))
+		}
+		panic(fmt.Errorf("message cosmos.staking.v1beta1.Periods does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_Periods) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in cosmos.staking.v1beta1.Periods", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_Periods) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_Periods) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_Periods) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_Periods) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*Periods)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.PeriodMap) > 0 {
+			SiZeMaP := func(k int32, v *Period) {
+				l := 0
+				if v != nil {
+					l = options.Size(v)
+				}
+				l += 1 + runtime.Sov(uint64(l))
+				mapEntrySize := 1 + runtime.Sov(uint64(k)) + l
+				n += mapEntrySize + 1 + runtime.Sov(uint64(mapEntrySize))
+			}
+			if options.Deterministic {
+				sortme := make([]int32, 0, len(x.PeriodMap))
+				for k := range x.PeriodMap {
+					sortme = append(sortme, k)
+				}
+				sort.Slice(sortme, func(i, j int) bool {
+					return sortme[i] < sortme[j]
+				})
+				for _, k := range sortme {
+					v := x.PeriodMap[k]
+					SiZeMaP(k, v)
+				}
+			} else {
+				for k, v := range x.PeriodMap {
+					SiZeMaP(k, v)
+				}
+			}
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*Periods)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.PeriodMap) > 0 {
+			MaRsHaLmAp := func(k int32, v *Period) (protoiface.MarshalOutput, error) {
+				baseI := i
+				encoded, err := options.Marshal(v)
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x12
+				i = runtime.EncodeVarint(dAtA, i, uint64(k))
+				i--
+				dAtA[i] = 0x8
+				i = runtime.EncodeVarint(dAtA, i, uint64(baseI-i))
+				i--
+				dAtA[i] = 0xa
+				return protoiface.MarshalOutput{}, nil
+			}
+			if options.Deterministic {
+				keysForPeriodMap := make([]int32, 0, len(x.PeriodMap))
+				for k := range x.PeriodMap {
+					keysForPeriodMap = append(keysForPeriodMap, int32(k))
+				}
+				sort.Slice(keysForPeriodMap, func(i, j int) bool {
+					return keysForPeriodMap[i] < keysForPeriodMap[j]
+				})
+				for iNdEx := len(keysForPeriodMap) - 1; iNdEx >= 0; iNdEx-- {
+					v := x.PeriodMap[int32(keysForPeriodMap[iNdEx])]
+					out, err := MaRsHaLmAp(keysForPeriodMap[iNdEx], v)
+					if err != nil {
+						return out, err
+					}
+				}
+			} else {
+				for k := range x.PeriodMap {
+					v := x.PeriodMap[k]
+					out, err := MaRsHaLmAp(k, v)
+					if err != nil {
+						return out, err
+					}
+				}
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*Periods)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Periods: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: Periods: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PeriodMap", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.PeriodMap == nil {
+					x.PeriodMap = make(map[int32]*Period)
+				}
+				var mapkey int32
+				var mapvalue *Period
+				for iNdEx < postIndex {
+					entryPreIndex := iNdEx
+					var wire uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+						}
+						if iNdEx >= l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						wire |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					fieldNum := int32(wire >> 3)
+					if fieldNum == 1 {
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							mapkey |= int32(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+					} else if fieldNum == 2 {
+						var mapmsglen int
+						for shift := uint(0); ; shift += 7 {
+							if shift >= 64 {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+							}
+							if iNdEx >= l {
+								return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+							}
+							b := dAtA[iNdEx]
+							iNdEx++
+							mapmsglen |= int(b&0x7F) << shift
+							if b < 0x80 {
+								break
+							}
+						}
+						if mapmsglen < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						postmsgIndex := iNdEx + mapmsglen
+						if postmsgIndex < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						if postmsgIndex > l {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						mapvalue = &Period{}
+						if err := options.Unmarshal(dAtA[iNdEx:postmsgIndex], mapvalue); err != nil {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+						}
+						iNdEx = postmsgIndex
+					} else {
+						iNdEx = entryPreIndex
+						skippy, err := runtime.Skip(dAtA[iNdEx:])
+						if err != nil {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+						}
+						if (skippy < 0) || (iNdEx+skippy) < 0 {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+						}
+						if (iNdEx + skippy) > postIndex {
+							return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+						}
+						iNdEx += skippy
+					}
+				}
+				x.PeriodMap[mapkey] = mapvalue
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -1740,6 +3036,56 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Enum to represent different Staking Period types.
+type PeriodType int32
+
+const (
+	PeriodType_PERIOD_TYPE_FLIEXIBLE   PeriodType = 0
+	PeriodType_PERIOD_TYPE_THREE_MONTH PeriodType = 1
+	PeriodType_PERIOD_TYPE_ONE_YEAR    PeriodType = 2
+)
+
+// Enum value maps for PeriodType.
+var (
+	PeriodType_name = map[int32]string{
+		0: "PERIOD_TYPE_FLIEXIBLE",
+		1: "PERIOD_TYPE_THREE_MONTH",
+		2: "PERIOD_TYPE_ONE_YEAR",
+	}
+	PeriodType_value = map[string]int32{
+		"PERIOD_TYPE_FLIEXIBLE":   0,
+		"PERIOD_TYPE_THREE_MONTH": 1,
+		"PERIOD_TYPE_ONE_YEAR":    2,
+	}
+)
+
+func (x PeriodType) Enum() *PeriodType {
+	p := new(PeriodType)
+	*p = x
+	return p
+}
+
+func (x PeriodType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PeriodType) Descriptor() protoreflect.EnumDescriptor {
+	return file_cosmos_staking_v1beta1_genesis_proto_enumTypes[0].Descriptor()
+}
+
+func (PeriodType) Type() protoreflect.EnumType {
+	return &file_cosmos_staking_v1beta1_genesis_proto_enumTypes[0]
+}
+
+func (x PeriodType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PeriodType.Descriptor instead.
+func (PeriodType) EnumDescriptor() ([]byte, []int) {
+	return file_cosmos_staking_v1beta1_genesis_proto_rawDescGZIP(), []int{0}
+}
 
 // GenesisState defines the staking module's genesis state.
 type GenesisState struct {
@@ -1765,6 +3111,8 @@ type GenesisState struct {
 	Redelegations []*Redelegation `protobuf:"bytes,7,rep,name=redelegations,proto3" json:"redelegations,omitempty"`
 	// exported defines a bool to identify whether the chain dealing with exported or initialized genesis.
 	Exported bool `protobuf:"varint,8,opt,name=exported,proto3" json:"exported,omitempty"`
+	// periods defines the supported staking periods.
+	Periods *Periods `protobuf:"bytes,9,opt,name=periods,proto3" json:"periods,omitempty"`
 }
 
 func (x *GenesisState) Reset() {
@@ -1843,6 +3191,13 @@ func (x *GenesisState) GetExported() bool {
 	return false
 }
 
+func (x *GenesisState) GetPeriods() *Periods {
+	if x != nil {
+		return x.Periods
+	}
+	return nil
+}
+
 // LastValidatorPower required for validator set update logic.
 type LastValidatorPower struct {
 	state         protoimpl.MessageState
@@ -1889,6 +3244,96 @@ func (x *LastValidatorPower) GetPower() int64 {
 	return 0
 }
 
+// Message representing the Period
+type Period struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// type defines the type of the staking period.
+	Type_ PeriodType `protobuf:"varint,1,opt,name=type,proto3,enum=cosmos.staking.v1beta1.PeriodType" json:"type,omitempty"` // Enum for period type
+	// duration defines, if staked, the min time for the delegation.
+	Duration *durationpb.Duration `protobuf:"bytes,2,opt,name=duration,proto3" json:"duration,omitempty"`
+	// rewards_multiplier defines the rewards multiplier for the staking period.
+	RewardsMultiplier string `protobuf:"bytes,3,opt,name=rewards_multiplier,json=rewardsMultiplier,proto3" json:"rewards_multiplier,omitempty"`
+}
+
+func (x *Period) Reset() {
+	*x = Period{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_staking_v1beta1_genesis_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Period) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Period) ProtoMessage() {}
+
+// Deprecated: Use Period.ProtoReflect.Descriptor instead.
+func (*Period) Descriptor() ([]byte, []int) {
+	return file_cosmos_staking_v1beta1_genesis_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Period) GetType_() PeriodType {
+	if x != nil {
+		return x.Type_
+	}
+	return PeriodType_PERIOD_TYPE_FLIEXIBLE
+}
+
+func (x *Period) GetDuration() *durationpb.Duration {
+	if x != nil {
+		return x.Duration
+	}
+	return nil
+}
+
+func (x *Period) GetRewardsMultiplier() string {
+	if x != nil {
+		return x.RewardsMultiplier
+	}
+	return ""
+}
+
+type Periods struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PeriodMap map[int32]*Period `protobuf:"bytes,1,rep,name=period_map,json=periodMap,proto3" json:"period_map,omitempty" protobuf_key:"varint,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+}
+
+func (x *Periods) Reset() {
+	*x = Periods{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_cosmos_staking_v1beta1_genesis_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Periods) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Periods) ProtoMessage() {}
+
+// Deprecated: Use Periods.ProtoReflect.Descriptor instead.
+func (*Periods) Descriptor() ([]byte, []int) {
+	return file_cosmos_staking_v1beta1_genesis_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Periods) GetPeriodMap() map[int32]*Period {
+	if x != nil {
+		return x.PeriodMap
+	}
+	return nil
+}
+
 var File_cosmos_staking_v1beta1_genesis_proto protoreflect.FileDescriptor
 
 var file_cosmos_staking_v1beta1_genesis_proto_rawDesc = []byte{
@@ -1902,7 +3347,9 @@ var file_cosmos_staking_v1beta1_genesis_proto_rawDesc = []byte{
 	0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x63, 0x6f, 0x73, 0x6d,
 	0x6f, 0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69,
-	0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x97, 0x05, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
+	0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xdd, 0x05, 0x0a, 0x0c, 0x47, 0x65, 0x6e,
 	0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x41, 0x0a, 0x06, 0x70, 0x61, 0x72,
 	0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x63, 0x6f, 0x73, 0x6d,
 	0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
@@ -1944,28 +3391,65 @@ var file_cosmos_staking_v1beta1_genesis_proto_rawDesc = []byte{
 	0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x0d, 0x72, 0x65, 0x64, 0x65, 0x6c, 0x65, 0x67,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x72, 0x74,
 	0x65, 0x64, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x65, 0x78, 0x70, 0x6f, 0x72, 0x74,
-	0x65, 0x64, 0x22, 0x68, 0x0a, 0x12, 0x4c, 0x61, 0x73, 0x74, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61,
-	0x74, 0x6f, 0x72, 0x50, 0x6f, 0x77, 0x65, 0x72, 0x12, 0x32, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72,
-	0x69, 0x6e, 0x67, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x14, 0x0a, 0x05,
-	0x70, 0x6f, 0x77, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x70, 0x6f, 0x77,
-	0x65, 0x72, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x42, 0xdc, 0x01, 0x0a,
-	0x1a, 0x63, 0x6f, 0x6d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b,
-	0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x0c, 0x47, 0x65, 0x6e,
-	0x65, 0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x36, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x63, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2f, 0x76, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x3b, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x76, 0x31, 0x62, 0x65,
-	0x74, 0x61, 0x31, 0xa2, 0x02, 0x03, 0x43, 0x53, 0x58, 0xaa, 0x02, 0x16, 0x43, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x2e, 0x53, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x56, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0xca, 0x02, 0x16, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x53, 0x74, 0x61, 0x6b,
-	0x69, 0x6e, 0x67, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xe2, 0x02, 0x22, 0x43, 0x6f,
-	0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x53, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x5c, 0x56, 0x31, 0x62,
-	0x65, 0x74, 0x61, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0xea, 0x02, 0x18, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x61, 0x6b, 0x69,
-	0x6e, 0x67, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x65, 0x64, 0x12, 0x44, 0x0a, 0x07, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x73, 0x18, 0x09, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1f, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61,
+	0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x65, 0x72,
+	0x69, 0x6f, 0x64, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x07, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x73, 0x22, 0x68, 0x0a, 0x12, 0x4c, 0x61, 0x73, 0x74,
+	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x50, 0x6f, 0x77, 0x65, 0x72, 0x12, 0x32,
+	0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42,
+	0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x05, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x3a, 0x08, 0x88, 0xa0, 0x1f, 0x00, 0xe8, 0xa0,
+	0x1f, 0x00, 0x22, 0xed, 0x01, 0x0a, 0x06, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x12, 0x36, 0x0a,
+	0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x54, 0x79, 0x70, 0x65, 0x52,
+	0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x44, 0x0a, 0x08, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x42, 0x0d, 0xc8, 0xde, 0x1f, 0x00, 0x98, 0xdf, 0x1f, 0x01, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x08, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x65, 0x0a, 0x12, 0x72,
+	0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x5f, 0x6d, 0x75, 0x6c, 0x74, 0x69, 0x70, 0x6c, 0x69, 0x65,
+	0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x42, 0x36, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f,
+	0x1b, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61,
+	0x74, 0x68, 0x2e, 0x4c, 0x65, 0x67, 0x61, 0x63, 0x79, 0x44, 0x65, 0x63, 0xd2, 0xb4, 0x2d, 0x0a,
+	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x44, 0x65, 0x63, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x11, 0x72, 0x65, 0x77, 0x61, 0x72, 0x64, 0x73, 0x4d, 0x75, 0x6c, 0x74, 0x69, 0x70, 0x6c, 0x69,
+	0x65, 0x72, 0x22, 0xb6, 0x01, 0x0a, 0x07, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x73, 0x12, 0x4d,
+	0x0a, 0x0a, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x5f, 0x6d, 0x61, 0x70, 0x18, 0x01, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x2e, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b,
+	0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x65, 0x72, 0x69,
+	0x6f, 0x64, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x70, 0x45, 0x6e, 0x74,
+	0x72, 0x79, 0x52, 0x09, 0x70, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x70, 0x1a, 0x5c, 0x0a,
+	0x0e, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64, 0x4d, 0x61, 0x70, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12,
+	0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x03, 0x6b, 0x65,
+	0x79, 0x12, 0x34, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x1e, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e,
+	0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x65, 0x72, 0x69, 0x6f, 0x64,
+	0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x2a, 0x5e, 0x0a, 0x0a, 0x50,
+	0x65, 0x72, 0x69, 0x6f, 0x64, 0x54, 0x79, 0x70, 0x65, 0x12, 0x19, 0x0a, 0x15, 0x50, 0x45, 0x52,
+	0x49, 0x4f, 0x44, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x46, 0x4c, 0x49, 0x45, 0x58, 0x49, 0x42,
+	0x4c, 0x45, 0x10, 0x00, 0x12, 0x1b, 0x0a, 0x17, 0x50, 0x45, 0x52, 0x49, 0x4f, 0x44, 0x5f, 0x54,
+	0x59, 0x50, 0x45, 0x5f, 0x54, 0x48, 0x52, 0x45, 0x45, 0x5f, 0x4d, 0x4f, 0x4e, 0x54, 0x48, 0x10,
+	0x01, 0x12, 0x18, 0x0a, 0x14, 0x50, 0x45, 0x52, 0x49, 0x4f, 0x44, 0x5f, 0x54, 0x59, 0x50, 0x45,
+	0x5f, 0x4f, 0x4e, 0x45, 0x5f, 0x59, 0x45, 0x41, 0x52, 0x10, 0x02, 0x42, 0xdc, 0x01, 0x0a, 0x1a,
+	0x63, 0x6f, 0x6d, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b, 0x69,
+	0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65,
+	0x73, 0x69, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x36, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2f, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2f, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x3b, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0xa2, 0x02, 0x03, 0x43, 0x53, 0x58, 0xaa, 0x02, 0x16, 0x43, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x53, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61,
+	0x31, 0xca, 0x02, 0x16, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5c, 0x53, 0x74, 0x61, 0x6b, 0x69,
+	0x6e, 0x67, 0x5c, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0xe2, 0x02, 0x22, 0x43, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x5c, 0x53, 0x74, 0x61, 0x6b, 0x69, 0x6e, 0x67, 0x5c, 0x56, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x18, 0x43, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x61, 0x6b, 0x69, 0x6e,
+	0x67, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -1980,28 +3464,39 @@ func file_cosmos_staking_v1beta1_genesis_proto_rawDescGZIP() []byte {
 	return file_cosmos_staking_v1beta1_genesis_proto_rawDescData
 }
 
-var file_cosmos_staking_v1beta1_genesis_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_cosmos_staking_v1beta1_genesis_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_cosmos_staking_v1beta1_genesis_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_cosmos_staking_v1beta1_genesis_proto_goTypes = []interface{}{
-	(*GenesisState)(nil),        // 0: cosmos.staking.v1beta1.GenesisState
-	(*LastValidatorPower)(nil),  // 1: cosmos.staking.v1beta1.LastValidatorPower
-	(*Params)(nil),              // 2: cosmos.staking.v1beta1.Params
-	(*Validator)(nil),           // 3: cosmos.staking.v1beta1.Validator
-	(*Delegation)(nil),          // 4: cosmos.staking.v1beta1.Delegation
-	(*UnbondingDelegation)(nil), // 5: cosmos.staking.v1beta1.UnbondingDelegation
-	(*Redelegation)(nil),        // 6: cosmos.staking.v1beta1.Redelegation
+	(PeriodType)(0),             // 0: cosmos.staking.v1beta1.PeriodType
+	(*GenesisState)(nil),        // 1: cosmos.staking.v1beta1.GenesisState
+	(*LastValidatorPower)(nil),  // 2: cosmos.staking.v1beta1.LastValidatorPower
+	(*Period)(nil),              // 3: cosmos.staking.v1beta1.Period
+	(*Periods)(nil),             // 4: cosmos.staking.v1beta1.Periods
+	nil,                         // 5: cosmos.staking.v1beta1.Periods.PeriodMapEntry
+	(*Params)(nil),              // 6: cosmos.staking.v1beta1.Params
+	(*Validator)(nil),           // 7: cosmos.staking.v1beta1.Validator
+	(*Delegation)(nil),          // 8: cosmos.staking.v1beta1.Delegation
+	(*UnbondingDelegation)(nil), // 9: cosmos.staking.v1beta1.UnbondingDelegation
+	(*Redelegation)(nil),        // 10: cosmos.staking.v1beta1.Redelegation
+	(*durationpb.Duration)(nil), // 11: google.protobuf.Duration
 }
 var file_cosmos_staking_v1beta1_genesis_proto_depIdxs = []int32{
-	2, // 0: cosmos.staking.v1beta1.GenesisState.params:type_name -> cosmos.staking.v1beta1.Params
-	1, // 1: cosmos.staking.v1beta1.GenesisState.last_validator_powers:type_name -> cosmos.staking.v1beta1.LastValidatorPower
-	3, // 2: cosmos.staking.v1beta1.GenesisState.validators:type_name -> cosmos.staking.v1beta1.Validator
-	4, // 3: cosmos.staking.v1beta1.GenesisState.delegations:type_name -> cosmos.staking.v1beta1.Delegation
-	5, // 4: cosmos.staking.v1beta1.GenesisState.unbonding_delegations:type_name -> cosmos.staking.v1beta1.UnbondingDelegation
-	6, // 5: cosmos.staking.v1beta1.GenesisState.redelegations:type_name -> cosmos.staking.v1beta1.Redelegation
-	6, // [6:6] is the sub-list for method output_type
-	6, // [6:6] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	6,  // 0: cosmos.staking.v1beta1.GenesisState.params:type_name -> cosmos.staking.v1beta1.Params
+	2,  // 1: cosmos.staking.v1beta1.GenesisState.last_validator_powers:type_name -> cosmos.staking.v1beta1.LastValidatorPower
+	7,  // 2: cosmos.staking.v1beta1.GenesisState.validators:type_name -> cosmos.staking.v1beta1.Validator
+	8,  // 3: cosmos.staking.v1beta1.GenesisState.delegations:type_name -> cosmos.staking.v1beta1.Delegation
+	9,  // 4: cosmos.staking.v1beta1.GenesisState.unbonding_delegations:type_name -> cosmos.staking.v1beta1.UnbondingDelegation
+	10, // 5: cosmos.staking.v1beta1.GenesisState.redelegations:type_name -> cosmos.staking.v1beta1.Redelegation
+	4,  // 6: cosmos.staking.v1beta1.GenesisState.periods:type_name -> cosmos.staking.v1beta1.Periods
+	0,  // 7: cosmos.staking.v1beta1.Period.type:type_name -> cosmos.staking.v1beta1.PeriodType
+	11, // 8: cosmos.staking.v1beta1.Period.duration:type_name -> google.protobuf.Duration
+	5,  // 9: cosmos.staking.v1beta1.Periods.period_map:type_name -> cosmos.staking.v1beta1.Periods.PeriodMapEntry
+	3,  // 10: cosmos.staking.v1beta1.Periods.PeriodMapEntry.value:type_name -> cosmos.staking.v1beta1.Period
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_cosmos_staking_v1beta1_genesis_proto_init() }
@@ -2035,19 +3530,44 @@ func file_cosmos_staking_v1beta1_genesis_proto_init() {
 				return nil
 			}
 		}
+		file_cosmos_staking_v1beta1_genesis_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Period); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_cosmos_staking_v1beta1_genesis_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Periods); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_cosmos_staking_v1beta1_genesis_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   2,
+			NumEnums:      1,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_cosmos_staking_v1beta1_genesis_proto_goTypes,
 		DependencyIndexes: file_cosmos_staking_v1beta1_genesis_proto_depIdxs,
+		EnumInfos:         file_cosmos_staking_v1beta1_genesis_proto_enumTypes,
 		MessageInfos:      file_cosmos_staking_v1beta1_genesis_proto_msgTypes,
 	}.Build()
 	File_cosmos_staking_v1beta1_genesis_proto = out.File

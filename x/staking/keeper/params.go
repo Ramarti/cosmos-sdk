@@ -82,3 +82,30 @@ func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) 
 	err = k.cdc.Unmarshal(bz, &params)
 	return params, err
 }
+
+// SetPeriods sets the x/staking module periods.
+// CONTRACT: This method performs no validation of the periods.
+func (k Keeper) SetPeriods(ctx context.Context, periods types.Periods) error {
+	store := k.storeService.OpenKVStore(ctx)
+	bz, err := k.cdc.Marshal(&periods)
+	if err != nil {
+		return err
+	}
+	return store.Set(types.PeriodsKey, bz)
+}
+
+// GetPeriods gets the x/staking module periods.
+func (k Keeper) GetPeriods(ctx context.Context) (periods types.Periods, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	bz, err := store.Get(types.PeriodsKey)
+	if err != nil {
+		return periods, err
+	}
+
+	if bz == nil {
+		return periods, nil
+	}
+
+	err = k.cdc.Unmarshal(bz, &periods)
+	return periods, err
+}

@@ -48,6 +48,9 @@ func TestMigrateJSON(t *testing.T) {
 		"min_commission_rate": "0.000000000000000000",
 		"unbonding_time": "1814400s"
 	},
+	"periods": {
+		"periods": {}
+	},
 	"redelegations": [],
 	"unbonding_delegations": [],
 	"validators": []
