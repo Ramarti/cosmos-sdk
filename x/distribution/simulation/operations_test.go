@@ -3,6 +3,7 @@ package simulation_test
 import (
 	"math/rand"
 	"testing"
+	"time"
 
 	abci "github.com/cometbft/cometbft/abci/types"
 	"github.com/cosmos/gogoproto/proto"
@@ -111,7 +112,16 @@ func (suite *SimTestSuite) TestSimulateMsgWithdrawDelegatorReward() {
 	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
 	delegator := accounts[1]
 
-	delegation := stakingtypes.NewDelegation(delegator.Address.String(), validator0.GetOperator(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
+		"0", stakingtypes.Period{
+			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	suite.Require().NoError(suite.stakingKeeper.SetDelegation(suite.ctx, delegation))
 	valBz, err := address.NewBech32Codec("cosmosvaloper").StringToBytes(validator0.GetOperator())
 	suite.Require().NoError(err)
@@ -309,7 +319,7 @@ func (suite *SimTestSuite) getTestingValidator(accounts []simtypes.Account, comm
 	valPubKey := account.PubKey
 	valAddr := sdk.ValAddress(account.PubKey.Address().Bytes())
 	validator, err := stakingtypes.NewValidator(valAddr.String(), valPubKey, stakingtypes.
-		Description{})
+		Description{}, stakingtypes.TokenType_TOKEN_TYPE_LOCKED)
 	require.NoError(err)
 	validator, err = validator.SetInitialCommission(commission)
 	require.NoError(err)

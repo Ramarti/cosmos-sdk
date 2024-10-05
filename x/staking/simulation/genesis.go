@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -76,7 +77,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 			simulation.RandomDecAmount(simState.Rand, maxCommission),
 		)
 
-		validator, err := types.NewValidator(valAddr.String(), simState.Accounts[i].ConsKey.PubKey(), types.Description{})
+		validator, err := types.NewValidator(valAddr.String(), simState.Accounts[i].ConsKey.PubKey(), types.Description{}, types.TokenType_TOKEN_TYPE_LOCKED)
 		if err != nil {
 			panic(err)
 		}
@@ -84,7 +85,16 @@ func RandomizedGenState(simState *module.SimulationState) {
 		validator.DelegatorShares = sdkmath.LegacyNewDecFromInt(simState.InitialStake)
 		validator.Commission = commission
 
-		delegation := types.NewDelegation(simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake))
+		delegation := types.NewDelegation(
+			simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake), sdkmath.LegacyNewDecFromInt(simState.InitialStake),
+			"0", types.Period{
+				Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+				Duration:          time.Duration(0),
+				RewardsMultiplier: math.LegacyOneDec(),
+			},
+			time.Unix(0, 0),
+			time.Unix(0, 0),
+		)
 
 		validators = append(validators, validator)
 		delegations = append(delegations, delegation)

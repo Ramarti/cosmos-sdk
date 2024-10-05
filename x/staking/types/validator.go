@@ -41,7 +41,7 @@ var (
 var _ ValidatorI = Validator{}
 
 // NewValidator constructs a new Validator
-func NewValidator(operator string, pubKey cryptotypes.PubKey, description Description) (Validator, error) {
+func NewValidator(operator string, pubKey cryptotypes.PubKey, description Description, supportTokenType TokenType) (Validator, error) {
 	pkAny, err := codectypes.NewAnyWithValue(pubKey)
 	if err != nil {
 		return Validator{}, err
@@ -60,6 +60,9 @@ func NewValidator(operator string, pubKey cryptotypes.PubKey, description Descri
 		Commission:              NewCommission(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec()),
 		MinSelfDelegation:       math.OneInt(),
 		UnbondingOnHoldRefCount: 0,
+		SupportTokenType:        supportTokenType,
+		RewardsTokens:           math.ZeroInt(),
+		DelegatorRewardsShares:  math.LegacyZeroDec(),
 	}, nil
 }
 
@@ -517,3 +520,7 @@ func (v Validator) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	var pk cryptotypes.PubKey
 	return unpacker.UnpackAny(v.ConsensusPubkey, &pk)
 }
+
+func (v Validator) GetSupportTokenType() TokenType            { return v.SupportTokenType }
+func (v Validator) GetRewardsTokens() math.Int                { return v.RewardsTokens }
+func (v Validator) GetDelegatorRewardsShares() math.LegacyDec { return v.DelegatorRewardsShares }

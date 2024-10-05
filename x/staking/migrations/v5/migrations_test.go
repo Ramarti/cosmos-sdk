@@ -21,6 +21,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	v2 "github.com/cosmos/cosmos-sdk/x/staking/migrations/v2"
 	v5 "github.com/cosmos/cosmos-sdk/x/staking/migrations/v5"
+	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -90,7 +91,16 @@ func TestDelegationsByValidatorMigrations(t *testing.T) {
 	var addedDels []stakingtypes.Delegation
 
 	for i := 1; i < 11; i++ {
-		del1 := stakingtypes.NewDelegation(accAddrs[i].String(), valAddrs[0].String(), sdkmath.LegacyNewDec(100))
+		del1 := stakingtypes.NewDelegation(
+			accAddrs[i].String(), valAddrs[0].String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
+			"0", types.Period{
+				Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+				Duration:          time.Duration(0),
+				RewardsMultiplier: sdkmath.LegacyOneDec(),
+			},
+			time.Unix(0, 0).UTC(),
+			time.Unix(0, 0).UTC(),
+		)
 		store.Set(stakingtypes.GetDelegationKey(accAddrs[i], valAddrs[0]), stakingtypes.MustMarshalDelegation(cdc, del1))
 		addedDels = append(addedDels, del1)
 	}

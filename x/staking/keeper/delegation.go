@@ -888,7 +888,16 @@ func (k Keeper) Delegate(
 			return math.LegacyDec{}, err1
 		}
 
-		delegation = types.NewDelegation(delAddrStr, validator.GetOperator(), math.LegacyZeroDec())
+		delegation = types.NewDelegation(
+			delAddrStr, validator.GetOperator(), math.LegacyZeroDec(), math.LegacyZeroDec(),
+			"0", types.Period{
+				Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+				Duration:          time.Duration(0),
+				RewardsMultiplier: math.LegacyOneDec(),
+			},
+			time.Unix(0, 0),
+			time.Unix(0, 0),
+		)
 		err = k.Hooks().BeforeDelegationCreated(ctx, delAddr, valbz)
 	} else {
 		return math.LegacyZeroDec(), err

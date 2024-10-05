@@ -13,6 +13,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -566,7 +567,16 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 	require.NotNil(res)
 
 	shares := math.LegacyNewDec(100)
-	del := stakingtypes.NewDelegation(Addr.String(), srcValAddr.String(), shares)
+	del := stakingtypes.NewDelegation(
+		Addr.String(), srcValAddr.String(), shares, shares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, del))
 	_, err = keeper.GetDelegation(ctx, Addr, srcValAddr)
 	require.NoError(err)
@@ -720,7 +730,16 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 	require.NotNil(res)
 
 	shares := math.LegacyNewDec(100)
-	del := stakingtypes.NewDelegation(Addr.String(), ValAddr.String(), shares)
+	del := stakingtypes.NewDelegation(
+		Addr.String(), ValAddr.String(), shares, shares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, del))
 	_, err = keeper.GetDelegation(ctx, Addr, ValAddr)
 	require.NoError(err)
@@ -845,7 +864,16 @@ func (s *KeeperTestSuite) TestMsgCancelUnbondingDelegation() {
 	require.NotNil(res)
 
 	shares := math.LegacyNewDec(100)
-	del := stakingtypes.NewDelegation(Addr.String(), ValAddr.String(), shares)
+	del := stakingtypes.NewDelegation(
+		Addr.String(), ValAddr.String(), shares, shares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, del))
 	resDel, err := keeper.GetDelegation(ctx, Addr, ValAddr)
 	require.NoError(err)

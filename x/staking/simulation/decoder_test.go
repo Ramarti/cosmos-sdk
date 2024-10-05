@@ -29,9 +29,18 @@ func TestDecodeStore(t *testing.T) {
 	dec := simulation.NewDecodeStore(cdc)
 	bondTime := time.Now().UTC()
 
-	val, err := types.NewValidator(valAddr1.String(), delPk1, types.NewDescription("test", "test", "test", "test", "test"))
+	val, err := types.NewValidator(valAddr1.String(), delPk1, types.NewDescription("test", "test", "test", "test", "test"), types.TokenType_TOKEN_TYPE_LOCKED)
 	require.NoError(t, err)
-	del := types.NewDelegation(delAddr1.String(), valAddr1.String(), math.LegacyOneDec())
+	del := types.NewDelegation(
+		delAddr1.String(), valAddr1.String(), math.LegacyOneDec(), math.LegacyOneDec(),
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	ubd := types.NewUnbondingDelegation(delAddr1, valAddr1, 15, bondTime, math.OneInt(), 1, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
 	red := types.NewRedelegation(delAddr1, valAddr1, valAddr1, 12, bondTime, math.OneInt(), math.LegacyOneDec(), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
 

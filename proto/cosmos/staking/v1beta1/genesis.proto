@@ -44,6 +44,8 @@ message GenesisState {
 
   // periods defines the supported staking periods.
   Periods periods = 9 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+
+  TokenTypes token_types = 10 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
 // LastValidatorPower required for validator set update logic.
@@ -56,31 +58,4 @@ message LastValidatorPower {
 
   // power defines the power of the validator.
   int64 power = 2;
-}
-
-// Enum to represent different Staking Period types.
-enum PeriodType {
-  PERIOD_TYPE_FLIEXIBLE   = 0;
-  PERIOD_TYPE_THREE_MONTH = 1;
-  PERIOD_TYPE_ONE_YEAR    = 2;
-}
-
-// Message representing the Period
-message Period {
-  // type defines the type of the staking period.
-  PeriodType type = 1; // Enum for period type
-  // duration defines, if staked, the min time for the delegation.
-  google.protobuf.Duration duration = 2
-      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdduration) = true];
-  // rewards_multiplier defines the rewards multiplier for the staking period.
-  string rewards_multiplier = 3 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable)   = false,
-    (amino.dont_omitempty) = true
-  ];
-}
-
-message Periods {
-  map<int32, Period> period_map = 1;
 }

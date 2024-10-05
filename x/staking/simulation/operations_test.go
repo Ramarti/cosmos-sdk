@@ -197,7 +197,16 @@ func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	delTokens := s.stakingKeeper.TokensFromConsensusPower(ctx, 2)
 	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
 	delegator := s.accounts[2]
-	delegation := types.NewDelegation(delegator.Address.String(), validator0.GetOperator(), issuedShares)
+	delegation := types.NewDelegation(
+		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)
@@ -293,7 +302,16 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 	delTokens := s.stakingKeeper.TokensFromConsensusPower(ctx, 2)
 	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
 	delegator := s.accounts[2]
-	delegation := types.NewDelegation(delegator.Address.String(), validator0.GetOperator(), issuedShares)
+	delegation := types.NewDelegation(
+		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)
@@ -337,7 +355,16 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 
 	// setup accounts[3] as delegator
 	delegator := s.accounts[3]
-	delegation := types.NewDelegation(delegator.Address.String(), validator0.GetOperator(), issuedShares)
+	delegation := types.NewDelegation(
+		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)

@@ -12,6 +12,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking/testutil"
+	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -42,7 +43,16 @@ func (s *KeeperTestSuite) TestDelegation() {
 	}
 
 	// first add a validators[0] to delegate too
-	bond1to1 := stakingtypes.NewDelegation(addrDels[0].String(), valAddrs[0].String(), math.LegacyNewDec(9))
+	bond1to1 := stakingtypes.NewDelegation(
+		addrDels[0].String(), valAddrs[0].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 
 	// check the empty keeper first
 	_, err := keeper.GetDelegation(ctx, addrDels[0], valAddrs[0])
@@ -62,11 +72,56 @@ func (s *KeeperTestSuite) TestDelegation() {
 	require.Equal(bond1to1, resBond)
 
 	// add some more records
-	bond1to2 := stakingtypes.NewDelegation(addrDels[0].String(), valAddrs[1].String(), math.LegacyNewDec(9))
-	bond1to3 := stakingtypes.NewDelegation(addrDels[0].String(), valAddrs[2].String(), math.LegacyNewDec(9))
-	bond2to1 := stakingtypes.NewDelegation(addrDels[1].String(), valAddrs[0].String(), math.LegacyNewDec(9))
-	bond2to2 := stakingtypes.NewDelegation(addrDels[1].String(), valAddrs[1].String(), math.LegacyNewDec(9))
-	bond2to3 := stakingtypes.NewDelegation(addrDels[1].String(), valAddrs[2].String(), math.LegacyNewDec(9))
+	bond1to2 := stakingtypes.NewDelegation(
+		addrDels[0].String(), valAddrs[1].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
+	bond1to3 := stakingtypes.NewDelegation(
+		addrDels[0].String(), valAddrs[2].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
+	bond2to1 := stakingtypes.NewDelegation(
+		addrDels[1].String(), valAddrs[0].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
+	bond2to2 := stakingtypes.NewDelegation(
+		addrDels[1].String(), valAddrs[1].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
+	bond2to3 := stakingtypes.NewDelegation(
+		addrDels[1].String(), valAddrs[2].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, bond1to2))
 	require.NoError(keeper.SetDelegation(ctx, bond1to3))
 	require.NoError(keeper.SetDelegation(ctx, bond2to1))
@@ -377,7 +432,16 @@ func (s *KeeperTestSuite) TestUnbondDelegation() {
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	_ = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 
-	delegation := stakingtypes.NewDelegation(delAddrs[0].String(), valAddrs[0].String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		delAddrs[0].String(), valAddrs[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	bondTokens := keeper.TokensFromConsensusPower(ctx, 6)
@@ -417,7 +481,16 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 	require.NoError(keeper.SetValidatorByConsAddr(ctx, validator))
 	require.True(validator.IsBonded())
 
-	selfDelegation := stakingtypes.NewDelegation(sdk.AccAddress(addrVals[0].Bytes()).String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		sdk.AccAddress(addrVals[0].Bytes()).String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	// create a second delegation to this validator
@@ -427,7 +500,16 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 	require.Equal(delTokens, issuedShares.RoundInt())
 
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
-	delegation := stakingtypes.NewDelegation(addrDels[0].String(), addrVals[0].String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		addrDels[0].String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	val0AccAddr := sdk.AccAddress(addrVals[0].Bytes())
@@ -464,7 +546,16 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	require.True(validator.IsBonded())
 
-	selfDelegation := stakingtypes.NewDelegation(addrDels[0].String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		addrDels[0].String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	// create a second delegation to this validator
@@ -474,7 +565,16 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 	require.Equal(delTokens, issuedShares.RoundInt())
 
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
-	delegation := stakingtypes.NewDelegation(addrDels[1].String(), addrVals[0].String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		addrDels[1].String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	header := ctx.BlockHeader()
@@ -541,7 +641,16 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 	require.True(validator.IsBonded())
 
 	val0AccAddr := sdk.AccAddress(addrVals[0])
-	selfDelegation := stakingtypes.NewDelegation(val0AccAddr.String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	// create a second delegation to this validator
@@ -550,7 +659,16 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 	require.Equal(delTokens, issuedShares.RoundInt())
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	require.True(validator.IsBonded())
-	delegation := stakingtypes.NewDelegation(addrDels[1].String(), addrVals[0].String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		addrDels[1].String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	ctx = ctx.WithBlockHeight(10)
@@ -620,7 +738,16 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 	require.True(validator.IsBonded())
 	val0AccAddr := sdk.AccAddress(addrVals[0].Bytes())
 
-	selfDelegation := stakingtypes.NewDelegation(val0AccAddr.String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	// create a second delegation to this validator
@@ -631,7 +758,16 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	require.True(validator.IsBonded())
 
-	delegation := stakingtypes.NewDelegation(addrDels[1].String(), addrVals[0].String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		addrDels[1].String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	ctx = ctx.WithBlockHeight(10)
@@ -791,7 +927,16 @@ func (s *KeeperTestSuite) TestRedelegateToSameValidator() {
 
 	val0AccAddr := sdk.AccAddress(addrVals[0].Bytes())
 
-	selfDelegation := stakingtypes.NewDelegation(val0AccAddr.String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	_, err := keeper.BeginRedelegation(ctx, val0AccAddr, addrVals[0], addrVals[0], math.LegacyNewDec(5))
@@ -813,7 +958,16 @@ func (s *KeeperTestSuite) TestRedelegationMaxEntries() {
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	_ = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	val0AccAddr := sdk.AccAddress(addrVals[0].Bytes())
-	selfDelegation := stakingtypes.NewDelegation(val0AccAddr.String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	// create a second validator
@@ -868,7 +1022,16 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 
 	val0AccAddr := sdk.AccAddress(addrVals[0])
-	selfDelegation := stakingtypes.NewDelegation(val0AccAddr.String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	// create a second validator
@@ -885,7 +1048,16 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 	require.Equal(delTokens, issuedShares.RoundInt())
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 
-	delegation := stakingtypes.NewDelegation(addrDels[0].String(), addrVals[0].String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		addrDels[0].String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	_, err := keeper.BeginRedelegation(ctx, val0AccAddr, addrVals[0], addrVals[1], math.LegacyNewDecFromInt(delTokens))
@@ -917,7 +1089,16 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	val0AccAddr := sdk.AccAddress(addrVals[0].Bytes())
-	selfDelegation := stakingtypes.NewDelegation(val0AccAddr.String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	// create a second delegation to this validator
@@ -926,7 +1107,16 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 	validator, issuedShares = validator.AddTokensFromDel(delTokens)
 	require.Equal(delTokens, issuedShares.RoundInt())
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
-	delegation := stakingtypes.NewDelegation(addrDels[1].String(), addrVals[0].String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		addrDels[1].String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	// create a second validator
@@ -998,7 +1188,16 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	val0AccAddr := sdk.AccAddress(addrVals[0].Bytes())
-	selfDelegation := stakingtypes.NewDelegation(val0AccAddr.String(), addrVals[0].String(), issuedShares)
+	selfDelegation := stakingtypes.NewDelegation(
+		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 
 	// create a second delegation to this validator
@@ -1007,7 +1206,16 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 	validator, issuedShares = validator.AddTokensFromDel(delTokens)
 	require.Equal(delTokens, issuedShares.RoundInt())
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
-	delegation := stakingtypes.NewDelegation(addrDels[1].String(), addrVals[0].String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(
+		addrDels[1].String(), addrVals[0].String(), issuedShares, issuedShares,
+		"0", types.Period{
+			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	// create a second validator

@@ -13,6 +13,9 @@ type DelegationI interface {
 	GetDelegatorAddr() string  // delegator string for the bond
 	GetValidatorAddr() string  // validator operator address
 	GetShares() math.LegacyDec // amount of validator's shares held in this delegation
+	GetRewardsShares() math.LegacyDec
+	GetPeriodDelegations() map[string]*PeriodDelegation
+	GetPeriodDelegation(id string) *PeriodDelegation
 }
 
 // ValidatorI expected validator functions
@@ -38,4 +41,7 @@ type ValidatorI interface {
 	TokensFromSharesRoundUp(math.LegacyDec) math.LegacyDec          // token worth of provided delegator shares, rounded up
 	SharesFromTokens(amt math.Int) (math.LegacyDec, error)          // shares worth of delegator's bond
 	SharesFromTokensTruncated(amt math.Int) (math.LegacyDec, error) // truncated shares worth of delegator's bond
+	GetSupportTokenType() TokenType
+	GetRewardsTokens() math.Int
+	GetDelegatorRewardsShares() math.LegacyDec
 }

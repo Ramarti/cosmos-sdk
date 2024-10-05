@@ -16,11 +16,19 @@ import (
 var _ DelegationI = Delegation{}
 
 // NewDelegation creates a new delegation object
-func NewDelegation(delegatorAddr, validatorAddr string, shares math.LegacyDec) Delegation {
+func NewDelegation(
+	delegatorAddr, validatorAddr string,
+	shares, rewardsShares math.LegacyDec,
+	periodDelID string, period Period, startTime time.Time, endTime time.Time,
+) Delegation {
 	return Delegation{
 		DelegatorAddress: delegatorAddr,
 		ValidatorAddress: validatorAddr,
 		Shares:           shares,
+		RewardsShares:    rewardsShares,
+		PeriodDelegations: map[string]*PeriodDelegation{
+			periodDelID: NewPeriodDelegation(periodDelID, shares, rewardsShares, period, startTime, endTime),
+		},
 	}
 }
 
@@ -54,6 +62,32 @@ func (d Delegation) GetValidatorAddr() string {
 	return d.ValidatorAddress
 }
 func (d Delegation) GetShares() math.LegacyDec { return d.Shares }
+
+func (d Delegation) GetRewardsShares() math.LegacyDec { return d.RewardsShares }
+
+func (d Delegation) GetPeriodDelegations() map[string]*PeriodDelegation { return d.PeriodDelegations }
+
+func (d Delegation) GetPeriodDelegation(id string) *PeriodDelegation { return d.PeriodDelegations[id] }
+
+func (d *Delegation) AddPeriodDelegation(
+	id string,
+	shares, rewardsShares math.LegacyDec,
+	period Period, startTime, endTime time.Time,
+) bool {
+	if _, ok := d.PeriodDelegations[id]; ok {
+		return false
+	}
+
+	d.PeriodDelegations[id] = NewPeriodDelegation(id, shares, rewardsShares, period, startTime, endTime)
+
+	return true
+}
+
+func (d *Delegation) RemovePeriodDelegation(id string) {
+	if d.PeriodDelegations != nil {
+		delete(d.PeriodDelegations, id)
+	}
+}
 
 // Delegations is a collection of delegations
 type Delegations []Delegation
@@ -291,10 +325,10 @@ func (d Redelegations) String() (out string) {
 
 // NewDelegationResp creates a new DelegationResponse instance
 func NewDelegationResp(
-	delegatorAddr, validatorAddr string, shares math.LegacyDec, balance sdk.Coin,
+	delegation Delegation, balance sdk.Coin,
 ) DelegationResponse {
 	return DelegationResponse{
-		Delegation: NewDelegation(delegatorAddr, validatorAddr, shares),
+		Delegation: delegation,
 		Balance:    balance,
 	}
 }
@@ -372,4 +406,19 @@ func (r RedelegationResponses) String() (out string) {
 	}
 
 	return strings.TrimSpace(out)
+}
+
+func NewPeriodDelegation(
+	id string,
+	shares, rewardsShares math.LegacyDec,
+	period Period, startTime, endTime time.Time,
+) *PeriodDelegation {
+	return &PeriodDelegation{
+		Id:            id,
+		Shares:        shares,
+		RewardsShares: rewardsShares,
+		StartTime:     startTime,
+		Period:        period,
+		EndTime:       endTime,
+	}
 }
