@@ -39,6 +39,8 @@ func (k Keeper) HandleValidatorSignature(ctx context.Context, addr cryptotypes.A
 		return err
 	}
 
+	logger.Info("[Hans] signing info ", "missed", signInfo.MissedBlocksCounter, "index", signInfo.IndexOffset)
+
 	signedBlocksWindow, err := k.SignedBlocksWindow(ctx)
 	if err != nil {
 		return err
@@ -175,11 +177,6 @@ func (k Keeper) HandleValidatorSignature(ctx context.Context, addr cryptotypes.A
 				"slashed", slashFractionDowntime.String(),
 				"jailed_until", signInfo.JailedUntil,
 			)
-		} else if height == int64(singularityHeight) {
-			// reset the counter & bitmap so that the validator won't be
-			// immediately slashed after singularity.
-			signInfo.MissedBlocksCounter = 0
-			signInfo.IndexOffset = 0
 		} else {
 			// validator was (a) not found or (b) already jailed so we do not slash
 			logger.Info(
@@ -187,6 +184,19 @@ func (k Keeper) HandleValidatorSignature(ctx context.Context, addr cryptotypes.A
 				"validator", consAddr.String(),
 			)
 		}
+	}
+
+	if height == int64(singularityHeight) {
+		// reset the counter & bitmap so that the validator won't be
+		// immediately slashed after singularity.
+		signInfo.MissedBlocksCounter = 0
+		signInfo.IndexOffset = 0
+		err = k.DeleteMissedBlockBitmap(ctx, consAddr)
+		if err != nil {
+			return err
+		}
+
+		logger.Info("[Hans] reset missed block", "height", height, "singularity_height", singularityHeight)
 	}
 
 	// Set the updated signing info
