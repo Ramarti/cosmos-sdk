@@ -14,7 +14,7 @@ import (
 
 func CreateValidator(pk cryptotypes.PubKey, stake math.Int) (stakingtypes.Validator, error) {
 	valConsAddr := sdk.GetConsAddress(pk)
-	val, err := stakingtypes.NewValidator(sdk.ValAddress(valConsAddr).String(), pk, stakingtypes.Description{Moniker: "TestValidator"}, stakingtypes.TokenType_TOKEN_TYPE_LOCKED)
+	val, err := stakingtypes.NewValidator(sdk.ValAddress(valConsAddr).String(), pk, stakingtypes.Description{Moniker: "TestValidator"}, stakingtypes.TokenType_LOCKED)
 	val.Tokens = stake
 	val.DelegatorShares = math.LegacyNewDecFromInt(val.Tokens)
 	return val, err
@@ -129,7 +129,7 @@ func Delegate(
 		del := stakingtypes.NewDelegation(
 			delegator.String(), validator.GetOperator(), math.LegacyZeroDec(), math.LegacyZeroDec(),
 			"0", stakingtypes.Period{
-				Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+				PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 				Duration:          time.Duration(0),
 				RewardsMultiplier: math.LegacyOneDec(),
 			},

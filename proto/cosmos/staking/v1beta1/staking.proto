@@ -80,8 +80,8 @@ message Description {
 }
 
 enum TokenType {
-  TOKEN_TYPE_LOCKED   = 0;
-  TOKEN_TYPE_UNLOCKED = 1;
+  LOCKED   = 0;
+  UNLOCKED = 1;
 }
 
 message TokenTypeInfo {
@@ -222,17 +222,15 @@ message DVVTriplets {
   repeated DVVTriplet triplets = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
-// Enum to represent different Staking Period types.
 enum PeriodType {
-  PERIOD_TYPE_FLIEXIBLE   = 0;
-  PERIOD_TYPE_THREE_MONTH = 1;
-  PERIOD_TYPE_ONE_YEAR    = 2;
+  FLEXIBLE     = 0;
+  THREE_MONTHS = 1;
+  ONE_YEAR     = 2;
 }
-
 // Message representing the Period
 message Period {
   // type defines the type of the staking period.
-  PeriodType type = 1; // Enum for period type
+  PeriodType period_type = 1; // Enum for period type
   // duration defines, if staked, the min time for the delegation.
   google.protobuf.Duration duration = 2
       [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdduration) = true];
@@ -250,7 +248,7 @@ message Periods {
 }
 
 message PeriodDelegation {
-  string id = 1 [(amino.dont_omitempty) = true];
+  string period_delegation_id = 1 [(amino.dont_omitempty) = true];
 
   string shares = 2 [
     (cosmos_proto.scalar)  = "cosmos.Dec",

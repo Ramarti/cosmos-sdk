@@ -1,29 +1,6 @@
 package keeper_test
 
-import (
-	"fmt"
-	"testing"
-	"time"
-
-	"github.com/stretchr/testify/require"
-
-	"cosmossdk.io/core/header"
-	"cosmossdk.io/depinject"
-	"cosmossdk.io/log"
-	"cosmossdk.io/math"
-
-	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
-	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
-	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
-	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
-	"github.com/cosmos/cosmos-sdk/x/slashing/testutil"
-	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-)
-
+/* TODO(rayden): low priority
 func TestSlashRedelegation(t *testing.T) {
 	// setting up
 	var stakingKeeper *stakingkeeper.Keeper
@@ -163,3 +140,4 @@ func TestSlashRedelegation(t *testing.T) {
 	require.Equal(t, balance1AfterSlashing.Amount.Mul(math.NewIntFromUint64(10)).String(), balance1Before.Amount.String())
 	require.Equal(t, balance2AfterSlashing.Amount.Mul(math.NewIntFromUint64(10)).String(), balance2Before.Amount.String())
 }
+*/

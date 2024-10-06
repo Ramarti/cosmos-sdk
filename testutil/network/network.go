@@ -528,6 +528,7 @@ func New(l Logger, baseDir string, cfg Config) (*Network, error) {
 			stakingtypes.NewDescription(nodeDirName, "", "", "", ""),
 			stakingtypes.NewCommissionRates(commission, sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec()),
 			sdkmath.OneInt(),
+			stakingtypes.TokenType_LOCKED,
 		)
 		if err != nil {
 			return nil, err

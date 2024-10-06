@@ -78,15 +78,26 @@ func (d *Delegation) AddPeriodDelegation(
 		return false
 	}
 
+	d.Shares = d.Shares.Add(shares)
+	d.RewardsShares = d.RewardsShares.Add(rewardsShares)
 	d.PeriodDelegations[id] = NewPeriodDelegation(id, shares, rewardsShares, period, startTime, endTime)
 
 	return true
 }
 
 func (d *Delegation) RemovePeriodDelegation(id string) {
-	if d.PeriodDelegations != nil {
-		delete(d.PeriodDelegations, id)
+	if d.PeriodDelegations == nil {
+		return
 	}
+
+	pd, ok := d.PeriodDelegations[id]
+	if !ok {
+		return
+	}
+
+	d.Shares = d.Shares.Sub(pd.Shares)
+	d.RewardsShares = d.RewardsShares.Sub(pd.RewardsShares)
+	delete(d.PeriodDelegations, id)
 }
 
 // Delegations is a collection of delegations
@@ -414,11 +425,11 @@ func NewPeriodDelegation(
 	period Period, startTime, endTime time.Time,
 ) *PeriodDelegation {
 	return &PeriodDelegation{
-		Id:            id,
-		Shares:        shares,
-		RewardsShares: rewardsShares,
-		StartTime:     startTime,
-		Period:        period,
-		EndTime:       endTime,
+		PeriodDelegationId: id,
+		Shares:             shares,
+		RewardsShares:      rewardsShares,
+		StartTime:          startTime,
+		Period:             period,
+		EndTime:            endTime,
 	}
 }

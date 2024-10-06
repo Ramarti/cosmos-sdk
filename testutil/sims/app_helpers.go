@@ -252,13 +252,13 @@ func GenesisStateWithValSet(
 			UnbondingTime:     time.Unix(0, 0).UTC(),
 			Commission:        stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
 			MinSelfDelegation: sdkmath.ZeroInt(),
-			SupportTokenType:  stakingtypes.TokenType_TOKEN_TYPE_LOCKED,
+			SupportTokenType:  stakingtypes.TokenType_LOCKED,
 		}
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(
 			genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec(),
 			"0", stakingtypes.Period{
-				Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+				PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 				Duration:          time.Duration(0),
 				RewardsMultiplier: math.LegacyOneDec(),
 			},
@@ -269,7 +269,10 @@ func GenesisStateWithValSet(
 	}
 
 	// set validators and delegations
-	stakingGenesis := stakingtypes.NewGenesisState(stakingtypes.DefaultParams(), validators, delegations)
+	stakingGenesis := stakingtypes.NewGenesisState(
+		stakingtypes.DefaultParams(), stakingtypes.DefaultPeriods(), stakingtypes.DefaultTokenTypes(),
+		validators, delegations,
+	)
 	genesisState[stakingtypes.ModuleName] = codec.MustMarshalJSON(stakingGenesis)
 
 	totalSupply := sdk.NewCoins()

@@ -57,6 +57,8 @@ func RandomizedGenState(simState *module.SimulationState) {
 	// NewSimulationManager constructor for this to work
 	simState.UnbondTime = unbondTime
 	params := types.NewParams(simState.UnbondTime, maxVals, 7, histEntries, simState.BondDenom, minCommissionRate)
+	periods := types.DefaultPeriods()
+	tokenTypes := types.DefaultTokenTypes()
 
 	// validators & delegations
 	var (
@@ -77,7 +79,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 			simulation.RandomDecAmount(simState.Rand, maxCommission),
 		)
 
-		validator, err := types.NewValidator(valAddr.String(), simState.Accounts[i].ConsKey.PubKey(), types.Description{}, types.TokenType_TOKEN_TYPE_LOCKED)
+		validator, err := types.NewValidator(valAddr.String(), simState.Accounts[i].ConsKey.PubKey(), types.Description{}, types.TokenType_LOCKED)
 		if err != nil {
 			panic(err)
 		}
@@ -88,7 +90,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		delegation := types.NewDelegation(
 			simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake), sdkmath.LegacyNewDecFromInt(simState.InitialStake),
 			"0", types.Period{
-				Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+				PeriodType:        types.PeriodType_FLEXIBLE,
 				Duration:          time.Duration(0),
 				RewardsMultiplier: math.LegacyOneDec(),
 			},
@@ -100,7 +102,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 		delegations = append(delegations, delegation)
 	}
 
-	stakingGenesis := types.NewGenesisState(params, validators, delegations)
+	stakingGenesis := types.NewGenesisState(params, periods, tokenTypes, validators, delegations)
 
 	bz, err := json.MarshalIndent(&stakingGenesis.Params, "", " ")
 	if err != nil {

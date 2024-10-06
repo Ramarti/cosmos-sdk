@@ -38,6 +38,10 @@ var (
 	BondStatusBonded      = BondStatus_name[int32(Bonded)]
 )
 
+const (
+	ValidatorSelfDelegationID = "CreateValidator"
+)
+
 var _ ValidatorI = Validator{}
 
 // NewValidator constructs a new Validator
@@ -521,6 +525,6 @@ func (v Validator) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	return unpacker.UnpackAny(v.ConsensusPubkey, &pk)
 }
 
-func (v Validator) GetSupportTokenType() TokenType            { return v.SupportTokenType }
+func (v Validator) GetSupportTokenType() TokenType            { return TokenType(v.SupportTokenType) }
 func (v Validator) GetRewardsTokens() math.Int                { return v.RewardsTokens }
 func (v Validator) GetDelegatorRewardsShares() math.LegacyDec { return v.DelegatorRewardsShares }

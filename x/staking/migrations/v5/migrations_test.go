@@ -94,7 +94,7 @@ func TestDelegationsByValidatorMigrations(t *testing.T) {
 		del1 := stakingtypes.NewDelegation(
 			accAddrs[i].String(), valAddrs[0].String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
 			"0", types.Period{
-				Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+				PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 				Duration:          time.Duration(0),
 				RewardsMultiplier: sdkmath.LegacyOneDec(),
 			},

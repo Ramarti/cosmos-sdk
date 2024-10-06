@@ -8,9 +8,11 @@ import (
 )
 
 // NewGenesisState creates a new GenesisState instanc e
-func NewGenesisState(params Params, validators []Validator, delegations []Delegation) *GenesisState {
+func NewGenesisState(params Params, periods Periods, tokenTypes TokenTypes, validators []Validator, delegations []Delegation) *GenesisState {
 	return &GenesisState{
 		Params:      params,
+		Periods:     periods,
+		TokenTypes:  tokenTypes,
 		Validators:  validators,
 		Delegations: delegations,
 	}
@@ -19,7 +21,9 @@ func NewGenesisState(params Params, validators []Validator, delegations []Delega
 // DefaultGenesisState gets the raw genesis raw message for testing
 func DefaultGenesisState() *GenesisState {
 	return &GenesisState{
-		Params: DefaultParams(),
+		Params:     DefaultParams(),
+		Periods:    DefaultPeriods(),
+		TokenTypes: DefaultTokenTypes(),
 	}
 }
 

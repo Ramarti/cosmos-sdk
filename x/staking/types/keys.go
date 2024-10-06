@@ -53,8 +53,9 @@ var (
 	HistoricalInfoKey   = []byte{0x50} // prefix for the historical info
 	ValidatorUpdatesKey = []byte{0x61} // prefix for the end block validator updates key
 
-	ParamsKey  = []byte{0x51} // prefix for parameters for module x/staking
-	PeriodsKey = []byte{0x52} // prefix for periods for module x/staking
+	ParamsKey     = []byte{0x51} // prefix for parameters for module x/staking
+	PeriodsKey    = []byte{0x52} // prefix for periods for module x/staking
+	TokenTypesKey = []byte{0x53} // prefix for token types for module x/staking
 
 	DelegationByValIndexKey = []byte{0x71} // key for delegations by a validator
 )

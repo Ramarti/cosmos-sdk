@@ -2,12 +2,10 @@ package keeper
 
 import (
 	"context"
-	"strconv"
+	"fmt"
 	"time"
 
 	"github.com/hashicorp/go-metrics"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -38,6 +36,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
 	}
+	fmt.Printf("fuck run %+v\n", *msg)
 
 	if err := msg.Validate(k.validatorAddressCodec); err != nil {
 		return nil, err
@@ -140,7 +139,10 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	// move coins from the msg.Address account to a (self-delegation) delegator account
 	// the validator account and global shares are updated within here
 	// NOTE source will always be from a wallet which are unbonded
-	_, err = k.Keeper.Delegate(ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true)
+	_, err = k.Keeper.Delegate(
+		ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true,
+		types.ValidatorSelfDelegationID, types.PeriodType_FLEXIBLE,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +284,10 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 	}
 
 	// NOTE: source funds are always unbonded
-	newShares, err := k.Keeper.Delegate(ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true)
+	newShares, err := k.Keeper.Delegate(
+		ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true,
+		msg.PeriodDelegationId, msg.PeriodType,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -313,6 +318,7 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 }
 
 // BeginRedelegate defines a method for performing a redelegation of coins from a source validator to a destination validator of given delegator
+/* TODO(rayden): low priority
 func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedelegate) (*types.MsgBeginRedelegateResponse, error) {
 	valSrcAddr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorSrcAddress)
 	if err != nil {
@@ -387,6 +393,7 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 		CompletionTime: completionTime,
 	}, nil
 }
+*/
 
 // Undelegate defines a method for performing an undelegation from a delegate and a validator
 func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*types.MsgUndelegateResponse, error) {
@@ -462,6 +469,7 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 
 // CancelUnbondingDelegation defines a method for canceling the unbonding delegation
 // and delegate back to the validator.
+/* Deprecated since: piplabs/v0.50.7
 func (k msgServer) CancelUnbondingDelegation(ctx context.Context, msg *types.MsgCancelUnbondingDelegation) (*types.MsgCancelUnbondingDelegationResponse, error) {
 	valAddr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
 	if err != nil {
@@ -587,7 +595,7 @@ func (k msgServer) CancelUnbondingDelegation(ctx context.Context, msg *types.Msg
 
 	return &types.MsgCancelUnbondingDelegationResponse{}, nil
 }
-
+*/
 // UpdateParams defines a method to perform updation of params exist in x/staking module.
 func (k msgServer) UpdateParams(ctx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if k.authority != msg.Authority {

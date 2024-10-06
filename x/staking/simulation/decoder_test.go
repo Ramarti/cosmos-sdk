@@ -29,12 +29,12 @@ func TestDecodeStore(t *testing.T) {
 	dec := simulation.NewDecodeStore(cdc)
 	bondTime := time.Now().UTC()
 
-	val, err := types.NewValidator(valAddr1.String(), delPk1, types.NewDescription("test", "test", "test", "test", "test"), types.TokenType_TOKEN_TYPE_LOCKED)
+	val, err := types.NewValidator(valAddr1.String(), delPk1, types.NewDescription("test", "test", "test", "test", "test"), types.TokenType_LOCKED)
 	require.NoError(t, err)
 	del := types.NewDelegation(
 		delAddr1.String(), valAddr1.String(), math.LegacyOneDec(), math.LegacyOneDec(),
 		"0", types.Period{
-			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},

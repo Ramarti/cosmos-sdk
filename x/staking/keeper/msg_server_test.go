@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/staking/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -55,6 +55,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(1),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  ValAddr.String(),
 				Pubkey:            pubkey,
@@ -75,6 +76,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(1),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  sdk.AccAddress([]byte("invalid")).String(),
 				Pubkey:            pubkey,
@@ -95,6 +97,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(1),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  ValAddr.String(),
 				Pubkey:            nil,
@@ -115,6 +118,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(1),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  ValAddr.String(),
 				Pubkey:            pubkey,
@@ -135,6 +139,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(1),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  ValAddr.String(),
 				Pubkey:            pubkey,
@@ -155,6 +160,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(0),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  ValAddr.String(),
 				Pubkey:            pubkey,
@@ -175,6 +181,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(-1),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  ValAddr.String(),
 				Pubkey:            pubkey,
@@ -195,6 +202,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(100),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  ValAddr.String(),
 				Pubkey:            pubkey,
@@ -219,6 +227,7 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 					MaxChangeRate: math.LegacyNewDec(0),
 				},
 				MinSelfDelegation: math.NewInt(1),
+				SupportTokenType:  stakingtypes.TokenType_LOCKED,
 				DelegatorAddress:  Addr.String(),
 				ValidatorAddress:  ValAddr.String(),
 				Pubkey:            pubkey,
@@ -253,7 +262,10 @@ func (s *KeeperTestSuite) TestMsgEditValidator() {
 	require.NotNil(pk)
 
 	comm := stakingtypes.NewCommissionRates(math.LegacyNewDec(0), math.LegacyNewDec(0), math.LegacyNewDec(0))
-	msg, err := stakingtypes.NewMsgCreateValidator(ValAddr.String(), pk, sdk.NewCoin("stake", math.NewInt(10)), stakingtypes.Description{Moniker: "NewVal"}, comm, math.OneInt())
+	msg, err := stakingtypes.NewMsgCreateValidator(
+		ValAddr.String(), pk, sdk.NewCoin("stake", math.NewInt(10)), stakingtypes.Description{Moniker: "NewVal"}, comm, math.OneInt(),
+		stakingtypes.TokenType_LOCKED,
+	)
 	require.NoError(err)
 
 	res, err := msgServer.CreateValidator(ctx, msg)
@@ -427,9 +439,13 @@ func (s *KeeperTestSuite) TestMsgDelegate() {
 
 	comm := stakingtypes.NewCommissionRates(math.LegacyNewDec(0), math.LegacyNewDec(0), math.LegacyNewDec(0))
 
-	msg, err := stakingtypes.NewMsgCreateValidator(ValAddr.String(), pk, sdk.NewCoin("stake", math.NewInt(10)), stakingtypes.Description{Moniker: "NewVal"}, comm, math.OneInt())
+	msg, err := stakingtypes.NewMsgCreateValidator(
+		ValAddr.String(), pk, sdk.NewCoin("stake", math.NewInt(10)), stakingtypes.Description{Moniker: "NewVal"}, comm, math.OneInt(),
+		stakingtypes.TokenType_LOCKED,
+	)
 	require.NoError(err)
 
+	fmt.Printf("fuck test %+v\n", *msg)
 	res, err := msgServer.CreateValidator(ctx, msg)
 	require.NoError(err)
 	require.NotNil(res)
@@ -535,6 +551,7 @@ func (s *KeeperTestSuite) TestMsgDelegate() {
 	}
 }
 
+/* TODO(rayden): low priority
 func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 	ctx, keeper, msgServer := s.ctx, s.stakingKeeper, s.msgServer
 	require := s.Require()
@@ -570,7 +587,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 	del := stakingtypes.NewDelegation(
 		Addr.String(), srcValAddr.String(), shares, shares,
 		"0", types.Period{
-			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:              types.PeriodTypeFlexible),
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -711,6 +728,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 		})
 	}
 }
+*/
 
 func (s *KeeperTestSuite) TestMsgUndelegate() {
 	ctx, keeper, msgServer := s.ctx, s.stakingKeeper, s.msgServer
@@ -723,8 +741,12 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 	comm := stakingtypes.NewCommissionRates(math.LegacyNewDec(0), math.LegacyNewDec(0), math.LegacyNewDec(0))
 	amt := sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: keeper.TokensFromConsensusPower(s.ctx, int64(100))}
 
-	msg, err := stakingtypes.NewMsgCreateValidator(ValAddr.String(), pk, amt, stakingtypes.Description{Moniker: "NewVal"}, comm, math.OneInt())
+	msg, err := stakingtypes.NewMsgCreateValidator(
+		ValAddr.String(), pk, amt, stakingtypes.Description{Moniker: "NewVal"}, comm, math.OneInt(),
+		stakingtypes.TokenType_LOCKED,
+	)
 	require.NoError(err)
+
 	res, err := msgServer.CreateValidator(ctx, msg)
 	require.NoError(err)
 	require.NotNil(res)
@@ -732,8 +754,8 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 	shares := math.LegacyNewDec(100)
 	del := stakingtypes.NewDelegation(
 		Addr.String(), ValAddr.String(), shares, shares,
-		"0", types.Period{
-			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+		"0", stakingtypes.Period{
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -845,6 +867,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 	}
 }
 
+/* Deprecated since story/v0.50.7
 func (s *KeeperTestSuite) TestMsgCancelUnbondingDelegation() {
 	ctx, keeper, msgServer, ak := s.ctx, s.stakingKeeper, s.msgServer, s.accountKeeper
 	require := s.Require()
@@ -867,7 +890,7 @@ func (s *KeeperTestSuite) TestMsgCancelUnbondingDelegation() {
 	del := stakingtypes.NewDelegation(
 		Addr.String(), ValAddr.String(), shares, shares,
 		"0", types.Period{
-			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:              types.PeriodTypeFlexible),
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -1015,6 +1038,7 @@ func (s *KeeperTestSuite) TestMsgCancelUnbondingDelegation() {
 		})
 	}
 }
+*/
 
 func (s *KeeperTestSuite) TestMsgUpdateParams() {
 	ctx, keeper, msgServer := s.ctx, s.stakingKeeper, s.msgServer

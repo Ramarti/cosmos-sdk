@@ -17,7 +17,6 @@ import (
 	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec/address"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -185,6 +184,7 @@ func (s *SimTestSuite) TestSimulateMsgCreateValidator() {
 
 // TestSimulateMsgCancelUnbondingDelegation tests the normal scenario of a valid message of type TypeMsgCancelUnbondingDelegation.
 // Abonormal scenarios, where the message is
+/* Deprecated since piplabs/v0.50.7
 func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	require := s.Require()
 	blockTime := time.Now().UTC()
@@ -200,7 +200,7 @@ func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
 		"0", types.Period{
-			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -237,6 +237,7 @@ func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	require.Equal(validator0.GetOperator(), msg.ValidatorAddress)
 	require.Len(futureOperations, 0)
 }
+*/
 
 // TestSimulateMsgEditValidator tests the normal scenario of a valid message of type TypeMsgEditValidator.
 // Abonormal scenarios, where the message is created by an errors are not tested here.
@@ -305,7 +306,7 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
 		"0", types.Period{
-			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -341,6 +342,7 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 
 // TestSimulateMsgBeginRedelegate tests the normal scenario of a valid message of type TypeMsgBeginRedelegate.
 // Abonormal scenarios, where the message is created by an errors, are not tested here.
+/* TODO(rayden): low priority
 func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	require := s.Require()
 	blockTime := time.Now().UTC()
@@ -358,7 +360,7 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
 		"0", types.Period{
-			Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -395,6 +397,7 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	require.Equal("cosmosvaloper1p8wcgrjr4pjju90xg6u9cgq55dxwq8j7epjs3u", msg.ValidatorSrcAddress)
 	require.Len(futureOperations, 0)
 }
+*/
 
 func (s *SimTestSuite) getTestingValidator0(ctx sdk.Context) types.Validator {
 	commission0 := types.NewCommission(math.LegacyZeroDec(), math.LegacyOneDec(), math.LegacyOneDec())

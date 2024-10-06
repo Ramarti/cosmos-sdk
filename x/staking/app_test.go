@@ -70,6 +70,7 @@ func TestStakingMsgs(t *testing.T) {
 	description := types.NewDescription("foo_moniker", "", "", "", "")
 	createValidatorMsg, err := types.NewMsgCreateValidator(
 		sdk.ValAddress(addr1).String(), valKey.PubKey(), bondCoin, description, commissionRates, math.OneInt(),
+		types.TokenType_LOCKED,
 	)
 	require.NoError(t, err)
 
@@ -107,7 +108,10 @@ func TestStakingMsgs(t *testing.T) {
 
 	// delegate
 	require.True(t, sdk.Coins{genCoin}.Equal(bankKeeper.GetAllBalances(ctxCheck, addr2)))
-	delegateMsg := types.NewMsgDelegate(addr2.String(), sdk.ValAddress(addr1).String(), bondCoin)
+	delegateMsg := types.NewMsgDelegate(
+		addr2.String(), sdk.ValAddress(addr1).String(), bondCoin,
+		"0", types.PeriodType_FLEXIBLE,
+	)
 
 	header = cmtproto.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simtestutil.SignCheckDeliver(t, txConfig, app.BaseApp, header, []sdk.Msg{delegateMsg}, "", []uint64{1}, []uint64{0}, true, true, priv2)

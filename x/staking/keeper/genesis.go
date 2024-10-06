@@ -38,6 +38,10 @@ func (k Keeper) InitGenesis(ctx context.Context, data *types.GenesisState) (res 
 		panic(err)
 	}
 
+	if err := k.SetTokenTypes(ctx, data.TokenTypes); err != nil {
+		panic(err)
+	}
+
 	if err := k.SetLastTotalPower(ctx, data.LastTotalPower); err != nil {
 		panic(err)
 	}

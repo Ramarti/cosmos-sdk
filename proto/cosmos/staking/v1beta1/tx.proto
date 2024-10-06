@@ -29,7 +29,8 @@ service Msg {
 
   // BeginRedelegate defines a method for performing a redelegation
   // of coins from a delegator and source validator to a destination validator.
-  rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
+  // TODO(rayden): low priority
+  // rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
 
   // Undelegate defines a method for performing an undelegation from a
   // delegate and a validator.
@@ -39,7 +40,8 @@ service Msg {
   // and delegate back to previous validator.
   //
   // Since: cosmos-sdk 0.46
-  rpc CancelUnbondingDelegation(MsgCancelUnbondingDelegation) returns (MsgCancelUnbondingDelegationResponse);
+  // Deprecated since: piplabs/v0.50.7
+  // rpc CancelUnbondingDelegation(MsgCancelUnbondingDelegation) returns (MsgCancelUnbondingDelegationResponse);
 
   // UpdateParams defines an operation for updating the x/staking module
   // parameters.
@@ -109,11 +111,11 @@ message MsgDelegate {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  string                   delegator_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string                   validator_address = 2 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
-  cosmos.base.v1beta1.Coin amount            = 3 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
-  string                   id                = 4 [(amino.dont_omitempty) = true];
-  Period                   period            = 5 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  string                   delegator_address    = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string                   validator_address    = 2 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
+  cosmos.base.v1beta1.Coin amount               = 3 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  string                   period_delegation_id = 4 [(amino.dont_omitempty) = true];
+  PeriodType               period_type          = 5 [(amino.dont_omitempty) = true];
 }
 
 // MsgDelegateResponse defines the Msg/Delegate response type.

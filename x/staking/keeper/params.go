@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cosmossdk.io/math"
@@ -108,4 +109,83 @@ func (k Keeper) GetPeriods(ctx context.Context) (periods types.Periods, err erro
 
 	err = k.cdc.Unmarshal(bz, &periods)
 	return periods, err
+}
+
+// GetPeriod gets the x/staking module specific period based on period type.
+func (k Keeper) GetPeriod(ctx context.Context, periodType types.PeriodType) (period types.Period, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	bz, err := store.Get(types.PeriodsKey)
+	if err != nil {
+		return period, err
+	}
+
+	if bz == nil {
+		return period, nil
+	}
+
+	var periods types.Periods
+	if err := k.cdc.Unmarshal(bz, &periods); err != nil {
+		return period, err
+	}
+
+	p, ok := periods.PeriodMap[int32(periodType)]
+	if !ok {
+		return period, fmt.Errorf("period not found for period type %v", periodType)
+	}
+	period = *p
+
+	return period, nil
+}
+
+// SetTokenTypes sets the x/staking module token types.
+// CONTRACT: This method performs no validation of the token types.
+func (k Keeper) SetTokenTypes(ctx context.Context, tokenTypes types.TokenTypes) error {
+	store := k.storeService.OpenKVStore(ctx)
+	bz, err := k.cdc.Marshal(&tokenTypes)
+	if err != nil {
+		return err
+	}
+	return store.Set(types.TokenTypesKey, bz)
+}
+
+// GetTokenTypes gets the x/staking module token types.
+func (k Keeper) GetTokenTypes(ctx context.Context) (tokenTypes types.TokenTypes, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	bz, err := store.Get(types.TokenTypesKey)
+	if err != nil {
+		return tokenTypes, err
+	}
+
+	if bz == nil {
+		return tokenTypes, nil
+	}
+
+	err = k.cdc.Unmarshal(bz, &tokenTypes)
+	return tokenTypes, err
+}
+
+// GetTokenType gets the x/staking module token type based on the token type.
+func (k Keeper) GetTokenType(ctx context.Context, tokenType types.TokenType) (tokenTypeInfo types.TokenTypeInfo, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+	bz, err := store.Get(types.TokenTypesKey)
+	if err != nil {
+		return tokenTypeInfo, err
+	}
+
+	if bz == nil {
+		return tokenTypeInfo, nil
+	}
+
+	var tokenTypes types.TokenTypes
+	if err := k.cdc.Unmarshal(bz, &tokenTypes); err != nil {
+		return tokenTypeInfo, err
+	}
+
+	t, ok := tokenTypes.TokenTypeInfoMap[int32(tokenType)]
+	if !ok {
+		return tokenTypeInfo, fmt.Errorf("invalid token type %v", tokenType)
+	}
+	tokenTypeInfo = *t
+
+	return tokenTypeInfo, err
 }

@@ -179,7 +179,7 @@ func (suite *SimTestSuite) TestSimulateMsgUnjail() {
 	selfDelegation := stakingtypes.NewDelegation(
 		suite.accounts[0].Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -214,7 +214,7 @@ func getTestingValidator(ctx sdk.Context, stakingKeeper *stakingkeeper.Keeper, a
 	account := accounts[n]
 	valPubKey := account.ConsKey.PubKey()
 	valAddr := sdk.ValAddress(account.PubKey.Address().Bytes())
-	validator, err := stakingtypes.NewValidator(valAddr.String(), valPubKey, stakingtypes.Description{}, stakingtypes.TokenType_TOKEN_TYPE_LOCKED)
+	validator, err := stakingtypes.NewValidator(valAddr.String(), valPubKey, stakingtypes.Description{}, stakingtypes.TokenType_LOCKED)
 	if err != nil {
 		return stakingtypes.Validator{}, fmt.Errorf("failed to create validator: %w", err)
 	}

@@ -65,7 +65,7 @@ func TestCalculateRewardsBasic(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -160,7 +160,7 @@ func TestCalculateRewardsAfterSlash(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -273,7 +273,7 @@ func TestCalculateRewardsAfterManySlashes(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -404,7 +404,7 @@ func TestCalculateRewardsMultiDelegator(t *testing.T) {
 	del0 := stakingtypes.NewDelegation(
 		addr0.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -511,7 +511,7 @@ func TestWithdrawDelegationRewardsBasic(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -595,7 +595,7 @@ func TestCalculateRewardsAfterManySlashesInSameBlock(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -721,7 +721,7 @@ func TestCalculateRewardsMultiDelegatorMultiSlash(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -865,7 +865,7 @@ func TestCalculateRewardsMultiDelegatorMultWithdraw(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -1073,7 +1073,7 @@ func Test100PercentCommissionReward(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},

@@ -171,7 +171,10 @@ func SimulateMsgCreateValidator(
 			simtypes.RandomDecAmount(r, maxCommission),
 		)
 
-		msg, err := types.NewMsgCreateValidator(address.String(), simAccount.ConsKey.PubKey(), selfDelegation, description, commission, math.OneInt())
+		msg, err := types.NewMsgCreateValidator(
+			address.String(), simAccount.ConsKey.PubKey(), selfDelegation, description, commission, math.OneInt(),
+			types.TokenType_LOCKED,
+		)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), "unable to create CreateValidator message"), nil, err
 		}
@@ -327,7 +330,10 @@ func SimulateMsgDelegate(
 			}
 		}
 
-		msg := types.NewMsgDelegate(simAccount.Address.String(), val.GetOperator(), bondAmt)
+		msg := types.NewMsgDelegate(
+			simAccount.Address.String(), val.GetOperator(), bondAmt,
+			"0", types.PeriodType_FLEXIBLE,
+		)
 
 		txCtx := simulation.OperationInput{
 			R:             r,

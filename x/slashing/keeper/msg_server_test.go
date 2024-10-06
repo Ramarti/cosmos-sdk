@@ -168,7 +168,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 			malleate: func() *slashingtypes.MsgUnjail {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_TOKEN_TYPE_LOCKED)
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				s.Require().NoError(err)
 
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
@@ -202,7 +202,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
 
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_TOKEN_TYPE_LOCKED)
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				val.Tokens = sdkmath.NewInt(1000)
 				val.DelegatorShares = sdkmath.LegacyNewDec(1)
 				val.Jailed = false
@@ -218,7 +218,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
 					"0", types.Period{
-						Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+						PeriodType:        types.PeriodType_FLEXIBLE,
 						Duration:          time.Duration(0),
 						RewardsMultiplier: math.LegacyOneDec(),
 					},
@@ -241,7 +241,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
 
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_TOKEN_TYPE_LOCKED)
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				val.Tokens = sdkmath.NewInt(1000)
 				val.DelegatorShares = sdkmath.LegacyNewDec(1)
 				val.Jailed = true
@@ -257,7 +257,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
 					"0", types.Period{
-						Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+						PeriodType:        types.PeriodType_FLEXIBLE,
 						Duration:          time.Duration(0),
 						RewardsMultiplier: math.LegacyOneDec(),
 					},
@@ -280,7 +280,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
 
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_TOKEN_TYPE_LOCKED)
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				val.Tokens = sdkmath.NewInt(1000)
 				val.DelegatorShares = sdkmath.LegacyNewDec(1)
 				val.Jailed = true
@@ -296,7 +296,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(10000), sdkmath.LegacyNewDec(10000),
 					"0", types.Period{
-						Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+						PeriodType:        types.PeriodType_FLEXIBLE,
 						Duration:          time.Duration(0),
 						RewardsMultiplier: math.LegacyOneDec(),
 					},
@@ -319,7 +319,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
 
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_TOKEN_TYPE_LOCKED)
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				val.Tokens = sdkmath.NewInt(1000)
 				val.DelegatorShares = sdkmath.LegacyNewDec(1)
 
@@ -335,7 +335,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
 					"0", types.Period{
-						Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+						PeriodType:        types.PeriodType_FLEXIBLE,
 						Duration:          time.Duration(0),
 						RewardsMultiplier: math.LegacyOneDec(),
 					},

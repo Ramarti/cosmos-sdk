@@ -115,7 +115,7 @@ func (suite *SimTestSuite) TestSimulateMsgWithdrawDelegatorReward() {
 	delegation := stakingtypes.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
 		"0", stakingtypes.Period{
-			Type:              stakingtypes.PeriodType_PERIOD_TYPE_FLIEXIBLE,
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
@@ -319,7 +319,7 @@ func (suite *SimTestSuite) getTestingValidator(accounts []simtypes.Account, comm
 	valPubKey := account.PubKey
 	valAddr := sdk.ValAddress(account.PubKey.Address().Bytes())
 	validator, err := stakingtypes.NewValidator(valAddr.String(), valPubKey, stakingtypes.
-		Description{}, stakingtypes.TokenType_TOKEN_TYPE_LOCKED)
+		Description{}, stakingtypes.TokenType_LOCKED)
 	require.NoError(err)
 	validator, err = validator.SetInitialCommission(commission)
 	require.NoError(err)

@@ -22,11 +22,11 @@ import (
 )
 
 func TestValidatorTestEquivalent(t *testing.T) {
-	val1 := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
-	val2 := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	val1 := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
+	val2 := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	require.Equal(t, val1.String(), val2.String())
 
-	val2 = newValidator(t, valAddr2, pk2, types.TokenType_TOKEN_TYPE_LOCKED)
+	val2 = newValidator(t, valAddr2, pk2, types.TokenType_LOCKED)
 	require.NotEqual(t, val1.String(), val2.String())
 }
 
@@ -60,7 +60,7 @@ func TestUpdateDescription(t *testing.T) {
 }
 
 func TestABCIValidatorUpdate(t *testing.T) {
-	validator := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	abciVal := validator.ABCIValidatorUpdate(sdk.DefaultPowerReduction)
 	pk, err := validator.TmConsPublicKey()
 	require.NoError(t, err)
@@ -69,7 +69,7 @@ func TestABCIValidatorUpdate(t *testing.T) {
 }
 
 func TestABCIValidatorUpdateZero(t *testing.T) {
-	validator := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	abciVal := validator.ABCIValidatorUpdateZero()
 	pk, err := validator.TmConsPublicKey()
 	require.NoError(t, err)
@@ -103,7 +103,7 @@ func TestRemoveTokens(t *testing.T) {
 }
 
 func TestAddTokensValidatorBonded(t *testing.T) {
-	validator := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	validator = validator.UpdateStatus(types.Bonded)
 	validator, delShares := validator.AddTokensFromDel(math.NewInt(10))
 
@@ -113,7 +113,7 @@ func TestAddTokensValidatorBonded(t *testing.T) {
 }
 
 func TestAddTokensValidatorUnbonding(t *testing.T) {
-	validator := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	validator = validator.UpdateStatus(types.Unbonding)
 	validator, delShares := validator.AddTokensFromDel(math.NewInt(10))
 
@@ -124,7 +124,7 @@ func TestAddTokensValidatorUnbonding(t *testing.T) {
 }
 
 func TestAddTokensValidatorUnbonded(t *testing.T) {
-	validator := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	validator = validator.UpdateStatus(types.Unbonded)
 	validator, delShares := validator.AddTokensFromDel(math.NewInt(10))
 
@@ -158,7 +158,7 @@ func TestRemoveDelShares(t *testing.T) {
 }
 
 func TestAddTokensFromDel(t *testing.T) {
-	validator := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 
 	validator, shares := validator.AddTokensFromDel(math.NewInt(6))
 	require.True(math.LegacyDecEq(t, math.LegacyNewDec(6), shares))
@@ -172,7 +172,7 @@ func TestAddTokensFromDel(t *testing.T) {
 }
 
 func TestUpdateStatus(t *testing.T) {
-	validator := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	validator, _ = validator.AddTokensFromDel(math.NewInt(100))
 	require.Equal(t, types.Unbonded, validator.Status)
 	require.Equal(t, int64(100), validator.Tokens.Int64())
@@ -200,7 +200,7 @@ func TestPossibleOverflow(t *testing.T) {
 }
 
 func TestValidatorMarshalUnmarshalJSON(t *testing.T) {
-	validator := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	js, err := legacy.Cdc.MarshalJSON(validator)
 	require.NoError(t, err)
 	require.NotEmpty(t, js)
@@ -212,7 +212,7 @@ func TestValidatorMarshalUnmarshalJSON(t *testing.T) {
 }
 
 func TestValidatorSetInitialCommission(t *testing.T) {
-	val := newValidator(t, valAddr1, pk1, types.TokenType_TOKEN_TYPE_LOCKED)
+	val := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	testCases := []struct {
 		validator   types.Validator
 		commission  types.Commission
@@ -253,7 +253,7 @@ func TestValidatorsSortDeterminism(t *testing.T) {
 	// Create random validator slice
 	for i := range vals {
 		pk := ed25519.GenPrivKey().PubKey()
-		vals[i] = newValidator(t, sdk.ValAddress(pk.Address()), pk, types.TokenType_TOKEN_TYPE_LOCKED)
+		vals[i] = newValidator(t, sdk.ValAddress(pk.Address()), pk, types.TokenType_LOCKED)
 	}
 
 	// Save sorted copy
@@ -278,7 +278,7 @@ func TestValidatorsSortCometBFT(t *testing.T) {
 	for i := range vals {
 		pk := ed25519.GenPrivKey().PubKey()
 		pk2 := ed25519.GenPrivKey().PubKey()
-		vals[i] = newValidator(t, sdk.ValAddress(pk2.Address()), pk, types.TokenType_TOKEN_TYPE_LOCKED)
+		vals[i] = newValidator(t, sdk.ValAddress(pk2.Address()), pk, types.TokenType_LOCKED)
 		vals[i].Status = types.Bonded
 		vals[i].Tokens = math.NewInt(rand.Int63())
 	}
@@ -310,7 +310,7 @@ func TestValidatorToCmt(t *testing.T) {
 
 	for i := 0; i < 10; i++ {
 		pk := ed25519.GenPrivKey().PubKey()
-		val := newValidator(t, sdk.ValAddress(pk.Address()), pk, types.TokenType_TOKEN_TYPE_LOCKED)
+		val := newValidator(t, sdk.ValAddress(pk.Address()), pk, types.TokenType_LOCKED)
 		val.Status = types.Bonded
 		val.Tokens = math.NewInt(rand.Int63())
 		vals.Validators = append(vals.Validators, val)

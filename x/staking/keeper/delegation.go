@@ -862,7 +862,7 @@ func (k Keeper) DequeueAllMatureRedelegationQueue(ctx context.Context, currTime 
 // tokenSrc indicates the bond status of the incoming funds.
 func (k Keeper) Delegate(
 	ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc types.BondStatus,
-	validator types.Validator, subtractAccount bool,
+	validator types.Validator, subtractAccount bool, periodDelID string, periodType types.PeriodType,
 ) (newShares math.LegacyDec, err error) {
 	// In some situations, the exchange rate becomes invalid, e.g. if
 	// Validator loses all tokens due to slashing. In this case,
@@ -871,38 +871,9 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), types.ErrDelegatorShareExRateInvalid
 	}
 
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	valbz, err := k.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
-	if err != nil {
-		return math.LegacyZeroDec(), err
-	}
-
-	// Get or create the delegation object and call the appropriate hook if present
-	delegation, err := k.GetDelegation(ctx, delAddr, valbz)
-	if err == nil {
-		// found
-		err = k.Hooks().BeforeDelegationSharesModified(ctx, delAddr, valbz)
-	} else if errors.Is(err, types.ErrNoDelegation) {
-		// not found
-		delAddrStr, err1 := k.authKeeper.AddressCodec().BytesToString(delAddr)
-		if err1 != nil {
-			return math.LegacyDec{}, err1
-		}
-
-		delegation = types.NewDelegation(
-			delAddrStr, validator.GetOperator(), math.LegacyZeroDec(), math.LegacyZeroDec(),
-			"0", types.Period{
-				Type:              types.PeriodType_PERIOD_TYPE_FLIEXIBLE,
-				Duration:          time.Duration(0),
-				RewardsMultiplier: math.LegacyOneDec(),
-			},
-			time.Unix(0, 0),
-			time.Unix(0, 0),
-		)
-		err = k.Hooks().BeforeDelegationCreated(ctx, delAddr, valbz)
-	} else {
-		return math.LegacyZeroDec(), err
-	}
-
 	if err != nil {
 		return math.LegacyZeroDec(), err
 	}
@@ -964,8 +935,45 @@ func (k Keeper) Delegate(
 		return newShares, err
 	}
 
+	tokenTypeRewardsMultiplier, err := k.GetTokenTypeRewardsMultiplier(ctx, validator.GetSupportTokenType())
+	if err != nil {
+		return math.LegacyDec{}, err
+	}
+	period, err := k.GetPeriod(ctx, periodType)
+	if err != nil {
+		return math.LegacyDec{}, err
+	}
+
+	// Get or create the delegation object and call the appropriate hook if present
+	delegation, err := k.GetDelegation(ctx, delAddr, valbz)
+	if err == nil {
+		// found, and add period delegation
+		delegation.AddPeriodDelegation(
+			periodDelID, newShares, newShares.Mul(tokenTypeRewardsMultiplier).Mul(period.RewardsMultiplier),
+			period, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
+		)
+		err = k.Hooks().BeforeDelegationSharesModified(ctx, delAddr, valbz)
+	} else if errors.Is(err, types.ErrNoDelegation) {
+		// not found
+		delAddrStr, err1 := k.authKeeper.AddressCodec().BytesToString(delAddr)
+		if err1 != nil {
+			return math.LegacyDec{}, err1
+		}
+		delegation = types.NewDelegation(
+			delAddrStr, validator.GetOperator(),
+			newShares, newShares.Mul(period.RewardsMultiplier),
+			periodDelID, period, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
+		)
+		err = k.Hooks().BeforeDelegationCreated(ctx, delAddr, valbz)
+	} else {
+		return math.LegacyZeroDec(), err
+	}
+	// check err from BeforeDelegationCreated
+	if err != nil {
+		return math.LegacyZeroDec(), err
+	}
+
 	// Update delegation
-	delegation.Shares = delegation.Shares.Add(newShares)
 	if err = k.SetDelegation(ctx, delegation); err != nil {
 		return newShares, err
 	}
@@ -1223,6 +1231,7 @@ func (k Keeper) CompleteUnbonding(ctx context.Context, delAddr sdk.AccAddress, v
 
 // BeginRedelegation begins unbonding / redelegation and creates a redelegation
 // record.
+/* TODO(rayden): low priority
 func (k Keeper) BeginRedelegation(
 	ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec,
 ) (completionTime time.Time, err error) {
@@ -1302,6 +1311,7 @@ func (k Keeper) BeginRedelegation(
 
 	return completionTime, nil
 }
+*/
 
 // CompleteRedelegation completes the redelegations of all mature entries in the
 // retrieved redelegation object and returns the total redelegation (initial)
