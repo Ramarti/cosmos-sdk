@@ -28,16 +28,16 @@ func ParseTokenTypeNormalized(tokenTypeStr string) (types.TokenType, error) {
 }
 
 func (k Keeper) GetTokenTypeRewardsMultiplier(ctx context.Context, tokenType types.TokenType) (math.LegacyDec, error) {
-	fmt.Printf("fxxxxxxxxk %v %s\n", int32(tokenType), tokenType)
 	tokenTypes, err := k.GetTokenTypes(ctx)
 	if err != nil {
 		return math.LegacyDec{}, err
 	}
-	fmt.Printf("fccccck %+v\n", tokenTypes.TokenTypeInfoMap)
+
 	tokenTypeInfo, ok := tokenTypes.TokenTypeInfoMap[int32(tokenType)]
 	if !ok {
 		return math.LegacyDec{}, fmt.Errorf("invalid token type %v", tokenType)
 	}
+
 	return tokenTypeInfo.RewardsMultiplier, nil
 }
 
@@ -63,9 +63,11 @@ func (k Keeper) GetPeriodRewardsMultiplier(ctx context.Context, periodType types
 	if err != nil {
 		return math.LegacyZeroDec(), err
 	}
+
 	period, ok := ps.PeriodMap[int32(periodType)]
 	if !ok {
 		return math.LegacyDec{}, fmt.Errorf("invalid period type %v", periodType)
 	}
+
 	return period.RewardsMultiplier, nil
 }

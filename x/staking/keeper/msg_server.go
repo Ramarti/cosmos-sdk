@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/hashicorp/go-metrics"
@@ -36,7 +35,6 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
 	}
-	fmt.Printf("fuck run %+v\n", *msg)
 
 	if err := msg.Validate(k.validatorAddressCodec); err != nil {
 		return nil, err

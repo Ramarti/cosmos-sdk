@@ -1,7 +1,6 @@
 package keeper_test
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -445,7 +444,6 @@ func (s *KeeperTestSuite) TestMsgDelegate() {
 	)
 	require.NoError(err)
 
-	fmt.Printf("fuck test %+v\n", *msg)
 	res, err := msgServer.CreateValidator(ctx, msg)
 	require.NoError(err)
 	require.NotNil(res)
