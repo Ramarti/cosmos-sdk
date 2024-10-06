@@ -209,6 +209,37 @@
       "delegations": null,
       "unbonding_delegations": null,
       "redelegations": null,
+      "periods": {
+        "period_map": {
+          "0":{
+            "duration": "0s",
+            "period_type": 0,
+            "rewards_multiplier": "1.000000000000000000"
+          },
+          "1": {
+            "duration": "7776000s",
+            "period_type": 1,
+            "rewards_multiplier": "1.100000000000000000"
+          },
+          "2": {
+            "duration": "31536000s",
+            "period_type": 2,
+            "rewards_multiplier": "1.200000000000000000"
+          }
+        }
+      },
+      "token_types": {
+        "token_type_info_map": {
+          "0": {
+            "rewards_multiplier": "1.000000000000000000",
+            "token_type": 0
+          },
+          "1": {
+            "rewards_multiplier": "2.000000000000000000",
+            "token_type": 1
+          }
+        }
+      },
       "exported": false
     }
   }
