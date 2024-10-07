@@ -1071,6 +1071,7 @@ func (s *KeeperTestSuite) TestMsgUpdateParams() {
 				Authority: keeper.GetAuthority(),
 				Params: stakingtypes.Params{
 					MinCommissionRate: math.LegacyNewDec(-10),
+					MinDelegation:     stakingtypes.DefaultMinDelegation,
 					UnbondingTime:     stakingtypes.DefaultUnbondingTime,
 					MaxValidators:     stakingtypes.DefaultMaxValidators,
 					MaxEntries:        stakingtypes.DefaultMaxEntries,
@@ -1087,6 +1088,7 @@ func (s *KeeperTestSuite) TestMsgUpdateParams() {
 				Authority: keeper.GetAuthority(),
 				Params: stakingtypes.Params{
 					MinCommissionRate: math.LegacyNewDec(2),
+					MinDelegation:     stakingtypes.DefaultMinDelegation,
 					UnbondingTime:     stakingtypes.DefaultUnbondingTime,
 					MaxValidators:     stakingtypes.DefaultMaxValidators,
 					MaxEntries:        stakingtypes.DefaultMaxEntries,
@@ -1103,6 +1105,7 @@ func (s *KeeperTestSuite) TestMsgUpdateParams() {
 				Authority: keeper.GetAuthority(),
 				Params: stakingtypes.Params{
 					MinCommissionRate: stakingtypes.DefaultMinCommissionRate,
+					MinDelegation:     stakingtypes.DefaultMinDelegation,
 					UnbondingTime:     stakingtypes.DefaultUnbondingTime,
 					MaxValidators:     stakingtypes.DefaultMaxValidators,
 					MaxEntries:        stakingtypes.DefaultMaxEntries,
@@ -1135,6 +1138,7 @@ func (s *KeeperTestSuite) TestMsgUpdateParams() {
 				Authority: keeper.GetAuthority(),
 				Params: stakingtypes.Params{
 					MinCommissionRate: stakingtypes.DefaultMinCommissionRate,
+					MinDelegation:     stakingtypes.DefaultMinDelegation,
 					UnbondingTime:     stakingtypes.DefaultUnbondingTime,
 					MaxValidators:     stakingtypes.DefaultMaxValidators,
 					MaxEntries:        0,
@@ -1155,6 +1159,7 @@ func (s *KeeperTestSuite) TestMsgUpdateParams() {
 					MaxValidators:     stakingtypes.DefaultMaxValidators,
 					HistoricalEntries: stakingtypes.DefaultHistoricalEntries,
 					MinCommissionRate: stakingtypes.DefaultMinCommissionRate,
+					MinDelegation:     stakingtypes.DefaultMinDelegation,
 					BondDenom:         "denom",
 				},
 			},

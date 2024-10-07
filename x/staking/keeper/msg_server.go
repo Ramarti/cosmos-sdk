@@ -112,6 +112,13 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, err
 	}
 
+	minDelegation, err := k.MinDelegation(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to get min delegation")
+	}
+	if msg.MinSelfDelegation.LT(minDelegation) {
+		return nil, types.ErrMinSelfDelegationBelowMinDelegation
+	}
 	validator.MinSelfDelegation = msg.MinSelfDelegation
 
 	err = k.SetValidator(ctx, validator)

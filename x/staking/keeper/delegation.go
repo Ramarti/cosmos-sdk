@@ -871,6 +871,15 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), types.ErrDelegatorShareExRateInvalid
 	}
 
+	minDelegation, err := k.MinDelegation(ctx)
+	if err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
+	}
+	// delegation amount must be greater than or equal to minimum delegation
+	if bondAmt.LT(minDelegation) {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), types.ErrDelegationBelowMinimum
+	}
+
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	valbz, err := k.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
@@ -954,7 +963,10 @@ func (k Keeper) Delegate(
 		)
 		err = k.Hooks().BeforeDelegationSharesModified(ctx, delAddr, valbz)
 	} else if errors.Is(err, types.ErrNoDelegation) {
-		// not found
+		// not found, should not below the minimum self delegation if it's self delegation
+		if bytes.Equal(delAddr, valbz) && bondAmt.LT(validator.MinSelfDelegation) {
+			return math.LegacyZeroDec(), math.LegacyZeroDec(), types.ErrSelfDelegationBelowMinimum
+		}
 		delAddrStr, err1 := k.authKeeper.AddressCodec().BytesToString(delAddr)
 		if err1 != nil {
 			return math.LegacyZeroDec(), math.LegacyZeroDec(), err1
