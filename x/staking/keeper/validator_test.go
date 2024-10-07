@@ -358,7 +358,7 @@ func (s *KeeperTestSuite) TestValidatorToken() {
 	delTokens := keeper.TokensFromConsensusPower(ctx, 5)
 
 	validator := testutil.NewValidator(s.T(), valAddr, valPubKey)
-	validator, _, err := keeper.AddValidatorTokensAndShares(ctx, validator, addTokens)
+	validator, _, _, err := keeper.AddValidatorTokensAndShares(ctx, validator, addTokens, math.LegacyOneDec(), math.LegacyOneDec())
 	require.NoError(err)
 	require.Equal(addTokens, validator.Tokens)
 	validator, _ = keeper.GetValidator(ctx, valAddr)

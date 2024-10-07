@@ -137,7 +137,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	// move coins from the msg.Address account to a (self-delegation) delegator account
 	// the validator account and global shares are updated within here
 	// NOTE source will always be from a wallet which are unbonded
-	_, err = k.Keeper.Delegate(
+	_, _, err = k.Keeper.Delegate(
 		ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true,
 		types.ValidatorSelfDelegationID, types.PeriodType_FLEXIBLE,
 	)
@@ -282,7 +282,7 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 	}
 
 	// NOTE: source funds are always unbonded
-	newShares, err := k.Keeper.Delegate(
+	newShares, newRewardsShares, err := k.Keeper.Delegate(
 		ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true,
 		msg.PeriodDelegationId, msg.PeriodType,
 	)
@@ -309,6 +309,9 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 			sdk.NewAttribute(types.AttributeKeyDelegator, msg.DelegatorAddress),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()),
 			sdk.NewAttribute(types.AttributeKeyNewShares, newShares.String()),
+			sdk.NewAttribute(types.AttributeKeyNewRewardsShares, newRewardsShares.String()),
+			sdk.NewAttribute(types.AttributeKeyPeriodDelegationId, msg.PeriodDelegationId),
+			sdk.NewAttribute(types.AttributeKeyPeriodType, msg.PeriodType.String()),
 		),
 	})
 

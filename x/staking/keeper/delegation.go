@@ -863,19 +863,19 @@ func (k Keeper) DequeueAllMatureRedelegationQueue(ctx context.Context, currTime 
 func (k Keeper) Delegate(
 	ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc types.BondStatus,
 	validator types.Validator, subtractAccount bool, periodDelID string, periodType types.PeriodType,
-) (newShares math.LegacyDec, err error) {
+) (newShares, newRewardsShares math.LegacyDec, err error) {
 	// In some situations, the exchange rate becomes invalid, e.g. if
 	// Validator loses all tokens due to slashing. In this case,
 	// make all future delegations invalid.
 	if validator.InvalidExRate() {
-		return math.LegacyZeroDec(), types.ErrDelegatorShareExRateInvalid
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), types.ErrDelegatorShareExRateInvalid
 	}
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	valbz, err := k.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
 	if err != nil {
-		return math.LegacyZeroDec(), err
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
 	// if subtractAccount is true then we are
@@ -899,12 +899,12 @@ func (k Keeper) Delegate(
 
 		bondDenom, err := k.BondDenom(ctx)
 		if err != nil {
-			return math.LegacyDec{}, err
+			return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 		}
 
 		coins := sdk.NewCoins(sdk.NewCoin(bondDenom, bondAmt))
 		if err := k.bankKeeper.DelegateCoinsFromAccountToModule(ctx, delAddr, sendName, coins); err != nil {
-			return math.LegacyDec{}, err
+			return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 		}
 	} else {
 		// potentially transfer tokens between pools, if
@@ -917,31 +917,31 @@ func (k Keeper) Delegate(
 			// transfer pools
 			err = k.notBondedTokensToBonded(ctx, bondAmt)
 			if err != nil {
-				return math.LegacyDec{}, err
+				return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 			}
 		case tokenSrc == types.Bonded && !validator.IsBonded():
 			// transfer pools
 			err = k.bondedTokensToNotBonded(ctx, bondAmt)
 			if err != nil {
-				return math.LegacyDec{}, err
+				return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 			}
 		default:
 			panic("unknown token source bond status")
 		}
 	}
 
-	_, newShares, err = k.AddValidatorTokensAndShares(ctx, validator, bondAmt)
-	if err != nil {
-		return newShares, err
-	}
-
 	tokenTypeRewardsMultiplier, err := k.GetTokenTypeRewardsMultiplier(ctx, validator.GetSupportTokenType())
 	if err != nil {
-		return math.LegacyDec{}, err
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 	period, err := k.GetPeriod(ctx, periodType)
 	if err != nil {
-		return math.LegacyDec{}, err
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
+	}
+
+	_, newShares, newRewardsShares, err = k.AddValidatorTokensAndShares(ctx, validator, bondAmt, tokenTypeRewardsMultiplier, period.RewardsMultiplier)
+	if err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
 	// Get or create the delegation object and call the appropriate hook if present
@@ -949,7 +949,7 @@ func (k Keeper) Delegate(
 	if err == nil {
 		// found, and add period delegation
 		delegation.AddPeriodDelegation(
-			periodDelID, newShares, newShares.Mul(tokenTypeRewardsMultiplier).Mul(period.RewardsMultiplier),
+			periodDelID, newShares, newRewardsShares,
 			period, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
 		)
 		err = k.Hooks().BeforeDelegationSharesModified(ctx, delAddr, valbz)
@@ -957,33 +957,33 @@ func (k Keeper) Delegate(
 		// not found
 		delAddrStr, err1 := k.authKeeper.AddressCodec().BytesToString(delAddr)
 		if err1 != nil {
-			return math.LegacyDec{}, err1
+			return math.LegacyZeroDec(), math.LegacyZeroDec(), err1
 		}
 		delegation = types.NewDelegation(
 			delAddrStr, validator.GetOperator(),
-			newShares, newShares.Mul(period.RewardsMultiplier),
+			newShares, newRewardsShares,
 			periodDelID, period, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
 		)
 		err = k.Hooks().BeforeDelegationCreated(ctx, delAddr, valbz)
 	} else {
-		return math.LegacyZeroDec(), err
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 	// check err from BeforeDelegationCreated
 	if err != nil {
-		return math.LegacyZeroDec(), err
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
 	// Update delegation
 	if err = k.SetDelegation(ctx, delegation); err != nil {
-		return newShares, err
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
 	// Call the after-modification hook
 	if err := k.Hooks().AfterDelegationModified(ctx, delAddr, valbz); err != nil {
-		return newShares, err
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
-	return newShares, nil
+	return newShares, newRewardsShares, nil
 }
 
 // Unbond unbonds a particular delegation and perform associated store operations.
