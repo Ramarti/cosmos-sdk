@@ -38,10 +38,6 @@ var (
 	BondStatusBonded      = BondStatus_name[int32(Bonded)]
 )
 
-const (
-	ValidatorSelfDelegationID = "CreateValidator"
-)
-
 var _ ValidatorI = Validator{}
 
 // NewValidator constructs a new Validator

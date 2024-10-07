@@ -12,6 +12,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const (
+	FlexibleDelegationID = "0"
+)
+
 // Implements Delegation interface
 var _ DelegationI = Delegation{}
 
@@ -74,13 +78,23 @@ func (d *Delegation) AddPeriodDelegation(
 	shares, rewardsShares math.LegacyDec,
 	period Period, startTime, endTime time.Time,
 ) bool {
-	if _, ok := d.PeriodDelegations[id]; ok {
-		return false
+	_, ok := d.PeriodDelegations[id]
+	if ok {
+		// found, check if it's a flexible delegation
+		if id != FlexibleDelegationID {
+			return false
+		}
+		// all flexible delegations will be in the same period delegation
+		d.PeriodDelegations[id].Shares = d.PeriodDelegations[id].Shares.Add(shares)
+		d.PeriodDelegations[id].RewardsShares = d.PeriodDelegations[id].RewardsShares.Add(rewardsShares)
+	} else {
+		// not found, create new period delegation
+		d.PeriodDelegations[id] = NewPeriodDelegation(id, shares, rewardsShares, period, startTime, endTime)
 	}
 
+	// update overall shares
 	d.Shares = d.Shares.Add(shares)
 	d.RewardsShares = d.RewardsShares.Add(rewardsShares)
-	d.PeriodDelegations[id] = NewPeriodDelegation(id, shares, rewardsShares, period, startTime, endTime)
 
 	return true
 }

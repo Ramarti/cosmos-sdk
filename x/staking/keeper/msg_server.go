@@ -146,7 +146,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	// NOTE source will always be from a wallet which are unbonded
 	_, _, err = k.Keeper.Delegate(
 		ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true,
-		types.ValidatorSelfDelegationID, types.PeriodType_FLEXIBLE,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 	)
 	if err != nil {
 		return nil, err
