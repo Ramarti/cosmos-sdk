@@ -288,6 +288,11 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		)
 	}
 
+	// all flexible period delegate use the same period delegation id
+	if msg.PeriodType == types.PeriodType_FLEXIBLE {
+		msg.PeriodDelegationId = types.FlexibleDelegationID
+	}
+
 	// NOTE: source funds are always unbonded
 	newShares, newRewardsShares, err := k.Keeper.Delegate(
 		ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true,
