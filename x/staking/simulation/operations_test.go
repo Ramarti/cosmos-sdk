@@ -199,7 +199,7 @@ func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	delegator := s.accounts[2]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		"0", types.Period{
+		types.FlexibleDelegationID, types.Period{
 			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
@@ -305,7 +305,7 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 	delegator := s.accounts[2]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		"0", types.Period{
+		types.FlexibleDelegationID, types.Period{
 			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
@@ -359,7 +359,7 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	delegator := s.accounts[3]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		"0", types.Period{
+		types.FlexibleDelegationID, types.Period{
 			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),

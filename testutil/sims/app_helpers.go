@@ -257,7 +257,7 @@ func GenesisStateWithValSet(
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(
 			genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec(),
-			"0", stakingtypes.Period{
+			stakingtypes.FlexibleDelegationID, stakingtypes.Period{
 				PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 				Duration:          time.Duration(0),
 				RewardsMultiplier: math.LegacyOneDec(),

@@ -217,7 +217,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
-					"0", types.Period{
+					types.FlexibleDelegationID, types.Period{
 						PeriodType:        types.PeriodType_FLEXIBLE,
 						Duration:          time.Duration(0),
 						RewardsMultiplier: math.LegacyOneDec(),
@@ -256,7 +256,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
-					"0", types.Period{
+					types.FlexibleDelegationID, types.Period{
 						PeriodType:        types.PeriodType_FLEXIBLE,
 						Duration:          time.Duration(0),
 						RewardsMultiplier: math.LegacyOneDec(),
@@ -295,7 +295,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(10000), sdkmath.LegacyNewDec(10000),
-					"0", types.Period{
+					types.FlexibleDelegationID, types.Period{
 						PeriodType:        types.PeriodType_FLEXIBLE,
 						Duration:          time.Duration(0),
 						RewardsMultiplier: math.LegacyOneDec(),
@@ -334,7 +334,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
-					"0", types.Period{
+					types.FlexibleDelegationID, types.Period{
 						PeriodType:        types.PeriodType_FLEXIBLE,
 						Duration:          time.Duration(0),
 						RewardsMultiplier: math.LegacyOneDec(),

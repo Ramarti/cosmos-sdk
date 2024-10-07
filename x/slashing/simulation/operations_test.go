@@ -178,7 +178,7 @@ func (suite *SimTestSuite) TestSimulateMsgUnjail() {
 
 	selfDelegation := stakingtypes.NewDelegation(
 		suite.accounts[0].Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		"0", stakingtypes.Period{
+		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
 			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),

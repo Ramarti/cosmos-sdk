@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	cmtabcitypes "github.com/cometbft/cometbft/abci/types"
 	"github.com/cometbft/cometbft/proto/tendermint/types"
@@ -172,7 +173,7 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 	}
 
 	// setup staking validator
-	validator, err := stakingtypes.NewValidator(f.valAddr.String(), PKS[0], stakingtypes.Description{})
+	validator, err := stakingtypes.NewValidator(f.valAddr.String(), PKS[0], stakingtypes.Description{}, stakingtypes.TokenType_LOCKED)
 	assert.NilError(t, err)
 	commission := stakingtypes.NewCommission(math.LegacyZeroDec(), math.LegacyOneDec(), math.LegacyOneDec())
 	validator, err = validator.SetInitialCommission(commission)
@@ -197,7 +198,14 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 
 	valBz, err := f.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
 	require.NoError(t, err)
-	delegation := stakingtypes.NewDelegation(delAddr.String(), validator.GetOperator(), issuedShares)
+	delegation := stakingtypes.NewDelegation(delAddr.String(), validator.GetOperator(), issuedShares, issuedShares,
+		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0),
+		time.Unix(0, 0))
 	require.NoError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, delegation))
 	require.NoError(t, f.distrKeeper.SetDelegatorStartingInfo(f.sdkCtx, valBz, delAddr, distrtypes.NewDelegatorStartingInfo(2, math.LegacyOneDec(), 20)))
 	// setup validator rewards

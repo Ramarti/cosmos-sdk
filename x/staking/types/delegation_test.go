@@ -19,7 +19,7 @@ import (
 func TestDelegationEqual(t *testing.T) {
 	d1 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(100), math.LegacyNewDec(100),
-		"0", types.Period{
+		types.FlexibleDelegationID, types.Period{
 			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
@@ -42,7 +42,7 @@ func TestDelegationEqual(t *testing.T) {
 func TestDelegationString(t *testing.T) {
 	d := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(100), math.LegacyNewDec(100),
-		"0", types.Period{
+		types.FlexibleDelegationID, types.Period{
 			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
@@ -101,7 +101,7 @@ func TestDelegationResponses(t *testing.T) {
 
 	del1 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(5), math.LegacyNewDec(5),
-		"0", types.Period{
+		types.FlexibleDelegationID, types.Period{
 			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
@@ -113,7 +113,7 @@ func TestDelegationResponses(t *testing.T) {
 
 	del2 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr3.String(), math.LegacyNewDec(5), math.LegacyNewDec(5),
-		"0", types.Period{
+		types.FlexibleDelegationID, types.Period{
 			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),

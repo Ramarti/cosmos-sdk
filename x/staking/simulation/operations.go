@@ -332,7 +332,7 @@ func SimulateMsgDelegate(
 
 		msg := types.NewMsgDelegate(
 			simAccount.Address.String(), val.GetOperator(), bondAmt,
-			"0", types.PeriodType_FLEXIBLE,
+			types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		)
 
 		txCtx := simulation.OperationInput{

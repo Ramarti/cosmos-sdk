@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"gotest.tools/v3/assert"
 
@@ -508,7 +509,15 @@ func TestGRPCDelegationRewards(t *testing.T) {
 	// setup delegation
 	delTokens := sdk.TokensFromConsensusPower(2, sdk.DefaultPowerReduction)
 	validator, issuedShares := val.AddTokensFromDel(delTokens)
-	delegation := stakingtypes.NewDelegation(delAddr.String(), f.valAddr.String(), issuedShares)
+	delegation := stakingtypes.NewDelegation(delAddr.String(), f.valAddr.String(), issuedShares, issuedShares,
+		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
+			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0),
+		time.Unix(0, 0),
+	)
 	assert.NilError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, delegation))
 	valBz, err := f.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
 	assert.NilError(t, err)

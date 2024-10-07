@@ -93,7 +93,7 @@ func TestDelegationsByValidatorMigrations(t *testing.T) {
 	for i := 1; i < 11; i++ {
 		del1 := stakingtypes.NewDelegation(
 			accAddrs[i].String(), valAddrs[0].String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
-			"0", types.Period{
+			stakingtypes.FlexibleDelegationID, types.Period{
 				PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 				Duration:          time.Duration(0),
 				RewardsMultiplier: sdkmath.LegacyOneDec(),

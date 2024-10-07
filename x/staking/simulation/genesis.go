@@ -89,7 +89,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 		delegation := types.NewDelegation(
 			simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake), sdkmath.LegacyNewDecFromInt(simState.InitialStake),
-			"0", types.Period{
+			types.FlexibleDelegationID, types.Period{
 				PeriodType:        types.PeriodType_FLEXIBLE,
 				Duration:          time.Duration(0),
 				RewardsMultiplier: math.LegacyOneDec(),

@@ -86,7 +86,7 @@ func (sh *Helper) Delegate(delegator sdk.AccAddress, val sdk.ValAddress, amount 
 	coin := sdk.NewCoin(sh.Denom, amount)
 	msg := stakingtypes.NewMsgDelegate(
 		delegator.String(), val.String(), coin,
-		"0", types.PeriodType_FLEXIBLE,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 	)
 	res, err := sh.msgSrvr.Delegate(sh.Ctx, msg)
 	require.NoError(sh.t, err)
@@ -98,7 +98,7 @@ func (sh *Helper) DelegateWithPower(delegator sdk.AccAddress, val sdk.ValAddress
 	coin := sdk.NewCoin(sh.Denom, sh.k.TokensFromConsensusPower(sh.Ctx, power))
 	msg := stakingtypes.NewMsgDelegate(
 		delegator.String(), val.String(), coin,
-		"0", types.PeriodType_FLEXIBLE,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 	)
 	res, err := sh.msgSrvr.Delegate(sh.Ctx, msg)
 	require.NoError(sh.t, err)

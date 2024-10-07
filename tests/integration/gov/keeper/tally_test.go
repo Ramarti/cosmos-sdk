@@ -278,7 +278,7 @@ func TestTallyDelgatorOverride(t *testing.T) {
 	val1, found := f.stakingKeeper.GetValidator(ctx, valAddrs[0])
 	assert.Assert(t, found)
 
-	_, err := f.stakingKeeper.Delegate(ctx, addrs[4], delTokens, stakingtypes.Unbonded, val1, true)
+	_, _, err := f.stakingKeeper.Delegate(ctx, addrs[4], delTokens, stakingtypes.Unbonded, val1, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
 
 	f.stakingKeeper.EndBlocker(ctx)
@@ -317,7 +317,7 @@ func TestTallyDelgatorInherit(t *testing.T) {
 	val3, found := f.stakingKeeper.GetValidator(ctx, vals[2])
 	assert.Assert(t, found)
 
-	_, err := f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val3, true)
+	_, _, err := f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val3, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
 
 	f.stakingKeeper.EndBlocker(ctx)
@@ -357,9 +357,9 @@ func TestTallyDelgatorMultipleOverride(t *testing.T) {
 	val2, found := f.stakingKeeper.GetValidator(ctx, vals[1])
 	assert.Assert(t, found)
 
-	_, err := f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val1, true)
+	_, _, err := f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val1, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
-	_, err = f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val2, true)
+	_, _, err = f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val2, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
 
 	f.stakingKeeper.EndBlocker(ctx)
@@ -402,9 +402,9 @@ func TestTallyDelgatorMultipleInherit(t *testing.T) {
 	val3, found := f.stakingKeeper.GetValidator(ctx, vals[2])
 	assert.Assert(t, found)
 
-	_, err := f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val2, true)
+	_, _, err := f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val2, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
-	_, err = f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val3, true)
+	_, _, err = f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val3, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
 
 	f.stakingKeeper.EndBlocker(ctx)
@@ -444,9 +444,9 @@ func TestTallyJailedValidator(t *testing.T) {
 	val3, found := f.stakingKeeper.GetValidator(ctx, valAddrs[2])
 	assert.Assert(t, found)
 
-	_, err := f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val2, true)
+	_, _, err := f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val2, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
-	_, err = f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val3, true)
+	_, _, err = f.stakingKeeper.Delegate(ctx, addrs[3], delTokens, stakingtypes.Unbonded, val3, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
 
 	f.stakingKeeper.EndBlocker(ctx)
@@ -488,7 +488,7 @@ func TestTallyValidatorMultipleDelegations(t *testing.T) {
 	val2, found := f.stakingKeeper.GetValidator(ctx, valAddrs[1])
 	assert.Assert(t, found)
 
-	_, err := f.stakingKeeper.Delegate(ctx, addrs[0], delTokens, stakingtypes.Unbonded, val2, true)
+	_, _, err := f.stakingKeeper.Delegate(ctx, addrs[0], delTokens, stakingtypes.Unbonded, val2, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	assert.NilError(t, err)
 
 	tp := TestProposal

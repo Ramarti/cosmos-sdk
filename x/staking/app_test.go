@@ -110,7 +110,7 @@ func TestStakingMsgs(t *testing.T) {
 	require.True(t, sdk.Coins{genCoin}.Equal(bankKeeper.GetAllBalances(ctxCheck, addr2)))
 	delegateMsg := types.NewMsgDelegate(
 		addr2.String(), sdk.ValAddress(addr1).String(), bondCoin,
-		"0", types.PeriodType_FLEXIBLE,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 	)
 
 	header = cmtproto.Header{Height: app.LastBlockHeight() + 1}

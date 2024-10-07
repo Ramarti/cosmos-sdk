@@ -752,7 +752,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 	shares := math.LegacyNewDec(100)
 	del := stakingtypes.NewDelegation(
 		Addr.String(), ValAddr.String(), shares, shares,
-		"0", stakingtypes.Period{
+		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
 			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),

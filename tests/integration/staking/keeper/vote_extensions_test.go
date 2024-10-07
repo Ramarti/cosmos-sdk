@@ -60,7 +60,7 @@ func TestValidateVoteExtensions(t *testing.T) {
 		assert.NilError(t, f.stakingKeeper.SetValidator(f.sdkCtx, v))
 		assert.NilError(t, f.stakingKeeper.SetValidatorByConsAddr(f.sdkCtx, v))
 		assert.NilError(t, f.stakingKeeper.SetNewValidatorByPowerIndex(f.sdkCtx, v))
-		_, err := f.stakingKeeper.Delegate(f.sdkCtx, sdk.AccAddress(privKeys[i].PubKey().Address()), v.Tokens, stakingtypes.Unbonded, v, true)
+		_, _, err := f.stakingKeeper.Delegate(f.sdkCtx, sdk.AccAddress(privKeys[i].PubKey().Address()), v.Tokens, stakingtypes.Unbonded, v, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 		assert.NilError(t, err)
 
 		// each val produces a vote
