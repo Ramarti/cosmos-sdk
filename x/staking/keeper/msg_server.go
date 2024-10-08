@@ -427,13 +427,6 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		)
 	}
 
-	shares, err := k.ValidateUnbondAmount(
-		ctx, delegatorAddress, addr, msg.Amount.Amount,
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	bondDenom, err := k.BondDenom(ctx)
 	if err != nil {
 		return nil, err
@@ -445,7 +438,14 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		)
 	}
 
-	completionTime, undelegatedAmt, err := k.Keeper.Undelegate(ctx, delegatorAddress, addr, shares)
+	shares, err := k.ValidateUnbondAmount(
+		ctx, delegatorAddress, addr, msg.PeriodDelegationId, msg.Amount.Amount,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	completionTime, undelegatedAmt, err := k.Keeper.Undelegate(ctx, delegatorAddress, addr, msg.PeriodDelegationId, shares)
 	if err != nil {
 		return nil, err
 	}

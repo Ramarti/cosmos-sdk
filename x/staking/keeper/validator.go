@@ -151,15 +151,15 @@ func (k Keeper) AddValidatorTokensAndShares(ctx context.Context, validator types
 
 // RemoveValidatorTokensAndShares updates the tokens of an existing validator, updates the validators power index key
 func (k Keeper) RemoveValidatorTokensAndShares(ctx context.Context, validator types.Validator,
-	sharesToRemove math.LegacyDec,
+	sharesToRemove math.LegacyDec, rewardsSharesToRemove math.LegacyDec,
 ) (valOut types.Validator, removedTokens math.Int, err error) {
 	err = k.DeleteValidatorByPowerIndex(ctx, validator)
 	if err != nil {
 		return valOut, removedTokens, err
 	}
 	validator, removedTokens = validator.RemoveDelShares(sharesToRemove)
-	err = k.SetValidator(ctx, validator)
-	if err != nil {
+	validator.DelegatorRewardsShares = validator.DelegatorRewardsShares.Sub(rewardsSharesToRemove)
+	if err := k.SetValidator(ctx, validator); err != nil {
 		return validator, removedTokens, err
 	}
 

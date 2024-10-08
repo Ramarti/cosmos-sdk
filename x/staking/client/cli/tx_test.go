@@ -602,6 +602,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"invalid unbond amount",
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(),
+				"0",
 				"foo",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -614,6 +615,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"invalid validator address",
 			[]string{
 				"foo",
+				"0",
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -626,6 +628,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"valid transaction of unbond",
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(),
+				"0",
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),

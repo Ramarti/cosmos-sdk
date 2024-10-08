@@ -129,11 +129,12 @@ func NewMsgBeginRedelegate(
 }
 
 // NewMsgUndelegate creates a new MsgUndelegate instance.
-func NewMsgUndelegate(delAddr, valAddr string, amount sdk.Coin) *MsgUndelegate {
+func NewMsgUndelegate(delAddr, valAddr string, periodDelegationId string, amount sdk.Coin) *MsgUndelegate {
 	return &MsgUndelegate{
-		DelegatorAddress: delAddr,
-		ValidatorAddress: valAddr,
-		Amount:           amount,
+		DelegatorAddress:   delAddr,
+		ValidatorAddress:   valAddr,
+		Amount:             amount,
+		PeriodDelegationId: periodDelegationId,
 	}
 }
 

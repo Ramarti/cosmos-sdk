@@ -193,7 +193,7 @@ func NewDelegateCmd(valAddrCodec, ac address.Codec) *cobra.Command {
 			fmt.Sprintf(`Delegate an amount of liquid coins to a validator from your wallet.
 
 Example:
-$ %s tx staking delegate cosmosvalopers1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1000stake --from mykey
+$ %s tx staking delegate cosmosvalopers1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1000stake 0 0 --from mykey
 `,
 				version.AppName,
 			),
@@ -292,14 +292,14 @@ func NewUnbondCmd(valAddrCodec, ac address.Codec) *cobra.Command {
 	bech32PrefixValAddr := sdk.GetConfig().GetBech32ValidatorAddrPrefix()
 
 	cmd := &cobra.Command{
-		Use:   "unbond [validator-addr] [amount]",
+		Use:   "unbond [validator-addr] [period_delegation_id] [amount]",
 		Short: "Unbond shares from a validator",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(3),
 		Long: strings.TrimSpace(
 			fmt.Sprintf(`Unbond an amount of bonded shares from a validator.
 
 Example:
-$ %s tx staking unbond %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 100stake --from mykey
+$ %s tx staking unbond %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 0 100stake --from mykey
 `,
 				version.AppName, bech32PrefixValAddr,
 			),
@@ -319,12 +319,12 @@ $ %s tx staking unbond %s1gghjut3ccd8ay0zduzj64hwre2fxs9ldmqhffj 100stake --from
 				return err
 			}
 
-			amount, err := sdk.ParseCoinNormalized(args[1])
+			amount, err := sdk.ParseCoinNormalized(args[2])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgUndelegate(delAddr, args[0], amount)
+			msg := types.NewMsgUndelegate(delAddr, args[0], args[1], amount)
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},

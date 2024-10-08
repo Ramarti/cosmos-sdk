@@ -381,7 +381,8 @@ func (k Keeper) SlashRedelegation(ctx context.Context, srcValidator types.Valida
 			sharesToUnbond = delegation.Shares
 		}
 
-		tokensToBurn, err := k.Unbond(ctx, delegatorAddress, valDstAddr, sharesToUnbond)
+		// TODO(rayden): low priority
+		tokensToBurn, err := k.Unbond(ctx, delegatorAddress, valDstAddr, types.FlexibleDelegationID, sharesToUnbond)
 		if err != nil {
 			return math.ZeroInt(), err
 		}

@@ -364,7 +364,7 @@ func (s *KeeperTestSuite) TestValidatorToken() {
 	validator, _ = keeper.GetValidator(ctx, valAddr)
 	require.Equal(math.LegacyNewDecFromInt(addTokens), validator.DelegatorShares)
 
-	_, _, err = keeper.RemoveValidatorTokensAndShares(ctx, validator, math.LegacyNewDecFromInt(delTokens))
+	_, _, err = keeper.RemoveValidatorTokensAndShares(ctx, validator, math.LegacyNewDecFromInt(delTokens), math.LegacyNewDecFromInt(delTokens))
 	require.NoError(err)
 	validator, _ = keeper.GetValidator(ctx, valAddr)
 	require.Equal(delTokens, validator.Tokens)

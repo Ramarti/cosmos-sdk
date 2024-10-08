@@ -108,7 +108,7 @@ func (sh *Helper) DelegateWithPower(delegator sdk.AccAddress, val sdk.ValAddress
 // Undelegate calls staking module `MsgServer/Undelegate` to unbound some stake from a validator.
 func (sh *Helper) Undelegate(delegator sdk.AccAddress, val sdk.ValAddress, amount math.Int, ok bool) {
 	unbondAmt := sdk.NewCoin(sh.Denom, amount)
-	msg := stakingtypes.NewMsgUndelegate(delegator.String(), val.String(), unbondAmt)
+	msg := stakingtypes.NewMsgUndelegate(delegator.String(), val.String(), stakingtypes.FlexibleDelegationID, unbondAmt)
 	res, err := sh.msgSrvr.Undelegate(sh.Ctx, msg)
 	if ok {
 		require.NoError(sh.t, err)

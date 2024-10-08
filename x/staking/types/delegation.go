@@ -100,10 +100,6 @@ func (d *Delegation) AddPeriodDelegation(
 }
 
 func (d *Delegation) RemovePeriodDelegation(id string) {
-	if d.PeriodDelegations == nil {
-		return
-	}
-
 	pd, ok := d.PeriodDelegations[id]
 	if !ok {
 		return

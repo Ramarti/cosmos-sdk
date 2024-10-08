@@ -428,7 +428,7 @@ func SimulateMsgUndelegate(
 		}
 
 		msg := types.NewMsgUndelegate(
-			delAddr, val.GetOperator(), sdk.NewCoin(bondDenom, unbondAmt),
+			delAddr, val.GetOperator(), types.FlexibleDelegationID, sdk.NewCoin(bondDenom, unbondAmt),
 		)
 
 		// need to retrieve the simulation account associated with delegation to retrieve PrivKey

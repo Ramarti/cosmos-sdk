@@ -773,9 +773,10 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 		{
 			name: "invalid validator",
 			input: &stakingtypes.MsgUndelegate{
-				DelegatorAddress: Addr.String(),
-				ValidatorAddress: sdk.AccAddress([]byte("invalid")).String(),
-				Amount:           sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
+				DelegatorAddress:   Addr.String(),
+				ValidatorAddress:   sdk.AccAddress([]byte("invalid")).String(),
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
 			},
 			expErr:    true,
 			expErrMsg: "invalid validator address",
@@ -783,9 +784,10 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 		{
 			name: "empty delegator",
 			input: &stakingtypes.MsgUndelegate{
-				DelegatorAddress: "",
-				ValidatorAddress: ValAddr.String(),
-				Amount:           sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: shares.RoundInt()},
+				DelegatorAddress:   "",
+				ValidatorAddress:   ValAddr.String(),
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				Amount:             sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: shares.RoundInt()},
 			},
 			expErr:    true,
 			expErrMsg: "invalid delegator address: empty address string is not allowed",
@@ -793,9 +795,10 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 		{
 			name: "invalid delegator",
 			input: &stakingtypes.MsgUndelegate{
-				DelegatorAddress: "invalid",
-				ValidatorAddress: ValAddr.String(),
-				Amount:           sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: shares.RoundInt()},
+				DelegatorAddress:   "invalid",
+				ValidatorAddress:   ValAddr.String(),
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				Amount:             sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: shares.RoundInt()},
 			},
 			expErr:    true,
 			expErrMsg: "invalid delegator address: decoding bech32 failed",
@@ -803,29 +806,21 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 		{
 			name: "validator does not exist",
 			input: &stakingtypes.MsgUndelegate{
-				DelegatorAddress: Addr.String(),
-				ValidatorAddress: sdk.ValAddress([]byte("invalid")).String(),
-				Amount:           sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
+				DelegatorAddress:   Addr.String(),
+				ValidatorAddress:   sdk.ValAddress([]byte("invalid")).String(),
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
 			},
 			expErr:    true,
 			expErrMsg: "validator does not exist",
 		},
 		{
-			name: "amount greater than delegated shares amount",
-			input: &stakingtypes.MsgUndelegate{
-				DelegatorAddress: Addr.String(),
-				ValidatorAddress: ValAddr.String(),
-				Amount:           sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(101)),
-			},
-			expErr:    true,
-			expErrMsg: "invalid shares amount",
-		},
-		{
 			name: "zero amount",
 			input: &stakingtypes.MsgUndelegate{
-				DelegatorAddress: Addr.String(),
-				ValidatorAddress: ValAddr.String(),
-				Amount:           sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(0)),
+				DelegatorAddress:   Addr.String(),
+				ValidatorAddress:   ValAddr.String(),
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(0)),
 			},
 			expErr:    true,
 			expErrMsg: "invalid shares amount",
@@ -833,21 +828,34 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 		{
 			name: "invalid coin denom",
 			input: &stakingtypes.MsgUndelegate{
-				DelegatorAddress: Addr.String(),
-				ValidatorAddress: ValAddr.String(),
-				Amount:           sdk.NewCoin("test", shares.RoundInt()),
+				DelegatorAddress:   Addr.String(),
+				ValidatorAddress:   ValAddr.String(),
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				Amount:             sdk.NewCoin("test", shares.RoundInt()),
 			},
 			expErr:    true,
 			expErrMsg: "invalid coin denomination",
 		},
 		{
-			name: "valid msg",
+			name: "amount greater than delegated shares amount",
 			input: &stakingtypes.MsgUndelegate{
-				DelegatorAddress: Addr.String(),
-				ValidatorAddress: ValAddr.String(),
-				Amount:           sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
+				DelegatorAddress:   Addr.String(),
+				ValidatorAddress:   ValAddr.String(),
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(101)),
 			},
 			expErr: false,
+		},
+		{
+			name: "already undelegated all",
+			input: &stakingtypes.MsgUndelegate{
+				DelegatorAddress:   Addr.String(),
+				ValidatorAddress:   ValAddr.String(),
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
+			},
+			expErr:    true,
+			expErrMsg: "no delegation",
 		},
 	}
 

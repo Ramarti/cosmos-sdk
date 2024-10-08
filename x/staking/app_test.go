@@ -123,7 +123,7 @@ func TestStakingMsgs(t *testing.T) {
 	require.NoError(t, err)
 
 	// begin unbonding
-	beginUnbondingMsg := types.NewMsgUndelegate(addr2.String(), sdk.ValAddress(addr1).String(), bondCoin)
+	beginUnbondingMsg := types.NewMsgUndelegate(addr2.String(), sdk.ValAddress(addr1).String(), types.FlexibleDelegationID, bondCoin)
 	header = cmtproto.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simtestutil.SignCheckDeliver(t, txConfig, app.BaseApp, header, []sdk.Msg{beginUnbondingMsg}, "", []uint64{1}, []uint64{1}, true, true, priv2)
 	require.NoError(t, err)
