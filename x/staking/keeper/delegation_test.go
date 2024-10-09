@@ -45,11 +45,7 @@ func (s *KeeperTestSuite) TestDelegation() {
 	// first add a validators[0] to delegate too
 	bond1to1 := stakingtypes.NewDelegation(
 		addrDels[0].String(), valAddrs[0].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -74,51 +70,31 @@ func (s *KeeperTestSuite) TestDelegation() {
 	// add some more records
 	bond1to2 := stakingtypes.NewDelegation(
 		addrDels[0].String(), valAddrs[1].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	bond1to3 := stakingtypes.NewDelegation(
 		addrDels[0].String(), valAddrs[2].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	bond2to1 := stakingtypes.NewDelegation(
 		addrDels[1].String(), valAddrs[0].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	bond2to2 := stakingtypes.NewDelegation(
 		addrDels[1].String(), valAddrs[1].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	bond2to3 := stakingtypes.NewDelegation(
 		addrDels[1].String(), valAddrs[2].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -440,11 +416,7 @@ func (s *KeeperTestSuite) TestUnbondDelegation() {
 
 	delegation := stakingtypes.NewDelegation(
 		delAddrs[0].String(), valAddrs[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -489,11 +461,7 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 
 	selfDelegation := stakingtypes.NewDelegation(
 		sdk.AccAddress(addrVals[0].Bytes()).String(), addrVals[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -508,11 +476,7 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	delegation := stakingtypes.NewDelegation(
 		addrDels[0].String(), addrVals[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -554,11 +518,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 
 	selfDelegation := stakingtypes.NewDelegation(
 		addrDels[0].String(), addrVals[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -573,11 +533,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	delegation := stakingtypes.NewDelegation(
 		addrDels[1].String(), addrVals[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -649,11 +605,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 	val0AccAddr := sdk.AccAddress(addrVals[0])
 	selfDelegation := stakingtypes.NewDelegation(
 		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -667,11 +619,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 	require.True(validator.IsBonded())
 	delegation := stakingtypes.NewDelegation(
 		addrDels[1].String(), addrVals[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -746,11 +694,7 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 
 	selfDelegation := stakingtypes.NewDelegation(
 		val0AccAddr.String(), addrVals[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -766,11 +710,7 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 
 	delegation := stakingtypes.NewDelegation(
 		addrDels[1].String(), addrVals[0].String(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)

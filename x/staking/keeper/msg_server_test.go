@@ -752,11 +752,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 	shares := math.LegacyNewDec(100)
 	del := stakingtypes.NewDelegation(
 		Addr.String(), ValAddr.String(), shares, shares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -1080,6 +1076,7 @@ func (s *KeeperTestSuite) TestMsgUpdateParams() {
 				Params: stakingtypes.Params{
 					MinCommissionRate: math.LegacyNewDec(-10),
 					MinDelegation:     stakingtypes.DefaultMinDelegation,
+					MinUndelegation:   stakingtypes.DefaultMinUndelegation,
 					UnbondingTime:     stakingtypes.DefaultUnbondingTime,
 					MaxValidators:     stakingtypes.DefaultMaxValidators,
 					MaxEntries:        stakingtypes.DefaultMaxEntries,

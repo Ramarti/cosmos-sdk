@@ -6,7 +6,6 @@ import (
 	"math/rand"
 	"time"
 
-	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -56,7 +55,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	// NOTE: the slashing module need to be defined after the staking module on the
 	// NewSimulationManager constructor for this to work
 	simState.UnbondTime = unbondTime
-	params := types.NewParams(simState.UnbondTime, maxVals, 7, histEntries, simState.BondDenom, minCommissionRate, types.DefaultMinDelegation)
+	params := types.NewParams(simState.UnbondTime, maxVals, 7, histEntries, simState.BondDenom, minCommissionRate, types.DefaultMinDelegation, types.DefaultMinUndelegation)
 	periods := types.DefaultPeriods()
 	tokenTypes := types.DefaultTokenTypes()
 
@@ -89,11 +88,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 		delegation := types.NewDelegation(
 			simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake), sdkmath.LegacyNewDecFromInt(simState.InitialStake),
-			types.FlexibleDelegationID, types.Period{
-				PeriodType:        types.PeriodType_FLEXIBLE,
-				Duration:          time.Duration(0),
-				RewardsMultiplier: math.LegacyOneDec(),
-			},
+			types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 			time.Unix(0, 0),
 			time.Unix(0, 0),
 		)

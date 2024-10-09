@@ -33,11 +33,7 @@ func TestDecodeStore(t *testing.T) {
 	require.NoError(t, err)
 	del := types.NewDelegation(
 		delAddr1.String(), valAddr1.String(), math.LegacyOneDec(), math.LegacyOneDec(),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)

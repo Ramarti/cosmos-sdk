@@ -305,11 +305,7 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 	delegator := s.accounts[2]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)

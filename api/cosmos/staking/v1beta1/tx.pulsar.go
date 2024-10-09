@@ -24,11 +24,11 @@ var (
 	fd_MsgCreateValidator_description         protoreflect.FieldDescriptor
 	fd_MsgCreateValidator_commission          protoreflect.FieldDescriptor
 	fd_MsgCreateValidator_min_self_delegation protoreflect.FieldDescriptor
-	fd_MsgCreateValidator_support_token_type  protoreflect.FieldDescriptor
 	fd_MsgCreateValidator_delegator_address   protoreflect.FieldDescriptor
 	fd_MsgCreateValidator_validator_address   protoreflect.FieldDescriptor
 	fd_MsgCreateValidator_pubkey              protoreflect.FieldDescriptor
 	fd_MsgCreateValidator_value               protoreflect.FieldDescriptor
+	fd_MsgCreateValidator_support_token_type  protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -37,11 +37,11 @@ func init() {
 	fd_MsgCreateValidator_description = md_MsgCreateValidator.Fields().ByName("description")
 	fd_MsgCreateValidator_commission = md_MsgCreateValidator.Fields().ByName("commission")
 	fd_MsgCreateValidator_min_self_delegation = md_MsgCreateValidator.Fields().ByName("min_self_delegation")
-	fd_MsgCreateValidator_support_token_type = md_MsgCreateValidator.Fields().ByName("support_token_type")
 	fd_MsgCreateValidator_delegator_address = md_MsgCreateValidator.Fields().ByName("delegator_address")
 	fd_MsgCreateValidator_validator_address = md_MsgCreateValidator.Fields().ByName("validator_address")
 	fd_MsgCreateValidator_pubkey = md_MsgCreateValidator.Fields().ByName("pubkey")
 	fd_MsgCreateValidator_value = md_MsgCreateValidator.Fields().ByName("value")
+	fd_MsgCreateValidator_support_token_type = md_MsgCreateValidator.Fields().ByName("support_token_type")
 }
 
 var _ protoreflect.Message = (*fastReflection_MsgCreateValidator)(nil)
@@ -127,12 +127,6 @@ func (x *fastReflection_MsgCreateValidator) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
-	if x.SupportTokenType != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.SupportTokenType))
-		if !f(fd_MsgCreateValidator_support_token_type, value) {
-			return
-		}
-	}
 	if x.DelegatorAddress != "" {
 		value := protoreflect.ValueOfString(x.DelegatorAddress)
 		if !f(fd_MsgCreateValidator_delegator_address, value) {
@@ -157,6 +151,12 @@ func (x *fastReflection_MsgCreateValidator) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
+	if x.SupportTokenType != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.SupportTokenType))
+		if !f(fd_MsgCreateValidator_support_token_type, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -178,8 +178,6 @@ func (x *fastReflection_MsgCreateValidator) Has(fd protoreflect.FieldDescriptor)
 		return x.Commission != nil
 	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_delegation":
 		return x.MinSelfDelegation != ""
-	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
-		return x.SupportTokenType != 0
 	case "cosmos.staking.v1beta1.MsgCreateValidator.delegator_address":
 		return x.DelegatorAddress != ""
 	case "cosmos.staking.v1beta1.MsgCreateValidator.validator_address":
@@ -188,6 +186,8 @@ func (x *fastReflection_MsgCreateValidator) Has(fd protoreflect.FieldDescriptor)
 		return x.Pubkey != nil
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		return x.Value != nil
+	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
+		return x.SupportTokenType != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -210,8 +210,6 @@ func (x *fastReflection_MsgCreateValidator) Clear(fd protoreflect.FieldDescripto
 		x.Commission = nil
 	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_delegation":
 		x.MinSelfDelegation = ""
-	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
-		x.SupportTokenType = 0
 	case "cosmos.staking.v1beta1.MsgCreateValidator.delegator_address":
 		x.DelegatorAddress = ""
 	case "cosmos.staking.v1beta1.MsgCreateValidator.validator_address":
@@ -220,6 +218,8 @@ func (x *fastReflection_MsgCreateValidator) Clear(fd protoreflect.FieldDescripto
 		x.Pubkey = nil
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		x.Value = nil
+	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
+		x.SupportTokenType = 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -245,9 +245,6 @@ func (x *fastReflection_MsgCreateValidator) Get(descriptor protoreflect.FieldDes
 	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_delegation":
 		value := x.MinSelfDelegation
 		return protoreflect.ValueOfString(value)
-	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
-		value := x.SupportTokenType
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	case "cosmos.staking.v1beta1.MsgCreateValidator.delegator_address":
 		value := x.DelegatorAddress
 		return protoreflect.ValueOfString(value)
@@ -260,6 +257,9 @@ func (x *fastReflection_MsgCreateValidator) Get(descriptor protoreflect.FieldDes
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		value := x.Value
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
+		value := x.SupportTokenType
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -286,8 +286,6 @@ func (x *fastReflection_MsgCreateValidator) Set(fd protoreflect.FieldDescriptor,
 		x.Commission = value.Message().Interface().(*CommissionRates)
 	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_delegation":
 		x.MinSelfDelegation = value.Interface().(string)
-	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
-		x.SupportTokenType = (TokenType)(value.Enum())
 	case "cosmos.staking.v1beta1.MsgCreateValidator.delegator_address":
 		x.DelegatorAddress = value.Interface().(string)
 	case "cosmos.staking.v1beta1.MsgCreateValidator.validator_address":
@@ -296,6 +294,8 @@ func (x *fastReflection_MsgCreateValidator) Set(fd protoreflect.FieldDescriptor,
 		x.Pubkey = value.Message().Interface().(*anypb.Any)
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		x.Value = value.Message().Interface().(*v1beta1.Coin)
+	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
+		x.SupportTokenType = (TokenType)(value.Enum())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -338,12 +338,12 @@ func (x *fastReflection_MsgCreateValidator) Mutable(fd protoreflect.FieldDescrip
 		return protoreflect.ValueOfMessage(x.Value.ProtoReflect())
 	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_delegation":
 		panic(fmt.Errorf("field min_self_delegation of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
-	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
-		panic(fmt.Errorf("field support_token_type of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
 	case "cosmos.staking.v1beta1.MsgCreateValidator.delegator_address":
 		panic(fmt.Errorf("field delegator_address of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
 	case "cosmos.staking.v1beta1.MsgCreateValidator.validator_address":
 		panic(fmt.Errorf("field validator_address of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
+	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
+		panic(fmt.Errorf("field support_token_type of message cosmos.staking.v1beta1.MsgCreateValidator is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -365,8 +365,6 @@ func (x *fastReflection_MsgCreateValidator) NewField(fd protoreflect.FieldDescri
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "cosmos.staking.v1beta1.MsgCreateValidator.min_self_delegation":
 		return protoreflect.ValueOfString("")
-	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
-		return protoreflect.ValueOfEnum(0)
 	case "cosmos.staking.v1beta1.MsgCreateValidator.delegator_address":
 		return protoreflect.ValueOfString("")
 	case "cosmos.staking.v1beta1.MsgCreateValidator.validator_address":
@@ -377,6 +375,8 @@ func (x *fastReflection_MsgCreateValidator) NewField(fd protoreflect.FieldDescri
 	case "cosmos.staking.v1beta1.MsgCreateValidator.value":
 		m := new(v1beta1.Coin)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "cosmos.staking.v1beta1.MsgCreateValidator.support_token_type":
+		return protoreflect.ValueOfEnum(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: cosmos.staking.v1beta1.MsgCreateValidator"))
@@ -458,9 +458,6 @@ func (x *fastReflection_MsgCreateValidator) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.SupportTokenType != 0 {
-			n += 1 + runtime.Sov(uint64(x.SupportTokenType))
-		}
 		l = len(x.DelegatorAddress)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -476,6 +473,9 @@ func (x *fastReflection_MsgCreateValidator) ProtoMethods() *protoiface.Methods {
 		if x.Value != nil {
 			l = options.Size(x.Value)
 			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.SupportTokenType != 0 {
+			n += 1 + runtime.Sov(uint64(x.SupportTokenType))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -741,25 +741,6 @@ func (x *fastReflection_MsgCreateValidator) ProtoMethods() *protoiface.Methods {
 				}
 				x.MinSelfDelegation = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 8:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SupportTokenType", wireType)
-				}
-				x.SupportTokenType = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.SupportTokenType |= TokenType(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			case 4:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
@@ -896,6 +877,25 @@ func (x *fastReflection_MsgCreateValidator) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
+			case 8:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SupportTokenType", wireType)
+				}
+				x.SupportTokenType = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SupportTokenType |= TokenType(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -7348,7 +7348,6 @@ type MsgCreateValidator struct {
 	Description       *Description     `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
 	Commission        *CommissionRates `protobuf:"bytes,2,opt,name=commission,proto3" json:"commission,omitempty"`
 	MinSelfDelegation string           `protobuf:"bytes,3,opt,name=min_self_delegation,json=minSelfDelegation,proto3" json:"min_self_delegation,omitempty"`
-	SupportTokenType  TokenType        `protobuf:"varint,8,opt,name=support_token_type,json=supportTokenType,proto3,enum=cosmos.staking.v1beta1.TokenType" json:"support_token_type,omitempty"`
 	// Deprecated: Use of Delegator Address in MsgCreateValidator is deprecated.
 	// The validator address bytes and delegator address bytes refer to the same account while creating validator (defer
 	// only in bech32 notation).
@@ -7358,6 +7357,7 @@ type MsgCreateValidator struct {
 	ValidatorAddress string        `protobuf:"bytes,5,opt,name=validator_address,json=validatorAddress,proto3" json:"validator_address,omitempty"`
 	Pubkey           *anypb.Any    `protobuf:"bytes,6,opt,name=pubkey,proto3" json:"pubkey,omitempty"`
 	Value            *v1beta1.Coin `protobuf:"bytes,7,opt,name=value,proto3" json:"value,omitempty"`
+	SupportTokenType TokenType     `protobuf:"varint,8,opt,name=support_token_type,json=supportTokenType,proto3,enum=cosmos.staking.v1beta1.TokenType" json:"support_token_type,omitempty"`
 }
 
 func (x *MsgCreateValidator) Reset() {
@@ -7401,13 +7401,6 @@ func (x *MsgCreateValidator) GetMinSelfDelegation() string {
 	return ""
 }
 
-func (x *MsgCreateValidator) GetSupportTokenType() TokenType {
-	if x != nil {
-		return x.SupportTokenType
-	}
-	return TokenType_LOCKED
-}
-
 // Deprecated: Do not use.
 func (x *MsgCreateValidator) GetDelegatorAddress() string {
 	if x != nil {
@@ -7435,6 +7428,13 @@ func (x *MsgCreateValidator) GetValue() *v1beta1.Coin {
 		return x.Value
 	}
 	return nil
+}
+
+func (x *MsgCreateValidator) GetSupportTokenType() TokenType {
+	if x != nil {
+		return x.SupportTokenType
+	}
+	return TokenType_LOCKED
 }
 
 // MsgCreateValidatorResponse defines the Msg/CreateValidator response type.
@@ -8067,30 +8067,30 @@ var file_cosmos_staking_v1beta1_tx_proto_rawDesc = []byte{
 	0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74, 0x68, 0x2e, 0x49, 0x6e,
 	0x74, 0xd2, 0xb4, 0x2d, 0x0a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x49, 0x6e, 0x74, 0xa8,
 	0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x11, 0x6d, 0x69, 0x6e, 0x53, 0x65, 0x6c, 0x66, 0x44, 0x65, 0x6c,
-	0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x56, 0x0a, 0x12, 0x73, 0x75, 0x70, 0x70, 0x6f,
-	0x72, 0x74, 0x5f, 0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x08, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61,
-	0x6b, 0x69, 0x6e, 0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x54, 0x6f, 0x6b,
-	0x65, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x10, 0x73,
-	0x75, 0x70, 0x70, 0x6f, 0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12,
-	0x47, 0x0a, 0x11, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x42, 0x1a, 0x18, 0x01, 0xd2, 0xb4,
-	0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f,
-	0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69,
-	0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x05, 0x20,
-	0x01, 0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d, 0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
-	0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x46, 0x0a, 0x06, 0x70, 0x75, 0x62, 0x6b,
-	0x65, 0x79, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x41, 0x6e, 0x79, 0x42, 0x18,
-	0xca, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x63, 0x72, 0x79, 0x70, 0x74,
-	0x6f, 0x2e, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79, 0x52, 0x06, 0x70, 0x75, 0x62, 0x6b, 0x65, 0x79,
-	0x12, 0x3a, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31,
-	0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69, 0x6e, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00,
-	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x40, 0x88, 0xa0,
+	0x65, 0x67, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x47, 0x0a, 0x11, 0x64, 0x65, 0x6c, 0x65, 0x67,
+	0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x04, 0x20, 0x01,
+	0x28, 0x09, 0x42, 0x1a, 0x18, 0x01, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10,
+	0x64, 0x65, 0x6c, 0x65, 0x67, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x12, 0x4e, 0x0a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x42, 0x21, 0xd2, 0xb4, 0x2d,
+	0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x56, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f,
+	0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x10,
+	0x76, 0x61, 0x6c, 0x69, 0x64, 0x61, 0x74, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x12, 0x46, 0x0a, 0x06, 0x70, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x14, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
+	0x75, 0x66, 0x2e, 0x41, 0x6e, 0x79, 0x42, 0x18, 0xca, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x2e, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x2e, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79,
+	0x52, 0x06, 0x70, 0x75, 0x62, 0x6b, 0x65, 0x79, 0x12, 0x3a, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75,
+	0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f,
+	0x69, 0x6e, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x05, 0x76,
+	0x61, 0x6c, 0x75, 0x65, 0x12, 0x56, 0x0a, 0x12, 0x73, 0x75, 0x70, 0x70, 0x6f, 0x72, 0x74, 0x5f,
+	0x74, 0x6f, 0x6b, 0x65, 0x6e, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x21, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x73, 0x74, 0x61, 0x6b, 0x69, 0x6e,
+	0x67, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x54,
+	0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x10, 0x73, 0x75, 0x70, 0x70,
+	0x6f, 0x72, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x3a, 0x40, 0x88, 0xa0,
 	0x1f, 0x00, 0xe8, 0xa0, 0x1f, 0x00, 0x82, 0xe7, 0xb0, 0x2a, 0x11, 0x76, 0x61, 0x6c, 0x69, 0x64,
 	0x61, 0x74, 0x6f, 0x72, 0x5f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x8a, 0xe7, 0xb0, 0x2a,
 	0x1d, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2d, 0x73, 0x64, 0x6b, 0x2f, 0x4d, 0x73, 0x67, 0x43,
@@ -8337,9 +8337,9 @@ var file_cosmos_staking_v1beta1_tx_proto_goTypes = []interface{}{
 	(*MsgUpdateParamsResponse)(nil),              // 13: cosmos.staking.v1beta1.MsgUpdateParamsResponse
 	(*Description)(nil),                          // 14: cosmos.staking.v1beta1.Description
 	(*CommissionRates)(nil),                      // 15: cosmos.staking.v1beta1.CommissionRates
-	(TokenType)(0),                               // 16: cosmos.staking.v1beta1.TokenType
-	(*anypb.Any)(nil),                            // 17: google.protobuf.Any
-	(*v1beta1.Coin)(nil),                         // 18: cosmos.base.v1beta1.Coin
+	(*anypb.Any)(nil),                            // 16: google.protobuf.Any
+	(*v1beta1.Coin)(nil),                         // 17: cosmos.base.v1beta1.Coin
+	(TokenType)(0),                               // 18: cosmos.staking.v1beta1.TokenType
 	(PeriodType)(0),                              // 19: cosmos.staking.v1beta1.PeriodType
 	(*timestamppb.Timestamp)(nil),                // 20: google.protobuf.Timestamp
 	(*Params)(nil),                               // 21: cosmos.staking.v1beta1.Params
@@ -8347,18 +8347,18 @@ var file_cosmos_staking_v1beta1_tx_proto_goTypes = []interface{}{
 var file_cosmos_staking_v1beta1_tx_proto_depIdxs = []int32{
 	14, // 0: cosmos.staking.v1beta1.MsgCreateValidator.description:type_name -> cosmos.staking.v1beta1.Description
 	15, // 1: cosmos.staking.v1beta1.MsgCreateValidator.commission:type_name -> cosmos.staking.v1beta1.CommissionRates
-	16, // 2: cosmos.staking.v1beta1.MsgCreateValidator.support_token_type:type_name -> cosmos.staking.v1beta1.TokenType
-	17, // 3: cosmos.staking.v1beta1.MsgCreateValidator.pubkey:type_name -> google.protobuf.Any
-	18, // 4: cosmos.staking.v1beta1.MsgCreateValidator.value:type_name -> cosmos.base.v1beta1.Coin
+	16, // 2: cosmos.staking.v1beta1.MsgCreateValidator.pubkey:type_name -> google.protobuf.Any
+	17, // 3: cosmos.staking.v1beta1.MsgCreateValidator.value:type_name -> cosmos.base.v1beta1.Coin
+	18, // 4: cosmos.staking.v1beta1.MsgCreateValidator.support_token_type:type_name -> cosmos.staking.v1beta1.TokenType
 	14, // 5: cosmos.staking.v1beta1.MsgEditValidator.description:type_name -> cosmos.staking.v1beta1.Description
-	18, // 6: cosmos.staking.v1beta1.MsgDelegate.amount:type_name -> cosmos.base.v1beta1.Coin
+	17, // 6: cosmos.staking.v1beta1.MsgDelegate.amount:type_name -> cosmos.base.v1beta1.Coin
 	19, // 7: cosmos.staking.v1beta1.MsgDelegate.period_type:type_name -> cosmos.staking.v1beta1.PeriodType
-	18, // 8: cosmos.staking.v1beta1.MsgBeginRedelegate.amount:type_name -> cosmos.base.v1beta1.Coin
+	17, // 8: cosmos.staking.v1beta1.MsgBeginRedelegate.amount:type_name -> cosmos.base.v1beta1.Coin
 	20, // 9: cosmos.staking.v1beta1.MsgBeginRedelegateResponse.completion_time:type_name -> google.protobuf.Timestamp
-	18, // 10: cosmos.staking.v1beta1.MsgUndelegate.amount:type_name -> cosmos.base.v1beta1.Coin
+	17, // 10: cosmos.staking.v1beta1.MsgUndelegate.amount:type_name -> cosmos.base.v1beta1.Coin
 	20, // 11: cosmos.staking.v1beta1.MsgUndelegateResponse.completion_time:type_name -> google.protobuf.Timestamp
-	18, // 12: cosmos.staking.v1beta1.MsgUndelegateResponse.amount:type_name -> cosmos.base.v1beta1.Coin
-	18, // 13: cosmos.staking.v1beta1.MsgCancelUnbondingDelegation.amount:type_name -> cosmos.base.v1beta1.Coin
+	17, // 12: cosmos.staking.v1beta1.MsgUndelegateResponse.amount:type_name -> cosmos.base.v1beta1.Coin
+	17, // 13: cosmos.staking.v1beta1.MsgCancelUnbondingDelegation.amount:type_name -> cosmos.base.v1beta1.Coin
 	21, // 14: cosmos.staking.v1beta1.MsgUpdateParams.params:type_name -> cosmos.staking.v1beta1.Params
 	0,  // 15: cosmos.staking.v1beta1.Msg.CreateValidator:input_type -> cosmos.staking.v1beta1.MsgCreateValidator
 	2,  // 16: cosmos.staking.v1beta1.Msg.EditValidator:input_type -> cosmos.staking.v1beta1.MsgEditValidator

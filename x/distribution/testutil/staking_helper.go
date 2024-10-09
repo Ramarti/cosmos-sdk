@@ -128,11 +128,7 @@ func Delegate(
 		err = distrKeeper.Hooks().BeforeDelegationCreated(ctx, delegator, valBz)
 		del := stakingtypes.NewDelegation(
 			delegator.String(), validator.GetOperator(), math.LegacyZeroDec(), math.LegacyZeroDec(),
-			stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-				PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-				Duration:          time.Duration(0),
-				RewardsMultiplier: math.LegacyOneDec(),
-			},
+			stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 			time.Unix(0, 0),
 			time.Unix(0, 0),
 		)

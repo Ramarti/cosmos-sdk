@@ -19,11 +19,7 @@ import (
 func TestDelegationEqual(t *testing.T) {
 	d1 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(100), math.LegacyNewDec(100),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -42,11 +38,7 @@ func TestDelegationEqual(t *testing.T) {
 func TestDelegationString(t *testing.T) {
 	d := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(100), math.LegacyNewDec(100),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0),
 		time.Unix(0, 0))
 	require.NotEmpty(t, d.String())
@@ -101,11 +93,7 @@ func TestDelegationResponses(t *testing.T) {
 
 	del1 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(5), math.LegacyNewDec(5),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -113,11 +101,7 @@ func TestDelegationResponses(t *testing.T) {
 
 	del2 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr3.String(), math.LegacyNewDec(5), math.LegacyNewDec(5),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)

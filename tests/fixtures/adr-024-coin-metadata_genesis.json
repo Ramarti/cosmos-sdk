@@ -202,7 +202,8 @@
         "max_entries": 7,
         "historical_entries": 100,
         "bond_denom": "stake",
-        "min_delegation": "1"
+        "min_delegation": "1",
+        "min_undelegation": "1"
       },
       "last_total_power": "0",
       "last_validator_powers": null,

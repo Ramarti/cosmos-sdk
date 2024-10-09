@@ -64,11 +64,7 @@ func TestCalculateRewardsBasic(t *testing.T) {
 	// delegation mock
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -159,11 +155,7 @@ func TestCalculateRewardsAfterSlash(t *testing.T) {
 
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -272,11 +264,7 @@ func TestCalculateRewardsAfterManySlashes(t *testing.T) {
 	// delegation mocks
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -403,11 +391,7 @@ func TestCalculateRewardsMultiDelegator(t *testing.T) {
 
 	del0 := stakingtypes.NewDelegation(
 		addr0.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -510,11 +494,7 @@ func TestWithdrawDelegationRewardsBasic(t *testing.T) {
 	// delegation mock
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -594,11 +574,7 @@ func TestCalculateRewardsAfterManySlashesInSameBlock(t *testing.T) {
 	// delegation mock
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -720,11 +696,7 @@ func TestCalculateRewardsMultiDelegatorMultiSlash(t *testing.T) {
 	// validator and delegation mocks
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -864,11 +836,7 @@ func TestCalculateRewardsMultiDelegatorMultWithdraw(t *testing.T) {
 	// validator and delegation mocks
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -1072,11 +1040,7 @@ func Test100PercentCommissionReward(t *testing.T) {
 	// validator and delegation mocks
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)

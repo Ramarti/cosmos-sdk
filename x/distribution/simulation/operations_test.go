@@ -114,11 +114,7 @@ func (suite *SimTestSuite) TestSimulateMsgWithdrawDelegatorReward() {
 
 	delegation := stakingtypes.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)

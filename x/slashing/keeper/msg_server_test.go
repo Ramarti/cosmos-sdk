@@ -3,13 +3,13 @@ package keeper_test
 import (
 	"time"
 
-	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/testutil/testdata"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 func (s *KeeperTestSuite) TestUpdateParams() {
@@ -217,11 +217,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
-					types.FlexibleDelegationID, types.Period{
-						PeriodType:        types.PeriodType_FLEXIBLE,
-						Duration:          time.Duration(0),
-						RewardsMultiplier: math.LegacyOneDec(),
-					},
+					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 					time.Unix(0, 0),
 					time.Unix(0, 0),
 				)
@@ -256,11 +252,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
-					types.FlexibleDelegationID, types.Period{
-						PeriodType:        types.PeriodType_FLEXIBLE,
-						Duration:          time.Duration(0),
-						RewardsMultiplier: math.LegacyOneDec(),
-					},
+					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 					time.Unix(0, 0),
 					time.Unix(0, 0),
 				)
@@ -295,11 +287,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(10000), sdkmath.LegacyNewDec(10000),
-					types.FlexibleDelegationID, types.Period{
-						PeriodType:        types.PeriodType_FLEXIBLE,
-						Duration:          time.Duration(0),
-						RewardsMultiplier: math.LegacyOneDec(),
-					},
+					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 					time.Unix(0, 0),
 					time.Unix(0, 0),
 				)
@@ -334,11 +322,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
-					types.FlexibleDelegationID, types.Period{
-						PeriodType:        types.PeriodType_FLEXIBLE,
-						Duration:          time.Duration(0),
-						RewardsMultiplier: math.LegacyOneDec(),
-					},
+					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 					time.Unix(0, 0),
 					time.Unix(0, 0),
 				)

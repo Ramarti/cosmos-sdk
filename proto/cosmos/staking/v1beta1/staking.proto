@@ -262,12 +262,9 @@ message PeriodDelegation {
     (gogoproto.nullable)   = false
   ];
 
-  google.protobuf.Timestamp start_time = 4
-      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];
+  PeriodType period_type = 4;
 
-  Period period = 5 [(gogoproto.nullable) = false];
-
-  google.protobuf.Timestamp end_time = 6
+  google.protobuf.Timestamp end_time = 5
       [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];
 }
 
@@ -414,6 +411,12 @@ message Params {
   ];
   // min_delegation is the chain-wide minimum delegation that a delegation can set
   string min_delegation = 7 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false
+  ];
+  // min_undelegation is the chain-wide minimum undelegation that an undelegation can set
+  string min_undelegation = 8 [
     (cosmos_proto.scalar)  = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable)   = false

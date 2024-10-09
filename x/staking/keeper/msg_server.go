@@ -116,10 +116,16 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	if err != nil {
 		return nil, errorsmod.Wrap(err, "failed to get min delegation")
 	}
+	// minimum self delegation should be greater than or equal to chain-side min delegation
 	if msg.MinSelfDelegation.LT(minDelegation) {
 		return nil, types.ErrMinSelfDelegationBelowMinDelegation
 	}
 	validator.MinSelfDelegation = msg.MinSelfDelegation
+
+	// delegation amount must be greater than or equal to minimum self delegation when creating validator
+	if msg.Value.Amount.LT(validator.MinSelfDelegation) {
+		return nil, types.ErrSelfDelegationBelowMinimum
+	}
 
 	err = k.SetValidator(ctx, validator)
 	if err != nil {
@@ -424,6 +430,18 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		return nil, errorsmod.Wrap(
 			sdkerrors.ErrInvalidRequest,
 			"invalid shares amount",
+		)
+	}
+
+	minUndelegation, err := k.MinUndelegation(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// undelegation amount must be greater than or equal to minimum undelegation
+	if msg.Amount.Amount.LT(minUndelegation) {
+		return nil, errorsmod.Wrap(
+			sdkerrors.ErrInvalidRequest,
+			"undelegation amount is less than the minimum undelegation amount",
 		)
 	}
 

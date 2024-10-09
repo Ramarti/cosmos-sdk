@@ -13,7 +13,6 @@ import (
 
 	coreheader "cosmossdk.io/core/header"
 	"cosmossdk.io/depinject"
-	"cosmossdk.io/math"
 	sdkmath "cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -257,11 +256,7 @@ func GenesisStateWithValSet(
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(
 			genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec(),
-			stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-				PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-				Duration:          time.Duration(0),
-				RewardsMultiplier: math.LegacyOneDec(),
-			},
+			stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 			time.Unix(0, 0),
 			time.Unix(0, 0),
 		))

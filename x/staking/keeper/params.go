@@ -63,6 +63,12 @@ func (k Keeper) MinDelegation(ctx context.Context) (math.Int, error) {
 	return params.MinDelegation, err
 }
 
+// MinDelegation - Minimum delegation amount
+func (k Keeper) MinUndelegation(ctx context.Context) (math.Int, error) {
+	params, err := k.GetParams(ctx)
+	return params.MinUndelegation, err
+}
+
 // SetParams sets the x/staking module parameters.
 // CONTRACT: This method performs no validation of the parameters.
 func (k Keeper) SetParams(ctx context.Context, params types.Params) error {

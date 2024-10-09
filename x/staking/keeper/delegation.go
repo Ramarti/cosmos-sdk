@@ -870,15 +870,6 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), types.ErrDelegatorShareExRateInvalid
 	}
 
-	minDelegation, err := k.MinDelegation(ctx)
-	if err != nil {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
-	}
-	// delegation amount must be greater than or equal to minimum delegation
-	if bondAmt.LT(minDelegation) {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), types.ErrDelegationBelowMinimum
-	}
-
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 
 	valbz, err := k.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
@@ -958,14 +949,10 @@ func (k Keeper) Delegate(
 		// found, and add period delegation
 		delegation.AddPeriodDelegation(
 			periodDelID, newShares, newRewardsShares,
-			period, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
+			period.PeriodType, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
 		)
 		err = k.Hooks().BeforeDelegationSharesModified(ctx, delAddr, valbz)
 	} else if errors.Is(err, types.ErrNoDelegation) {
-		// not found, should not below the minimum self delegation if it's self delegation
-		if bytes.Equal(delAddr, valbz) && bondAmt.LT(validator.MinSelfDelegation) {
-			return math.LegacyZeroDec(), math.LegacyZeroDec(), types.ErrSelfDelegationBelowMinimum
-		}
 		delAddrStr, err1 := k.authKeeper.AddressCodec().BytesToString(delAddr)
 		if err1 != nil {
 			return math.LegacyZeroDec(), math.LegacyZeroDec(), err1
@@ -973,7 +960,7 @@ func (k Keeper) Delegate(
 		delegation = types.NewDelegation(
 			delAddrStr, validator.GetOperator(),
 			newShares, newRewardsShares,
-			periodDelID, period, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
+			periodDelID, period.PeriodType, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
 		)
 		err = k.Hooks().BeforeDelegationCreated(ctx, delAddr, valbz)
 	} else {
@@ -1014,7 +1001,7 @@ func (k Keeper) Unbond(
 		return amount, types.ErrNoPeriodDelegation
 	}
 	// check if the period delegation reached the end time
-	if delPeriod := delegation.PeriodDelegations[periodDelegationId]; delPeriod.Period.PeriodType != types.PeriodType_FLEXIBLE &&
+	if delPeriod := delegation.PeriodDelegations[periodDelegationId]; delPeriod.PeriodType != types.PeriodType_FLEXIBLE &&
 		delPeriod.EndTime.After(sdk.UnwrapSDKContext(ctx).BlockTime()) {
 		return amount, types.ErrPeriodDelegationNotCompleted
 	}
@@ -1034,7 +1021,7 @@ func (k Keeper) Unbond(
 	if err != nil {
 		return amount, err
 	}
-	periodMultiplier, err := k.GetPeriodRewardsMultiplier(ctx, delegation.PeriodDelegations[periodDelegationId].Period.PeriodType)
+	periodMultiplier, err := k.GetPeriodRewardsMultiplier(ctx, delegation.PeriodDelegations[periodDelegationId].PeriodType)
 	if err != nil {
 		return amount, err
 	}
