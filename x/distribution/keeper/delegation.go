@@ -109,7 +109,7 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 	}
 
 	startingPeriod := startingInfo.PreviousPeriod
-	stake := startingInfo.Stake
+	rewardsStake := startingInfo.RewardsStake
 
 	// Iterate through slashes and withdraw with calculated staking for
 	// distribution periods. These period offsets are dependent on *when* slashes
@@ -127,7 +127,7 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 			func(height uint64, event types.ValidatorSlashEvent) (stop bool) {
 				endingPeriod := event.ValidatorPeriod
 				if endingPeriod > startingPeriod {
-					delRewards, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, stake)
+					delRewards, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, rewardsStake)
 					if err != nil {
 						panic(err)
 					}
@@ -135,7 +135,7 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 
 					// Note: It is necessary to truncate so we don't allow withdrawing
 					// more rewards than owed.
-					stake = stake.MulTruncate(math.LegacyOneDec().Sub(event.Fraction))
+					rewardsStake = rewardsStake.MulTruncate(math.LegacyOneDec().Sub(event.Fraction))
 					startingPeriod = endingPeriod
 				}
 				return false
@@ -149,7 +149,7 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 	// we had arbitrary-precision rationals.
 	currentStake := val.TokensFromShares(del.GetShares())
 
-	if stake.GT(currentStake) {
+	if rewardsStake.GT(currentStake) {
 		// AccountI for rounding inconsistencies between:
 		//
 		//     currentStake: calculated as in staking with a single computation
@@ -171,18 +171,18 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 		// however any greater amount should be considered a breach in expected
 		// behavior.
 		marginOfErr := math.LegacySmallestDec().MulInt64(3)
-		if stake.LTE(currentStake.Add(marginOfErr)) {
-			stake = currentStake
+		if rewardsStake.LTE(currentStake.Add(marginOfErr)) {
+			rewardsStake = currentStake
 		} else {
 			panic(fmt.Sprintf("calculated final stake for delegator %s greater than current stake"+
 				"\n\tfinal stake:\t%s"+
 				"\n\tcurrent stake:\t%s",
-				del.GetDelegatorAddr(), stake, currentStake))
+				del.GetDelegatorAddr(), rewardsStake, currentStake))
 		}
 	}
 
 	// calculate rewards for final period
-	delRewards, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, stake)
+	delRewards, err := k.calculateDelegationRewardsBetween(ctx, val, startingPeriod, endingPeriod, rewardsStake)
 	if err != nil {
 		return sdk.DecCoins{}, err
 	}

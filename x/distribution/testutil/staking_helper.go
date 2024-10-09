@@ -16,7 +16,9 @@ func CreateValidator(pk cryptotypes.PubKey, stake math.Int) (stakingtypes.Valida
 	valConsAddr := sdk.GetConsAddress(pk)
 	val, err := stakingtypes.NewValidator(sdk.ValAddress(valConsAddr).String(), pk, stakingtypes.Description{Moniker: "TestValidator"}, stakingtypes.TokenType_LOCKED)
 	val.Tokens = stake
+	val.RewardsTokens = math.LegacyNewDecFromInt(val.Tokens)
 	val.DelegatorShares = math.LegacyNewDecFromInt(val.Tokens)
+	val.DelegatorRewardsShares = math.LegacyNewDecFromInt(val.Tokens)
 	return val, err
 }
 

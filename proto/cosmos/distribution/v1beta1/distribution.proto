@@ -156,7 +156,7 @@ message CommunityPoolSpendProposal {
 // thus sdk.Dec is used.
 message DelegatorStartingInfo {
   uint64 previous_period = 1;
-  string stake           = 2 [
+  string rewards_stake   = 2 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false,

@@ -178,7 +178,7 @@ func TestAllocateTokensToManyValidators(t *testing.T) {
 			Validator: abciValB,
 		},
 	}
-	require.NoError(t, distrKeeper.AllocateTokens(ctx, 200, votes))
+	require.NoError(t, distrKeeper.AllocateTokens(ctx, votes))
 
 	// 98 outstanding rewards (100 less 2 to community pool)
 	val0OutstandingRewards, err = distrKeeper.GetValidatorOutstandingRewards(ctx, valAddr0)
@@ -325,7 +325,7 @@ func TestAllocateTokensTruncation(t *testing.T) {
 			Validator: abciValC,
 		},
 	}
-	require.NoError(t, distrKeeper.AllocateTokens(ctx, 31, votes))
+	require.NoError(t, distrKeeper.AllocateTokens(ctx, votes))
 
 	val0OutstandingRewards, err = distrKeeper.GetValidatorOutstandingRewards(ctx, valAddr0)
 	require.NoError(t, err)
