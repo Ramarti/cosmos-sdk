@@ -55,4 +55,5 @@ var (
 	ErrNotEnoughDelegationRewardsShares       = errors.Register(ModuleName, 50, "not enough delegation rewards shares")
 	ErrNotEnoughPeriodDelegationRewardsShares = errors.Register(ModuleName, 51, "not enough perioddelegation rewards shares")
 	ErrPeriodDelegationNotCompleted           = errors.Register(ModuleName, 52, "period delegation not completed")
+	ErrUndelegationBelowMinimum               = errors.Register(ModuleName, 53, "undelegation amount must be greater than or equal to minimum undelegation")
 )

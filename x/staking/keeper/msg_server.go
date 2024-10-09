@@ -122,11 +122,6 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	}
 	validator.MinSelfDelegation = msg.MinSelfDelegation
 
-	// delegation amount must be greater than or equal to minimum self delegation when creating validator
-	if msg.Value.Amount.LT(validator.MinSelfDelegation) {
-		return nil, types.ErrSelfDelegationBelowMinimum
-	}
-
 	err = k.SetValidator(ctx, validator)
 	if err != nil {
 		return nil, err
@@ -145,6 +140,11 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	// call the after-creation hook
 	if err := k.Hooks().AfterValidatorCreated(ctx, valAddr); err != nil {
 		return nil, err
+	}
+
+	// delegation amount must be greater than or equal to minimum self delegation when creating validator
+	if msg.Value.Amount.LT(validator.MinSelfDelegation) {
+		return nil, types.ErrSelfDelegationBelowMinimum
 	}
 
 	// move coins from the msg.Address account to a (self-delegation) delegator account
@@ -276,6 +276,15 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 			sdkerrors.ErrInvalidRequest,
 			"invalid delegation amount",
 		)
+	}
+
+	minDelegation, err := k.MinDelegation(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to get min delegation")
+	}
+	// delegation amount should be greater than or equal to chain-side min delegation
+	if msg.Amount.Amount.LT(minDelegation) {
+		return nil, types.ErrDelegationBelowMinimum
 	}
 
 	validator, err := k.GetValidator(ctx, valAddr)
