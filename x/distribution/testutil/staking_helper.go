@@ -143,9 +143,12 @@ func Delegate(
 
 	// Add tokens from delegation to validator
 	updateVal, newShares := validator.AddTokensFromDel(amount)
+	updateVal.RewardsTokens = updateVal.RewardsTokens.Add(math.LegacyNewDecFromInt(amount))
+	updateVal.DelegatorRewardsShares = updateVal.DelegatorRewardsShares.Add(newShares)
 	*validator = updateVal
 
 	delegation.Shares = delegation.Shares.Add(newShares)
+	delegation.RewardsShares = delegation.RewardsShares.Add(newShares)
 
 	return newShares, *delegation, nil
 }

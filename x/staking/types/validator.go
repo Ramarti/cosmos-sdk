@@ -306,6 +306,16 @@ func (v Validator) InvalidExRate() bool {
 	return v.Tokens.IsZero() && v.DelegatorShares.IsPositive()
 }
 
+// calculate the token worth of provided rewards shares
+func (v Validator) TokensFromRewardsShares(rewardsShares math.LegacyDec) math.LegacyDec {
+	return (rewardsShares.MulInt(v.Tokens)).Quo(v.DelegatorRewardsShares)
+}
+
+// calculate the token worth of provided rewards shares, truncated
+func (v Validator) TokensFromRewardsSharesTruncated(rewardsShares math.LegacyDec) math.LegacyDec {
+	return (rewardsShares.MulInt(v.Tokens)).QuoTruncate(v.DelegatorRewardsShares)
+}
+
 // calculate the token worth of provided shares
 func (v Validator) TokensFromShares(shares math.LegacyDec) math.LegacyDec {
 	return (shares.MulInt(v.Tokens)).Quo(v.DelegatorShares)

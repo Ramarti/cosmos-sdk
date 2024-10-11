@@ -20,22 +20,24 @@ type DelegationI interface {
 
 // ValidatorI expected validator functions
 type ValidatorI interface {
-	IsJailed() bool                                                 // whether the validator is jailed
-	GetMoniker() string                                             // moniker of the validator
-	GetStatus() BondStatus                                          // status of the validator
-	IsBonded() bool                                                 // check if has a bonded status
-	IsUnbonded() bool                                               // check if has status unbonded
-	IsUnbonding() bool                                              // check if has status unbonding
-	GetOperator() string                                            // operator address to receive/return validators coins
-	ConsPubKey() (cryptotypes.PubKey, error)                        // validation consensus pubkey (cryptotypes.PubKey)
-	TmConsPublicKey() (cmtprotocrypto.PublicKey, error)             // validation consensus pubkey (CometBFT)
-	GetConsAddr() ([]byte, error)                                   // validation consensus address
-	GetTokens() math.Int                                            // validation tokens
-	GetBondedTokens() math.Int                                      // validator bonded tokens
-	GetConsensusPower(math.Int) int64                               // validation power in CometBFT
-	GetCommission() math.LegacyDec                                  // validator commission rate
-	GetMinSelfDelegation() math.Int                                 // validator minimum self delegation
-	GetDelegatorShares() math.LegacyDec                             // total outstanding delegator shares
+	IsJailed() bool                                     // whether the validator is jailed
+	GetMoniker() string                                 // moniker of the validator
+	GetStatus() BondStatus                              // status of the validator
+	IsBonded() bool                                     // check if has a bonded status
+	IsUnbonded() bool                                   // check if has status unbonded
+	IsUnbonding() bool                                  // check if has status unbonding
+	GetOperator() string                                // operator address to receive/return validators coins
+	ConsPubKey() (cryptotypes.PubKey, error)            // validation consensus pubkey (cryptotypes.PubKey)
+	TmConsPublicKey() (cmtprotocrypto.PublicKey, error) // validation consensus pubkey (CometBFT)
+	GetConsAddr() ([]byte, error)                       // validation consensus address
+	GetTokens() math.Int                                // validation tokens
+	GetBondedTokens() math.Int                          // validator bonded tokens
+	GetConsensusPower(math.Int) int64                   // validation power in CometBFT
+	GetCommission() math.LegacyDec                      // validator commission rate
+	GetMinSelfDelegation() math.Int                     // validator minimum self delegation
+	GetDelegatorShares() math.LegacyDec
+	TokensFromRewardsShares(math.LegacyDec) math.LegacyDec          // token worth of provided delegator rewards shares
+	TokensFromRewardsSharesTruncated(math.LegacyDec) math.LegacyDec // token worth of provided delegator rewards shares, truncated                         // total outstanding delegator shares
 	TokensFromShares(math.LegacyDec) math.LegacyDec                 // token worth of provided delegator shares
 	TokensFromSharesTruncated(math.LegacyDec) math.LegacyDec        // token worth of provided delegator shares, truncated
 	TokensFromSharesRoundUp(math.LegacyDec) math.LegacyDec          // token worth of provided delegator shares, rounded up

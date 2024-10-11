@@ -240,18 +240,20 @@ func GenesisStateWithValSet(
 		}
 
 		validator := stakingtypes.Validator{
-			OperatorAddress:   sdk.ValAddress(val.Address).String(),
-			ConsensusPubkey:   pkAny,
-			Jailed:            false,
-			Status:            stakingtypes.Bonded,
-			Tokens:            bondAmt,
-			DelegatorShares:   sdkmath.LegacyOneDec(),
-			Description:       stakingtypes.Description{},
-			UnbondingHeight:   int64(0),
-			UnbondingTime:     time.Unix(0, 0).UTC(),
-			Commission:        stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
-			MinSelfDelegation: sdkmath.ZeroInt(),
-			SupportTokenType:  stakingtypes.TokenType_LOCKED,
+			OperatorAddress:        sdk.ValAddress(val.Address).String(),
+			ConsensusPubkey:        pkAny,
+			Jailed:                 false,
+			Status:                 stakingtypes.Bonded,
+			Tokens:                 bondAmt,
+			DelegatorShares:        sdkmath.LegacyOneDec(),
+			Description:            stakingtypes.Description{},
+			UnbondingHeight:        int64(0),
+			UnbondingTime:          time.Unix(0, 0).UTC(),
+			Commission:             stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
+			MinSelfDelegation:      sdkmath.ZeroInt(),
+			SupportTokenType:       stakingtypes.TokenType_LOCKED,
+			RewardsTokens:          sdkmath.LegacyNewDecFromInt(bondAmt),
+			DelegatorRewardsShares: sdkmath.LegacyOneDec(),
 		}
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(
