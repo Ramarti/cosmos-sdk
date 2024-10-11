@@ -47,7 +47,7 @@ func TestGRPCParams(t *testing.T) {
 			name: "valid request",
 			malleate: func() {
 				params = types.Params{
-					CommunityTax:        math.LegacyNewDecWithPrec(3, 1),
+					UbiPool:             math.LegacyNewDecWithPrec(3, 1),
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
 					WithdrawAddrEnabled: true,
@@ -416,20 +416,20 @@ func TestGRPCDelegatorWithdrawAddress(t *testing.T) {
 	}
 }
 
-func TestGRPCCommunityPool(t *testing.T) {
+func TestGRPCUbiPool(t *testing.T) {
 	t.Parallel()
 	f := initFixture(t)
 
 	assert.NilError(t, f.distrKeeper.FeePool.Set(f.sdkCtx, types.FeePool{
-		CommunityPool: sdk.NewDecCoins(sdk.DecCoin{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(0)}),
+		UbiPool: sdk.NewDecCoins(sdk.DecCoin{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(0)}),
 	}))
 
 	qr := f.app.QueryHelper()
 	queryClient := types.NewQueryClient(qr)
 
 	var (
-		req     *types.QueryCommunityPoolRequest
-		expPool *types.QueryCommunityPoolResponse
+		req     *types.QueryUbiPoolRequest
+		expPool *types.QueryUbiPoolResponse
 	)
 
 	testCases := []struct {
@@ -439,8 +439,8 @@ func TestGRPCCommunityPool(t *testing.T) {
 		{
 			name: "valid request empty community pool",
 			malleate: func() {
-				req = &types.QueryCommunityPoolRequest{}
-				expPool = &types.QueryCommunityPoolResponse{}
+				req = &types.QueryUbiPoolRequest{}
+				expPool = &types.QueryUbiPoolResponse{}
 			},
 		},
 		{
@@ -450,11 +450,11 @@ func TestGRPCCommunityPool(t *testing.T) {
 				assert.NilError(t, f.bankKeeper.MintCoins(f.sdkCtx, types.ModuleName, amount))
 				assert.NilError(t, f.bankKeeper.SendCoinsFromModuleToAccount(f.sdkCtx, types.ModuleName, f.addr, amount))
 
-				err := f.distrKeeper.FundCommunityPool(f.sdkCtx, amount, f.addr)
+				err := f.distrKeeper.FundUbiPool(f.sdkCtx, amount, f.addr)
 				assert.Assert(t, err == nil)
-				req = &types.QueryCommunityPoolRequest{}
+				req = &types.QueryUbiPoolRequest{}
 
-				expPool = &types.QueryCommunityPoolResponse{Pool: sdk.NewDecCoinsFromCoins(amount...)}
+				expPool = &types.QueryUbiPoolResponse{Pool: sdk.NewDecCoinsFromCoins(amount...)}
 			},
 		},
 	}
@@ -464,7 +464,7 @@ func TestGRPCCommunityPool(t *testing.T) {
 		t.Run(fmt.Sprintf("Case %s", tc.name), func(t *testing.T) {
 			testCase.malleate()
 
-			pool, err := queryClient.CommunityPool(f.sdkCtx, req)
+			pool, err := queryClient.UbiPool(f.sdkCtx, req)
 
 			assert.NilError(t, err)
 			assert.DeepEqual(t, expPool, pool)
@@ -477,7 +477,7 @@ func TestGRPCDelegationRewards(t *testing.T) {
 	f := initFixture(t)
 
 	assert.NilError(t, f.distrKeeper.FeePool.Set(f.sdkCtx, types.FeePool{
-		CommunityPool: sdk.NewDecCoins(sdk.DecCoin{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(1000)}),
+		UbiPool: sdk.NewDecCoins(sdk.DecCoin{Denom: sdk.DefaultBondDenom, Amount: math.LegacyNewDec(1000)}),
 	}))
 
 	// set module account coins
@@ -510,11 +510,7 @@ func TestGRPCDelegationRewards(t *testing.T) {
 	delTokens := sdk.TokensFromConsensusPower(2, sdk.DefaultPowerReduction)
 	validator, issuedShares := val.AddTokensFromDel(delTokens)
 	delegation := stakingtypes.NewDelegation(delAddr.String(), f.valAddr.String(), issuedShares, issuedShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.Period{
-			PeriodType:        stakingtypes.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0),
 		time.Unix(0, 0),
 	)

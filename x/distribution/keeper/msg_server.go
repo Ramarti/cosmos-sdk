@@ -102,23 +102,6 @@ func (k msgServer) WithdrawValidatorCommission(ctx context.Context, msg *types.M
 	return &types.MsgWithdrawValidatorCommissionResponse{Amount: amount}, nil
 }
 
-func (k msgServer) FundCommunityPool(ctx context.Context, msg *types.MsgFundCommunityPool) (*types.MsgFundCommunityPoolResponse, error) {
-	depositor, err := k.authKeeper.AddressCodec().StringToBytes(msg.Depositor)
-	if err != nil {
-		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid depositor address: %s", err)
-	}
-
-	if err := validateAmount(msg.Amount); err != nil {
-		return nil, err
-	}
-
-	if err := k.Keeper.FundCommunityPool(ctx, msg.Amount, depositor); err != nil {
-		return nil, err
-	}
-
-	return &types.MsgFundCommunityPoolResponse{}, nil
-}
-
 func (k msgServer) UpdateParams(ctx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if err := k.validateAuthority(msg.Authority); err != nil {
 		return nil, err
@@ -138,34 +121,6 @@ func (k msgServer) UpdateParams(ctx context.Context, msg *types.MsgUpdateParams)
 	}
 
 	return &types.MsgUpdateParamsResponse{}, nil
-}
-
-func (k msgServer) CommunityPoolSpend(ctx context.Context, msg *types.MsgCommunityPoolSpend) (*types.MsgCommunityPoolSpendResponse, error) {
-	if err := k.validateAuthority(msg.Authority); err != nil {
-		return nil, err
-	}
-
-	if err := validateAmount(msg.Amount); err != nil {
-		return nil, err
-	}
-
-	recipient, err := k.authKeeper.AddressCodec().StringToBytes(msg.Recipient)
-	if err != nil {
-		return nil, err
-	}
-
-	if k.bankKeeper.BlockedAddr(recipient) {
-		return nil, errors.Wrapf(sdkerrors.ErrUnauthorized, "%s is not allowed to receive external funds", msg.Recipient)
-	}
-
-	if err := k.DistributeFromFeePool(ctx, msg.Amount, recipient); err != nil {
-		return nil, err
-	}
-
-	logger := k.Logger(ctx)
-	logger.Info("transferred from the community pool to recipient", "amount", msg.Amount.String(), "recipient", msg.Recipient)
-
-	return &types.MsgCommunityPoolSpendResponse{}, nil
 }
 
 func (k msgServer) DepositValidatorRewardsPool(ctx context.Context, msg *types.MsgDepositValidatorRewardsPool) (*types.MsgDepositValidatorRewardsPoolResponse, error) {

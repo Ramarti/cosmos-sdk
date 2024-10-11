@@ -168,7 +168,7 @@ func TestGetTotalRewards(t *testing.T) {
 	require.Equal(t, expectedRewards, totalRewards)
 }
 
-func TestFundCommunityPool(t *testing.T) {
+func TestFundUbiPool(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	key := storetypes.NewKVStoreKey(types.StoreKey)
 	storeService := runtime.NewKVStoreService(key)
@@ -198,14 +198,14 @@ func TestFundCommunityPool(t *testing.T) {
 
 	initPool, err := distrKeeper.FeePool.Get(ctx)
 	require.NoError(t, err)
-	require.Empty(t, initPool.CommunityPool)
+	require.Empty(t, initPool.UbiPool)
 
 	amount := sdk.NewCoins(sdk.NewInt64Coin("stake", 100))
 	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), addrs[0], "distribution", amount).Return(nil)
-	err = distrKeeper.FundCommunityPool(ctx, amount, addrs[0])
+	err = distrKeeper.FundUbiPool(ctx, amount, addrs[0])
 	require.NoError(t, err)
 
 	feePool, err := distrKeeper.FeePool.Get(ctx)
 	require.NoError(t, err)
-	require.Equal(t, initPool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(amount...)...), feePool.CommunityPool)
+	require.Equal(t, initPool.UbiPool.Add(sdk.NewDecCoinsFromCoins(amount...)...), feePool.UbiPool)
 }

@@ -459,11 +459,11 @@ func (s *GRPCQueryTestSuite) TestQueryWithdrawAddressGRPC() {
 	}
 }
 
-func (s *GRPCQueryTestSuite) TestQueryValidatorCommunityPoolGRPC() {
+func (s *GRPCQueryTestSuite) TestQueryValidatorUbiPoolGRPC() {
 	val := s.network.Validators[0]
 	baseURL := val.APIAddress
 
-	communityPool, err := sdk.ParseDecCoins("0.4stake")
+	ubiPool, err := sdk.ParseDecCoins("0.4stake")
 	s.Require().NoError(err)
 
 	testCases := []struct {
@@ -476,14 +476,14 @@ func (s *GRPCQueryTestSuite) TestQueryValidatorCommunityPoolGRPC() {
 	}{
 		{
 			"gRPC request params with wrong validator address",
-			fmt.Sprintf("%s/cosmos/distribution/v1beta1/community_pool", baseURL),
+			fmt.Sprintf("%s/cosmos/distribution/v1beta1/ubi_pool", baseURL),
 			map[string]string{
 				grpctypes.GRPCBlockHeightHeader: "2",
 			},
 			false,
-			&types.QueryCommunityPoolResponse{},
-			&types.QueryCommunityPoolResponse{
-				Pool: communityPool,
+			&types.QueryUbiPoolResponse{},
+			&types.QueryUbiPoolResponse{
+				Pool: ubiPool,
 			},
 		},
 	}

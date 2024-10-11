@@ -69,7 +69,7 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 			return 0, err
 		}
 
-		feePool.CommunityPool = feePool.CommunityPool.Add(rewards.Rewards...)
+		feePool.UbiPool = feePool.UbiPool.Add(rewards.Rewards...)
 		outstanding.Rewards = outstanding.GetRewards().Sub(rewards.Rewards)
 		err = k.FeePool.Set(ctx, feePool)
 		if err != nil {

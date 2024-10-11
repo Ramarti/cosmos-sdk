@@ -128,11 +128,7 @@ func TestSlashRedelegation(t *testing.T) {
 	// set the associated delegation
 	del := types.NewDelegation(
 		addrDels[0].String(), addrVals[1].String(), math.LegacyNewDec(10), math.LegacyNewDec(10),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0),
 		time.Unix(0, 0),
 	)
@@ -410,11 +406,7 @@ func TestSlashWithRedelegation(t *testing.T) {
 	// set the associated delegation
 	del := types.NewDelegation(
 		addrDels[0].String(), addrVals[1].String(), math.LegacyNewDecFromInt(rdTokens), math.LegacyNewDecFromInt(rdTokens),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0),
 		time.Unix(0, 0),
 	)
@@ -577,11 +569,7 @@ func TestSlashBoth(t *testing.T) {
 	// set the associated delegation
 	delA := types.NewDelegation(
 		addrDels[0].String(), addrVals[1].String(), math.LegacyNewDecFromInt(rdATokens), math.LegacyNewDecFromInt(rdATokens),
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0),
 		time.Unix(0, 0),
 	)

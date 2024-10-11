@@ -9,15 +9,15 @@ import (
 // zero fee pool
 func InitialFeePool() FeePool {
 	return FeePool{
-		CommunityPool: sdk.DecCoins{},
+		UbiPool: sdk.DecCoins{},
 	}
 }
 
 // ValidateGenesis validates the fee pool for a genesis state
 func (f FeePool) ValidateGenesis() error {
-	if f.CommunityPool.IsAnyNegative() {
-		return fmt.Errorf("negative CommunityPool in distribution fee pool, is %v",
-			f.CommunityPool)
+	if f.UbiPool.IsAnyNegative() {
+		return fmt.Errorf("negative UbiPool in distribution fee pool, is %v",
+			f.UbiPool)
 	}
 
 	return nil

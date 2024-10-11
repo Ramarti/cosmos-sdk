@@ -6,14 +6,14 @@ import (
 	"cosmossdk.io/math"
 )
 
-// GetCommunityTax returns the current distribution community tax.
-func (k Keeper) GetCommunityTax(ctx context.Context) (math.LegacyDec, error) {
+// GetUbiPool returns the current distribution ubi pool.
+func (k Keeper) GetUbiPool(ctx context.Context) (math.LegacyDec, error) {
 	params, err := k.Params.Get(ctx)
 	if err != nil {
 		return math.LegacyDec{}, err
 	}
 
-	return params.CommunityTax, nil
+	return params.UbiPool, nil
 }
 
 // GetWithdrawAddrEnabled returns the current distribution withdraw address

@@ -62,11 +62,7 @@ func BenchmarkGetValidatorDelegations(b *testing.B) {
 			banktestutil.FundAccount(f.sdkCtx, f.bankKeeper, delegator,
 				sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(i)))))
 			NewDel := types.NewDelegation(delegator.String(), val.String(), math.LegacyNewDec(int64(i)), math.LegacyNewDec(int64(i)),
-				types.FlexibleDelegationID, types.Period{
-					PeriodType:        types.PeriodType_FLEXIBLE,
-					Duration:          time.Duration(0),
-					RewardsMultiplier: math.LegacyOneDec(),
-				},
+				types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 				time.Unix(0, 0),
 				time.Unix(0, 0),
 			)
@@ -106,11 +102,7 @@ func BenchmarkGetValidatorDelegationsLegacy(b *testing.B) {
 			banktestutil.FundAccount(f.sdkCtx, f.bankKeeper, delegator, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(i)))))
 			NewDel := types.NewDelegation(
 				delegator.String(), val.String(), math.LegacyNewDec(int64(i)), math.LegacyNewDec(int64(i)),
-				types.FlexibleDelegationID, types.Period{
-					PeriodType:        types.PeriodType_FLEXIBLE,
-					Duration:          time.Duration(0),
-					RewardsMultiplier: math.LegacyOneDec(),
-				},
+				types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 				time.Unix(0, 0),
 				time.Unix(0, 0),
 			)

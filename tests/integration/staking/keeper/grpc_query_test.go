@@ -519,7 +519,7 @@ func TestGRPCQueryUnbondingDelegation(t *testing.T) {
 	unbondingTokens := f.stakingKeeper.TokensFromConsensusPower(ctx, 2)
 	valAddr, err1 := sdk.ValAddressFromBech32(addrVal2)
 	assert.NilError(t, err1)
-	_, _, err := f.stakingKeeper.Undelegate(ctx, addrAcc2, valAddr, math.LegacyNewDecFromInt(unbondingTokens))
+	_, _, err := f.stakingKeeper.Undelegate(ctx, addrAcc2, valAddr, types.FlexibleDelegationID, math.LegacyNewDecFromInt(unbondingTokens))
 	assert.NilError(t, err)
 
 	unbond, found := f.stakingKeeper.GetUnbondingDelegation(ctx, addrAcc2, valAddr)
@@ -622,11 +622,11 @@ func TestGRPCQueryDelegatorUnbondingDelegations(t *testing.T) {
 	unbondingTokens := f.stakingKeeper.TokensFromConsensusPower(ctx, 2)
 	valAddr1, err1 := sdk.ValAddressFromBech32(addrVal)
 	assert.NilError(t, err1)
-	_, _, err := f.stakingKeeper.Undelegate(ctx, addrAcc, valAddr1, math.LegacyNewDecFromInt(unbondingTokens))
+	_, _, err := f.stakingKeeper.Undelegate(ctx, addrAcc, valAddr1, types.FlexibleDelegationID, math.LegacyNewDecFromInt(unbondingTokens))
 	assert.NilError(t, err)
 	valAddr2, err1 := sdk.ValAddressFromBech32(addrVal2)
 	assert.NilError(t, err1)
-	_, _, err = f.stakingKeeper.Undelegate(ctx, addrAcc, valAddr2, math.LegacyNewDecFromInt(unbondingTokens))
+	_, _, err = f.stakingKeeper.Undelegate(ctx, addrAcc, valAddr2, types.FlexibleDelegationID, math.LegacyNewDecFromInt(unbondingTokens))
 	assert.NilError(t, err)
 
 	unbond, found := f.stakingKeeper.GetUnbondingDelegation(ctx, addrAcc, valAddr1)
@@ -934,7 +934,7 @@ func TestGRPCQueryValidatorUnbondingDelegations(t *testing.T) {
 	undelAmount := f.stakingKeeper.TokensFromConsensusPower(ctx, 2)
 	valbz, err := f.stakingKeeper.ValidatorAddressCodec().StringToBytes(val1.GetOperator())
 	assert.NilError(t, err)
-	_, _, err = f.stakingKeeper.Undelegate(ctx, addrAcc1, valbz, math.LegacyNewDecFromInt(undelAmount))
+	_, _, err = f.stakingKeeper.Undelegate(ctx, addrAcc1, valbz, types.FlexibleDelegationID, math.LegacyNewDecFromInt(undelAmount))
 	assert.NilError(t, err)
 	applyValidatorSetUpdates(t, ctx, f.stakingKeeper, -1)
 
