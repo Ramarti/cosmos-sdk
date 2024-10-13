@@ -1,6 +1,29 @@
 package keeper_test
 
-/* TODO(rayden): low priority
+import (
+	"fmt"
+	"testing"
+	"time"
+
+	"github.com/stretchr/testify/require"
+
+	"cosmossdk.io/core/header"
+	"cosmossdk.io/depinject"
+	"cosmossdk.io/log"
+	"cosmossdk.io/math"
+
+	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
+	banktestutil "github.com/cosmos/cosmos-sdk/x/bank/testutil"
+	distributionkeeper "github.com/cosmos/cosmos-sdk/x/distribution/keeper"
+	slashingkeeper "github.com/cosmos/cosmos-sdk/x/slashing/keeper"
+	"github.com/cosmos/cosmos-sdk/x/slashing/testutil"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+)
+
 func TestSlashRedelegation(t *testing.T) {
 	// setting up
 	var stakingKeeper *stakingkeeper.Keeper
@@ -46,7 +69,8 @@ func TestSlashRedelegation(t *testing.T) {
 	evilValAddr := sdk.ValAddress(evilValPubKey.Address())
 	banktestutil.FundAccount(ctx, bankKeeper, sdk.AccAddress(evilValAddr), testCoins)
 	createValMsg1, _ := stakingtypes.NewMsgCreateValidator(
-		evilValAddr.String(), evilValPubKey, testCoins[0], stakingtypes.Description{Details: "test"}, stakingtypes.NewCommissionRates(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)), math.OneInt())
+		evilValAddr.String(), evilValPubKey, testCoins[0], stakingtypes.Description{Details: "test"}, stakingtypes.NewCommissionRates(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)), math.OneInt(),
+		stakingtypes.TokenType_LOCKED)
 	_, err = stakingMsgServer.CreateValidator(ctx, createValMsg1)
 	require.NoError(t, err)
 
@@ -54,7 +78,8 @@ func TestSlashRedelegation(t *testing.T) {
 	goodValAddr := sdk.ValAddress(goodValPubKey.Address())
 	banktestutil.FundAccount(ctx, bankKeeper, sdk.AccAddress(goodValAddr), testCoins)
 	createValMsg2, _ := stakingtypes.NewMsgCreateValidator(
-		goodValAddr.String(), goodValPubKey, testCoins[0], stakingtypes.Description{Details: "test"}, stakingtypes.NewCommissionRates(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)), math.OneInt())
+		goodValAddr.String(), goodValPubKey, testCoins[0], stakingtypes.Description{Details: "test"}, stakingtypes.NewCommissionRates(math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDecWithPrec(5, 1), math.LegacyNewDec(0)), math.OneInt(),
+		stakingtypes.TokenType_LOCKED)
 	_, err = stakingMsgServer.CreateValidator(ctx, createValMsg2)
 	require.NoError(t, err)
 
@@ -66,12 +91,12 @@ func TestSlashRedelegation(t *testing.T) {
 	require.NoError(t, err)
 
 	// Acc 2 delegate
-	delMsg := stakingtypes.NewMsgDelegate(testAcc2.String(), evilValAddr.String(), testCoins[0])
+	delMsg := stakingtypes.NewMsgDelegate(testAcc2.String(), evilValAddr.String(), testCoins[0], stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	_, err = stakingMsgServer.Delegate(ctx, delMsg)
 	require.NoError(t, err)
 
 	// Acc 1 delegate
-	delMsg = stakingtypes.NewMsgDelegate(testAcc1.String(), evilValAddr.String(), testCoins[0])
+	delMsg = stakingtypes.NewMsgDelegate(testAcc1.String(), evilValAddr.String(), testCoins[0], stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	_, err = stakingMsgServer.Delegate(ctx, delMsg)
 	require.NoError(t, err)
 
@@ -87,17 +112,17 @@ func TestSlashRedelegation(t *testing.T) {
 	evilPower := stakingKeeper.TokensToConsensusPower(ctx, evilVal.Tokens)
 
 	// Acc 1 redelegate from evil val to good val
-	redelMsg := stakingtypes.NewMsgBeginRedelegate(testAcc1.String(), evilValAddr.String(), goodValAddr.String(), testCoins[0])
+	redelMsg := stakingtypes.NewMsgBeginRedelegate(testAcc1.String(), evilValAddr.String(), goodValAddr.String(), stakingtypes.FlexibleDelegationID, testCoins[0])
 	_, err = stakingMsgServer.BeginRedelegate(ctx, redelMsg)
 	require.NoError(t, err)
 
 	// Acc 1 undelegate from good val
-	undelMsg := stakingtypes.NewMsgUndelegate(testAcc1.String(), goodValAddr.String(), testCoins[0])
+	undelMsg := stakingtypes.NewMsgUndelegate(testAcc1.String(), goodValAddr.String(), stakingtypes.FlexibleDelegationID, testCoins[0])
 	_, err = stakingMsgServer.Undelegate(ctx, undelMsg)
 	require.NoError(t, err)
 
 	// Acc 2 undelegate from evil val
-	undelMsg = stakingtypes.NewMsgUndelegate(testAcc2.String(), evilValAddr.String(), testCoins[0])
+	undelMsg = stakingtypes.NewMsgUndelegate(testAcc2.String(), evilValAddr.String(), stakingtypes.FlexibleDelegationID, testCoins[0])
 	_, err = stakingMsgServer.Undelegate(ctx, undelMsg)
 	require.NoError(t, err)
 
@@ -140,4 +165,3 @@ func TestSlashRedelegation(t *testing.T) {
 	require.Equal(t, balance1AfterSlashing.Amount.Mul(math.NewIntFromUint64(10)).String(), balance1Before.Amount.String())
 	require.Equal(t, balance2AfterSlashing.Amount.Mul(math.NewIntFromUint64(10)).String(), balance2Before.Amount.String())
 }
-*/
