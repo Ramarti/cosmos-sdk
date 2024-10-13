@@ -756,7 +756,7 @@ func (s *KeeperTestSuite) TestGetRedelegationsFromSrcValidator() {
 
 	addrDels, addrVals := createValAddrs(2)
 
-	rd := stakingtypes.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], 0,
+	rd := stakingtypes.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], types.FlexibleDelegationID, 0,
 		time.Unix(0, 0), math.NewInt(5),
 		math.LegacyNewDec(5), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
 
@@ -786,7 +786,7 @@ func (s *KeeperTestSuite) TestRedelegation() {
 
 	addrDels, addrVals := createValAddrs(2)
 
-	rd := stakingtypes.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], 0,
+	rd := stakingtypes.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], types.FlexibleDelegationID, 0,
 		time.Unix(0, 0).UTC(), math.NewInt(5),
 		math.LegacyNewDec(5), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
 

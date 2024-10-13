@@ -22,6 +22,7 @@ const (
 	Msg_CreateValidator_FullMethodName = "/cosmos.staking.v1beta1.Msg/CreateValidator"
 	Msg_EditValidator_FullMethodName   = "/cosmos.staking.v1beta1.Msg/EditValidator"
 	Msg_Delegate_FullMethodName        = "/cosmos.staking.v1beta1.Msg/Delegate"
+	Msg_BeginRedelegate_FullMethodName = "/cosmos.staking.v1beta1.Msg/BeginRedelegate"
 	Msg_Undelegate_FullMethodName      = "/cosmos.staking.v1beta1.Msg/Undelegate"
 	Msg_UpdateParams_FullMethodName    = "/cosmos.staking.v1beta1.Msg/UpdateParams"
 )
@@ -37,6 +38,9 @@ type MsgClient interface {
 	// Delegate defines a method for performing a delegation of coins
 	// from a delegator to a validator.
 	Delegate(ctx context.Context, in *MsgDelegate, opts ...grpc.CallOption) (*MsgDelegateResponse, error)
+	// BeginRedelegate defines a method for performing a redelegation
+	// of coins from a delegator and source validator to a destination validator.
+	BeginRedelegate(ctx context.Context, in *MsgBeginRedelegate, opts ...grpc.CallOption) (*MsgBeginRedelegateResponse, error)
 	// Undelegate defines a method for performing an undelegation from a
 	// delegate and a validator.
 	Undelegate(ctx context.Context, in *MsgUndelegate, opts ...grpc.CallOption) (*MsgUndelegateResponse, error)
@@ -81,6 +85,15 @@ func (c *msgClient) Delegate(ctx context.Context, in *MsgDelegate, opts ...grpc.
 	return out, nil
 }
 
+func (c *msgClient) BeginRedelegate(ctx context.Context, in *MsgBeginRedelegate, opts ...grpc.CallOption) (*MsgBeginRedelegateResponse, error) {
+	out := new(MsgBeginRedelegateResponse)
+	err := c.cc.Invoke(ctx, Msg_BeginRedelegate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) Undelegate(ctx context.Context, in *MsgUndelegate, opts ...grpc.CallOption) (*MsgUndelegateResponse, error) {
 	out := new(MsgUndelegateResponse)
 	err := c.cc.Invoke(ctx, Msg_Undelegate_FullMethodName, in, out, opts...)
@@ -110,6 +123,10 @@ type MsgServer interface {
 	// Delegate defines a method for performing a delegation of coins
 	// from a delegator to a validator.
 	Delegate(context.Context, *MsgDelegate) (*MsgDelegateResponse, error)
+	// BeginRedelegate defines a method for performing a redelegation
+	// of coins from a delegator and source validator to a destination validator.
+	// TODO(rayden): low priority
+	BeginRedelegate(context.Context, *MsgBeginRedelegate) (*MsgBeginRedelegateResponse, error)
 	// Undelegate defines a method for performing an undelegation from a
 	// delegate and a validator.
 	Undelegate(context.Context, *MsgUndelegate) (*MsgUndelegateResponse, error)
@@ -132,6 +149,9 @@ func (UnimplementedMsgServer) EditValidator(context.Context, *MsgEditValidator) 
 }
 func (UnimplementedMsgServer) Delegate(context.Context, *MsgDelegate) (*MsgDelegateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delegate not implemented")
+}
+func (UnimplementedMsgServer) BeginRedelegate(context.Context, *MsgBeginRedelegate) (*MsgBeginRedelegateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BeginRedelegate not implemented")
 }
 func (UnimplementedMsgServer) Undelegate(context.Context, *MsgUndelegate) (*MsgUndelegateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Undelegate not implemented")
@@ -206,6 +226,24 @@ func _Msg_Delegate_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_BeginRedelegate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgBeginRedelegate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).BeginRedelegate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_BeginRedelegate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).BeginRedelegate(ctx, req.(*MsgBeginRedelegate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_Undelegate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgUndelegate)
 	if err := dec(in); err != nil {
@@ -260,6 +298,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delegate",
 			Handler:    _Msg_Delegate_Handler,
+		},
+		{
+			MethodName: "BeginRedelegate",
+			Handler:    _Msg_BeginRedelegate_Handler,
 		},
 		{
 			MethodName: "Undelegate",

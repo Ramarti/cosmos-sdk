@@ -249,8 +249,9 @@ func (ubds UnbondingDelegations) String() (out string) {
 	return strings.TrimSpace(out)
 }
 
-func NewRedelegationEntry(creationHeight int64, completionTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64) RedelegationEntry {
+func NewRedelegationEntry(periodDelegationId string, creationHeight int64, completionTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64) RedelegationEntry {
 	return RedelegationEntry{
+		PeriodDelegationId:      periodDelegationId,
 		CreationHeight:          creationHeight,
 		CompletionTime:          completionTime,
 		InitialBalance:          balance,
@@ -271,7 +272,7 @@ func (e RedelegationEntry) OnHold() bool {
 }
 
 func NewRedelegation(
-	delegatorAddr sdk.AccAddress, validatorSrcAddr, validatorDstAddr sdk.ValAddress,
+	delegatorAddr sdk.AccAddress, validatorSrcAddr, validatorDstAddr sdk.ValAddress, periodDelegationId string,
 	creationHeight int64, minTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64,
 	valAc, delAc address.Codec,
 ) Redelegation {
@@ -293,14 +294,14 @@ func NewRedelegation(
 		ValidatorSrcAddress: valSrcAddr,
 		ValidatorDstAddress: valDstAddr,
 		Entries: []RedelegationEntry{
-			NewRedelegationEntry(creationHeight, minTime, balance, sharesDst, id),
+			NewRedelegationEntry(periodDelegationId, creationHeight, minTime, balance, sharesDst, id),
 		},
 	}
 }
 
 // AddEntry - append entry to the unbonding delegation
-func (red *Redelegation) AddEntry(creationHeight int64, minTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64) {
-	entry := NewRedelegationEntry(creationHeight, minTime, balance, sharesDst, id)
+func (red *Redelegation) AddEntry(periodDelegationId string, creationHeight int64, minTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64) {
+	entry := NewRedelegationEntry(periodDelegationId, creationHeight, minTime, balance, sharesDst, id)
 	red.Entries = append(red.Entries, entry)
 }
 
@@ -396,11 +397,15 @@ func NewRedelegationResponse(
 
 // NewRedelegationEntryResponse creates a new RedelegationEntryResponse instance.
 func NewRedelegationEntryResponse(
-	creationHeight int64, completionTime time.Time, sharesDst math.LegacyDec, initialBalance, balance math.Int, unbondingID uint64,
+	periodDelegationId string, creationHeight int64, completionTime time.Time,
+	sharesDst math.LegacyDec, initialBalance, balance math.Int, unbondingID uint64,
 ) RedelegationEntryResponse {
 	return RedelegationEntryResponse{
-		RedelegationEntry: NewRedelegationEntry(creationHeight, completionTime, initialBalance, sharesDst, unbondingID),
-		Balance:           balance,
+		RedelegationEntry: NewRedelegationEntry(
+			periodDelegationId, creationHeight, completionTime,
+			initialBalance, sharesDst, unbondingID,
+		),
+		Balance: balance,
 	}
 }
 

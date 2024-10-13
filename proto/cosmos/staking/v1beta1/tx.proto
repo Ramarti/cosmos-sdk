@@ -29,8 +29,7 @@ service Msg {
 
   // BeginRedelegate defines a method for performing a redelegation
   // of coins from a delegator and source validator to a destination validator.
-  // TODO(rayden): low priority
-  // rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
+  rpc BeginRedelegate(MsgBeginRedelegate) returns (MsgBeginRedelegateResponse);
 
   // Undelegate defines a method for performing an undelegation from a
   // delegate and a validator.
@@ -134,6 +133,7 @@ message MsgBeginRedelegate {
   string                   validator_src_address = 2 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   string                   validator_dst_address = 3 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   cosmos.base.v1beta1.Coin amount                = 4 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  string                   period_delegation_id  = 5 [(amino.dont_omitempty) = true];
 }
 
 // MsgBeginRedelegateResponse defines the Msg/BeginRedelegate response type.

@@ -38,7 +38,7 @@ func TestDecodeStore(t *testing.T) {
 		time.Unix(0, 0).UTC(),
 	)
 	ubd := types.NewUnbondingDelegation(delAddr1, valAddr1, 15, bondTime, math.OneInt(), 1, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
-	red := types.NewRedelegation(delAddr1, valAddr1, valAddr1, 12, bondTime, math.OneInt(), math.LegacyOneDec(), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
+	red := types.NewRedelegation(delAddr1, valAddr1, valAddr1, types.FlexibleDelegationID, 12, bondTime, math.OneInt(), math.LegacyOneDec(), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
 
 	kvPairs := kv.Pairs{
 		Pairs: []kv.Pair{

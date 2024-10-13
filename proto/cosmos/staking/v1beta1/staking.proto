@@ -366,6 +366,8 @@ message RedelegationEntry {
 
   // Strictly positive if this entry's unbonding has been stopped by external modules
   int64 unbonding_on_hold_ref_count = 6;
+
+  string period_delegation_id = 7 [(amino.dont_omitempty) = true];
 }
 
 // Redelegation contains the list of a particular delegator's redelegating bonds

@@ -346,7 +346,6 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 }
 
 // BeginRedelegate defines a method for performing a redelegation of coins from a source validator to a destination validator of given delegator
-/* TODO(rayden): low priority
 func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedelegate) (*types.MsgBeginRedelegateResponse, error) {
 	valSrcAddr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorSrcAddress)
 	if err != nil {
@@ -370,8 +369,17 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 		)
 	}
 
+	minDelegation, err := k.MinDelegation(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to get min delegation")
+	}
+	// redelegation amount should be greater than or equal to chain-side min delegation
+	if msg.Amount.Amount.LT(minDelegation) {
+		return nil, types.ErrRedelegationBelowMinimum
+	}
+
 	shares, err := k.ValidateUnbondAmount(
-		ctx, delegatorAddress, valSrcAddr, msg.Amount.Amount,
+		ctx, delegatorAddress, valSrcAddr, msg.PeriodDelegationId, msg.Amount.Amount,
 	)
 	if err != nil {
 		return nil, err
@@ -389,7 +397,7 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 	}
 
 	completionTime, err := k.BeginRedelegation(
-		ctx, delegatorAddress, valSrcAddr, valDstAddr, shares,
+		ctx, delegatorAddress, valSrcAddr, valDstAddr, msg.PeriodDelegationId, shares,
 	)
 	if err != nil {
 		return nil, err
@@ -421,7 +429,6 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 		CompletionTime: completionTime,
 	}, nil
 }
-*/
 
 // Undelegate defines a method for performing an undelegation from a delegate and a validator
 func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*types.MsgUndelegateResponse, error) {

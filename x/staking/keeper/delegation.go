@@ -676,8 +676,8 @@ func (k Keeper) SetRedelegation(ctx context.Context, red types.Redelegation) err
 // addresses. It creates the unbonding delegation if it does not exist.
 func (k Keeper) SetRedelegationEntry(ctx context.Context,
 	delegatorAddr sdk.AccAddress, validatorSrcAddr,
-	validatorDstAddr sdk.ValAddress, creationHeight int64,
-	minTime time.Time, balance math.Int,
+	validatorDstAddr sdk.ValAddress, periodDelegationId string,
+	creationHeight int64, minTime time.Time, balance math.Int,
 	sharesSrc, sharesDst math.LegacyDec,
 ) (types.Redelegation, error) {
 	id, err := k.IncrementUnbondingID(ctx)
@@ -687,10 +687,10 @@ func (k Keeper) SetRedelegationEntry(ctx context.Context,
 
 	red, err := k.GetRedelegation(ctx, delegatorAddr, validatorSrcAddr, validatorDstAddr)
 	if err == nil {
-		red.AddEntry(creationHeight, minTime, balance, sharesDst, id)
+		red.AddEntry(periodDelegationId, creationHeight, minTime, balance, sharesDst, id)
 	} else if errors.Is(err, types.ErrNoRedelegation) {
 		red = types.NewRedelegation(delegatorAddr, validatorSrcAddr,
-			validatorDstAddr, creationHeight, minTime, balance, sharesDst, id, k.validatorAddressCodec, k.authKeeper.AddressCodec())
+			validatorDstAddr, periodDelegationId, creationHeight, minTime, balance, sharesDst, id, k.validatorAddressCodec, k.authKeeper.AddressCodec())
 	} else {
 		return types.Redelegation{}, err
 	}
@@ -1271,9 +1271,10 @@ func (k Keeper) CompleteUnbonding(ctx context.Context, delAddr sdk.AccAddress, v
 
 // BeginRedelegation begins unbonding / redelegation and creates a redelegation
 // record.
-/* TODO(rayden): low priority
+// TODO(rayden): low priority
 func (k Keeper) BeginRedelegation(
-	ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec,
+	ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress,
+	periodDelegationId string, sharesAmount math.LegacyDec,
 ) (completionTime time.Time, err error) {
 	if bytes.Equal(valSrcAddr, valDstAddr) {
 		return time.Time{}, types.ErrSelfRedelegation
@@ -1312,7 +1313,7 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, types.ErrMaxRedelegationEntries
 	}
 
-	returnAmount, err := k.Unbond(ctx, delAddr, valSrcAddr, sharesAmount)
+	returnAmount, err := k.Unbond(ctx, delAddr, valSrcAddr, periodDelegationId, sharesAmount)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -1321,7 +1322,17 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, types.ErrTinyRedelegationAmount
 	}
 
-	sharesCreated, err := k.Delegate(ctx, delAddr, returnAmount, srcValidator.GetStatus(), dstValidator, false)
+	delegation, err := k.GetDelegation(ctx, delAddr, valSrcAddr)
+	if errors.Is(err, types.ErrNoDelegation) {
+		return time.Time{}, types.ErrNoDelegatorForAddress
+	} else if err != nil {
+		return time.Time{}, err
+	}
+	// Since we already unbond successfully, there's no need to check if the period delegation exists.
+	sharesCreated, _, err := k.Delegate(
+		ctx, delAddr, returnAmount, srcValidator.GetStatus(), dstValidator, false,
+		periodDelegationId, delegation.PeriodDelegations[periodDelegationId].PeriodType,
+	)
 	if err != nil {
 		return time.Time{}, err
 	}
@@ -1337,7 +1348,7 @@ func (k Keeper) BeginRedelegation(
 	}
 
 	red, err := k.SetRedelegationEntry(
-		ctx, delAddr, valSrcAddr, valDstAddr,
+		ctx, delAddr, valSrcAddr, valDstAddr, periodDelegationId,
 		height, completionTime, returnAmount, sharesAmount, sharesCreated,
 	)
 	if err != nil {
@@ -1351,7 +1362,6 @@ func (k Keeper) BeginRedelegation(
 
 	return completionTime, nil
 }
-*/
 
 // CompleteRedelegation completes the redelegations of all mature entries in the
 // retrieved redelegation object and returns the total redelegation (initial)
