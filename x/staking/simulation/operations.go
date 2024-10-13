@@ -691,6 +691,7 @@ func SimulateMsgBeginRedelegate(
 
 		msg := types.NewMsgBeginRedelegate(
 			delAddr, srcVal.GetOperator(), destVal.GetOperator(),
+			types.FlexibleDelegationID,
 			sdk.NewCoin(bondDenom, redAmt),
 		)
 

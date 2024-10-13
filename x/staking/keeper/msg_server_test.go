@@ -549,7 +549,6 @@ func (s *KeeperTestSuite) TestMsgDelegate() {
 	}
 }
 
-// TODO(rayden): low priority
 func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 	ctx, keeper, msgServer := s.ctx, s.stakingKeeper, s.msgServer
 	require := s.Require()

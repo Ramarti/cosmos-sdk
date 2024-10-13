@@ -338,7 +338,6 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 
 // TestSimulateMsgBeginRedelegate tests the normal scenario of a valid message of type TypeMsgBeginRedelegate.
 // Abonormal scenarios, where the message is created by an errors, are not tested here.
-/* TODO(rayden): low priority
 func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	require := s.Require()
 	blockTime := time.Now().UTC()
@@ -355,11 +354,7 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	delegator := s.accounts[3]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
-			PeriodType:        types.PeriodType_FLEXIBLE,
-			Duration:          time.Duration(0),
-			RewardsMultiplier: math.LegacyOneDec(),
-		},
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
@@ -393,7 +388,6 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	require.Equal("cosmosvaloper1p8wcgrjr4pjju90xg6u9cgq55dxwq8j7epjs3u", msg.ValidatorSrcAddress)
 	require.Len(futureOperations, 0)
 }
-*/
 
 func (s *SimTestSuite) getTestingValidator0(ctx sdk.Context) types.Validator {
 	commission0 := types.NewCommission(math.LegacyZeroDec(), math.LegacyOneDec(), math.LegacyOneDec())

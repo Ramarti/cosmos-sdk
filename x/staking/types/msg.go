@@ -118,13 +118,14 @@ func NewMsgDelegate(delAddr, valAddr string, amount sdk.Coin, periodDelegationId
 
 // NewMsgBeginRedelegate creates a new MsgBeginRedelegate instance.
 func NewMsgBeginRedelegate(
-	delAddr, valSrcAddr, valDstAddr string, amount sdk.Coin,
+	delAddr, valSrcAddr, valDstAddr string, periodDelegationId string, amount sdk.Coin,
 ) *MsgBeginRedelegate {
 	return &MsgBeginRedelegate{
 		DelegatorAddress:    delAddr,
 		ValidatorSrcAddress: valSrcAddr,
 		ValidatorDstAddress: valDstAddr,
 		Amount:              amount,
+		PeriodDelegationId:  periodDelegationId,
 	}
 }
 
