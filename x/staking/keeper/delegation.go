@@ -1313,6 +1313,14 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, types.ErrMaxRedelegationEntries
 	}
 
+	// Get the delegation info before unbond in case the period delegation is pruned after unbond.
+	delegation, err := k.GetDelegation(ctx, delAddr, valSrcAddr)
+	if errors.Is(err, types.ErrNoDelegation) {
+		return time.Time{}, types.ErrNoDelegatorForAddress
+	} else if err != nil {
+		return time.Time{}, err
+	}
+
 	returnAmount, err := k.Unbond(ctx, delAddr, valSrcAddr, periodDelegationId, sharesAmount)
 	if err != nil {
 		return time.Time{}, err
@@ -1322,12 +1330,6 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, types.ErrTinyRedelegationAmount
 	}
 
-	delegation, err := k.GetDelegation(ctx, delAddr, valSrcAddr)
-	if errors.Is(err, types.ErrNoDelegation) {
-		return time.Time{}, types.ErrNoDelegatorForAddress
-	} else if err != nil {
-		return time.Time{}, err
-	}
 	// Since we already unbond successfully, there's no need to check if the period delegation exists.
 	sharesCreated, _, err := k.Delegate(
 		ctx, delAddr, returnAmount, srcValidator.GetStatus(), dstValidator, false,

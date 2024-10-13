@@ -125,7 +125,6 @@ type MsgServer interface {
 	Delegate(context.Context, *MsgDelegate) (*MsgDelegateResponse, error)
 	// BeginRedelegate defines a method for performing a redelegation
 	// of coins from a delegator and source validator to a destination validator.
-	// TODO(rayden): low priority
 	BeginRedelegate(context.Context, *MsgBeginRedelegate) (*MsgBeginRedelegateResponse, error)
 	// Undelegate defines a method for performing an undelegation from a
 	// delegate and a validator.

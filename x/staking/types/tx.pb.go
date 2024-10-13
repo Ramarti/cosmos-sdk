@@ -774,7 +774,6 @@ type MsgClient interface {
 	Delegate(ctx context.Context, in *MsgDelegate, opts ...grpc.CallOption) (*MsgDelegateResponse, error)
 	// BeginRedelegate defines a method for performing a redelegation
 	// of coins from a delegator and source validator to a destination validator.
-	// TODO(rayden): low priority
 	BeginRedelegate(ctx context.Context, in *MsgBeginRedelegate, opts ...grpc.CallOption) (*MsgBeginRedelegateResponse, error)
 	// Undelegate defines a method for performing an undelegation from a
 	// delegate and a validator.
@@ -858,7 +857,6 @@ type MsgServer interface {
 	Delegate(context.Context, *MsgDelegate) (*MsgDelegateResponse, error)
 	// BeginRedelegate defines a method for performing a redelegation
 	// of coins from a delegator and source validator to a destination validator.
-	// TODO(rayden): low priority
 	BeginRedelegate(context.Context, *MsgBeginRedelegate) (*MsgBeginRedelegateResponse, error)
 	// Undelegate defines a method for performing an undelegation from a
 	// delegate and a validator.
