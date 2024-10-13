@@ -21,7 +21,6 @@ var commonArgs = []string{
 }
 
 // MsgRedelegateExec creates a redelegate message.
-/* TODO(rayden): low priority
 func MsgRedelegateExec(clientCtx client.Context, from, src, dst, amount fmt.Stringer, extraArgs ...string) (testutil.BufferWriter, error) {
 	args := []string{
 		src.String(),
@@ -35,7 +34,6 @@ func MsgRedelegateExec(clientCtx client.Context, from, src, dst, amount fmt.Stri
 	args = append(args, commonArgs...)
 	return clitestutil.ExecTestCLICmd(clientCtx, stakingcli.NewRedelegateCmd(addresscodec.NewBech32Codec("cosmosvaloper"), addresscodec.NewBech32Codec("cosmos")), args)
 }
-*/
 
 // MsgUnbondExec creates a unbond message.
 func MsgUnbondExec(clientCtx client.Context, from, valAddress,

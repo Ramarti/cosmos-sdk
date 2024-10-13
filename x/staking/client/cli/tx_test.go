@@ -25,6 +25,7 @@ import (
 	testutilmod "github.com/cosmos/cosmos-sdk/types/module/testutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/staking/client/cli"
+	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 var PKs = simtestutil.CreateTestPubKeys(500)
@@ -506,7 +507,6 @@ func (s *CLITestSuite) TestNewDelegateCmd() {
 	}
 }
 
-/* TODO(rayden): low priority
 func (s *CLITestSuite) TestNewRedelegateCmd() {
 	cmd := cli.NewRedelegateCmd(addresscodec.NewBech32Codec("cosmosvaloper"), addresscodec.NewBech32Codec("cosmos"))
 
@@ -520,6 +520,7 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(), // src-validator-addr
 				sdk.ValAddress(s.addrs[1]).String(), // dst-validator-addr
+				types.FlexibleDelegationID,
 				"fooCoin",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -533,6 +534,7 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 			[]string{
 				"invalid",                           // wrong src-validator-addr
 				sdk.ValAddress(s.addrs[1]).String(), // dst-validator-addr
+				types.FlexibleDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(), // amount
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=%d", flags.FlagGas, 300000),
@@ -547,6 +549,7 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(), // src-validator-addr
 				"invalid",                           // wrong dst-validator-addr
+				types.FlexibleDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(), // amount
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=%d", flags.FlagGas, 300000),
@@ -559,8 +562,9 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 		{
 			"valid transaction of delegate",
 			[]string{
-				sdk.ValAddress(s.addrs[0]).String(),                             // src-validator-addr
-				sdk.ValAddress(s.addrs[1]).String(),                             // dst-validator-addr
+				sdk.ValAddress(s.addrs[0]).String(), // src-validator-addr
+				sdk.ValAddress(s.addrs[1]).String(), // dst-validator-addr
+				types.FlexibleDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(), // amount
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=%d", flags.FlagGas, 300000),
@@ -588,7 +592,6 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 		})
 	}
 }
-*/
 
 func (s *CLITestSuite) TestNewUnbondCmd() {
 	cmd := cli.NewUnbondCmd(addresscodec.NewBech32Codec("cosmosvaloper"), addresscodec.NewBech32Codec("cosmos"))
@@ -602,7 +605,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"invalid unbond amount",
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(),
-				"0",
+				types.FlexibleDelegationID,
 				"foo",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -615,7 +618,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"invalid validator address",
 			[]string{
 				"foo",
-				"0",
+				types.FlexibleDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -628,7 +631,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"valid transaction of unbond",
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(),
-				"0",
+				types.FlexibleDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),

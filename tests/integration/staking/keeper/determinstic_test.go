@@ -753,7 +753,6 @@ func TestGRPCPool(t *testing.T) {
 	testdata.DeterministicIterations(f.ctx, t, &stakingtypes.QueryPoolRequest{}, f.queryClient.Pool, 6242, false)
 }
 
-/* TODO(rayden): low priority
 func TestGRPCRedelegations(t *testing.T) {
 	t.Parallel()
 	f := initDeterministicFixture(t)
@@ -773,7 +772,7 @@ func TestGRPCRedelegations(t *testing.T) {
 		shares, err := createDelegationAndDelegate(rt, f, t, delegator, validator)
 		assert.NilError(t, err)
 
-		_, err = f.stakingKeeper.BeginRedelegation(f.ctx, delegator, srcValAddr, dstValAddr, shares)
+		_, err = f.stakingKeeper.BeginRedelegation(f.ctx, delegator, srcValAddr, dstValAddr, stakingtypes.FlexibleDelegationID, shares)
 		assert.NilError(t, err)
 
 		var req *stakingtypes.QueryRedelegationsRequest
@@ -807,7 +806,7 @@ func TestGRPCRedelegations(t *testing.T) {
 	shares, err := fundAccountAndDelegate(f, t, delegatorAddr1, validator, f.amt1)
 	assert.NilError(t, err)
 
-	_, err = f.stakingKeeper.BeginRedelegation(f.ctx, delegatorAddr1, validatorAddr1, validatorAddr2, shares)
+	_, err = f.stakingKeeper.BeginRedelegation(f.ctx, delegatorAddr1, validatorAddr1, validatorAddr2, stakingtypes.FlexibleDelegationID, shares)
 	assert.NilError(t, err)
 
 	req := &stakingtypes.QueryRedelegationsRequest{
@@ -818,7 +817,6 @@ func TestGRPCRedelegations(t *testing.T) {
 
 	testdata.DeterministicIterations(f.ctx, t, req, f.queryClient.Redelegations, 3920, false)
 }
-*/
 
 func TestGRPCParams(t *testing.T) {
 	t.Parallel()

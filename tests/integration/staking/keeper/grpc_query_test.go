@@ -790,7 +790,6 @@ func TestGRPCQueryHistoricalInfo(t *testing.T) {
 	}
 }
 
-/* TODO(rayden): low priority
 func TestGRPCQueryRedelegations(t *testing.T) {
 	t.Parallel()
 	f := initFixture(t)
@@ -818,7 +817,7 @@ func TestGRPCQueryRedelegations(t *testing.T) {
 	val2bz, err := f.stakingKeeper.ValidatorAddressCodec().StringToBytes(val2.GetOperator())
 	assert.NilError(t, err)
 
-	_, err = f.stakingKeeper.BeginRedelegation(ctx, addrAcc1, val1bz, val2bz, math.LegacyNewDecFromInt(rdAmount))
+	_, err = f.stakingKeeper.BeginRedelegation(ctx, addrAcc1, val1bz, val2bz, types.FlexibleDelegationID, math.LegacyNewDecFromInt(rdAmount))
 	assert.NilError(t, err)
 	applyValidatorSetUpdates(t, ctx, f.stakingKeeper, -1)
 
@@ -915,7 +914,6 @@ func TestGRPCQueryRedelegations(t *testing.T) {
 		})
 	}
 }
-*/
 
 func TestGRPCQueryValidatorUnbondingDelegations(t *testing.T) {
 	t.Parallel()

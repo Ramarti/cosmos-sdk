@@ -44,7 +44,6 @@ func (s *E2ETestSuite) SetupSuite() {
 	s.network, err = network.New(s.T(), s.T().TempDir(), s.cfg)
 	s.Require().NoError(err)
 
-	/* TODO(rayden): low priority
 	unbond, err := sdk.ParseCoinNormalized("10stake")
 	s.Require().NoError(err)
 
@@ -82,7 +81,6 @@ func (s *E2ETestSuite) SetupSuite() {
 	s.Require().NoError(val.ClientCtx.Codec.UnmarshalJSON(out.Bytes(), &txRes))
 	s.Require().Equal(uint32(0), txRes.Code)
 	s.Require().NoError(s.network.WaitForNextBlock())
-	*/
 }
 
 func (s *E2ETestSuite) TearDownSuite() {

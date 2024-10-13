@@ -126,7 +126,6 @@ func doUnbondingDelegation(
 	return completionTime, bondedAmt2, notBondedAmt2
 }
 
-/* TODO(rayden): low priority
 func doRedelegation(
 	t *testing.T,
 	stakingKeeper *stakingkeeper.Keeper,
@@ -136,7 +135,7 @@ func doRedelegation(
 	hookCalled *bool,
 ) (completionTime time.Time) {
 	var err error
-	completionTime, err = stakingKeeper.BeginRedelegation(ctx, addrDels[0], addrVals[0], addrVals[1], math.LegacyNewDec(1))
+	completionTime, err = stakingKeeper.BeginRedelegation(ctx, addrDels[0], addrVals[0], addrVals[1], types.FlexibleDelegationID, math.LegacyNewDec(1))
 	assert.NilError(t, err)
 
 	// Check that the redelegation happened- we look up the entry and see that it has the correct number of shares
@@ -150,7 +149,6 @@ func doRedelegation(
 
 	return completionTime
 }
-*/
 
 func doValidatorUnbonding(
 	t *testing.T,
@@ -308,7 +306,6 @@ func TestValidatorUnbondingOnHold2(t *testing.T) {
 	assert.Equal(t, 0, len(unbondingVals))
 }
 
-/* TODO(rayden): low priority
 func TestRedelegationOnHold1(t *testing.T) {
 	t.Parallel()
 	f := initFixture(t)
@@ -341,9 +338,7 @@ func TestRedelegationOnHold1(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(redelegations))
 }
-*/
 
-/* TODO(rayden): low priority
 func TestRedelegationOnHold2(t *testing.T) {
 	t.Parallel()
 	f := initFixture(t)
@@ -376,7 +371,6 @@ func TestRedelegationOnHold2(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, 0, len(redelegations))
 }
-*/
 
 func TestUnbondingDelegationOnHold1(t *testing.T) {
 	t.Parallel()

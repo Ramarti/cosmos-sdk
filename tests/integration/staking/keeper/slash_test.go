@@ -120,7 +120,7 @@ func TestSlashRedelegation(t *testing.T) {
 
 	// set a redelegation with an expiration timestamp beyond which the
 	// redelegation shouldn't be slashed
-	rd := types.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], 0,
+	rd := types.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], types.FlexibleDelegationID, 0,
 		time.Unix(5, 0), math.NewInt(10), math.LegacyNewDec(10), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
 
 	assert.NilError(t, f.stakingKeeper.SetRedelegation(f.sdkCtx, rd))
@@ -400,7 +400,7 @@ func TestSlashWithRedelegation(t *testing.T) {
 
 	// set a redelegation
 	rdTokens := f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, 6)
-	rd := types.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], 11, time.Unix(0, 0), rdTokens, math.LegacyNewDecFromInt(rdTokens), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
+	rd := types.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], types.FlexibleDelegationID, 11, time.Unix(0, 0), rdTokens, math.LegacyNewDecFromInt(rdTokens), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
 	assert.NilError(t, f.stakingKeeper.SetRedelegation(f.sdkCtx, rd))
 
 	// set the associated delegation
@@ -563,7 +563,7 @@ func TestSlashBoth(t *testing.T) {
 	// set a redelegation with expiration timestamp beyond which the
 	// redelegation shouldn't be slashed
 	rdATokens := f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, 6)
-	rdA := types.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], 11, time.Unix(0, 0), rdATokens, math.LegacyNewDecFromInt(rdATokens), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
+	rdA := types.NewRedelegation(addrDels[0], addrVals[0], addrVals[1], types.FlexibleDelegationID, 11, time.Unix(0, 0), rdATokens, math.LegacyNewDecFromInt(rdATokens), 0, address.NewBech32Codec("cosmosvaloper"), address.NewBech32Codec("cosmos"))
 	assert.NilError(t, f.stakingKeeper.SetRedelegation(f.sdkCtx, rdA))
 
 	// set the associated delegation
