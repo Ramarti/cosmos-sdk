@@ -694,24 +694,13 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 			expErr:    true,
 			expErrMsg: "invalid coin denomination",
 		},
-		// {
-		// 	name: "amount greater than delegated shares amount",
-		// 	input: &stakingtypes.MsgBeginRedelegate{
-		// 		DelegatorAddress:    Addr.String(),
-		// 		ValidatorSrcAddress: srcValAddr.String(),
-		// 		ValidatorDstAddress: dstValAddr.String(),
-		// 		Amount:              sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(101)),
-		// 		PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
-		// 	},
-		// 	expErr: false,
-		// },
 		{
-			name: "valid msg",
+			name: "amount greater than delegated shares amount",
 			input: &stakingtypes.MsgBeginRedelegate{
 				DelegatorAddress:    Addr.String(),
 				ValidatorSrcAddress: srcValAddr.String(),
 				ValidatorDstAddress: dstValAddr.String(),
-				Amount:              sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
+				Amount:              sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(101)),
 				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
 			},
 			expErr: false,
