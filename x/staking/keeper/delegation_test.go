@@ -423,7 +423,7 @@ func (s *KeeperTestSuite) TestUnbondDelegation() {
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 
 	bondTokens := keeper.TokensFromConsensusPower(ctx, 6)
-	amount, err := keeper.Unbond(ctx, delAddrs[0], valAddrs[0], types.FlexibleDelegationID, math.LegacyNewDecFromInt(bondTokens))
+	amount, err := keeper.Unbond(ctx, delAddrs[0], valAddrs[0], false, types.FlexibleDelegationID, math.LegacyNewDecFromInt(bondTokens))
 	require.NoError(err)
 	require.Equal(bondTokens, amount) // shares to be added to an unbonding delegation
 

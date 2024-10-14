@@ -985,8 +985,10 @@ func (k Keeper) Delegate(
 }
 
 // Unbond unbonds a particular delegation and perform associated store operations.
+// The forceUnbond is true iff from a redelegation or slashing.
 func (k Keeper) Unbond(
-	ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, periodDelegationId string, shares math.LegacyDec,
+	ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress,
+	forceUnbond bool, periodDelegationId string, shares math.LegacyDec,
 ) (amount math.Int, err error) {
 	// check if a delegation object exists in the store
 	delegation, err := k.GetDelegation(ctx, delAddr, valAddr)
@@ -1000,8 +1002,9 @@ func (k Keeper) Unbond(
 	if _, ok := delegation.PeriodDelegations[periodDelegationId]; !ok {
 		return amount, types.ErrNoPeriodDelegation
 	}
-	// check if the period delegation reached the end time
-	if delPeriod := delegation.PeriodDelegations[periodDelegationId]; delPeriod.PeriodType != types.PeriodType_FLEXIBLE &&
+	// check if the period delegation reached the end time, ignore if it's a force unbond
+	if delPeriod := delegation.PeriodDelegations[periodDelegationId]; !forceUnbond &&
+		delPeriod.PeriodType != types.PeriodType_FLEXIBLE &&
 		delPeriod.EndTime.After(sdk.UnwrapSDKContext(ctx).BlockTime()) {
 		return amount, types.ErrPeriodDelegationNotCompleted
 	}
@@ -1175,7 +1178,7 @@ func (k Keeper) Undelegate(
 		return time.Time{}, math.Int{}, types.ErrMaxUnbondingDelegationEntries
 	}
 
-	returnAmount, err := k.Unbond(ctx, delAddr, valAddr, periodDelegationId, sharesAmount)
+	returnAmount, err := k.Unbond(ctx, delAddr, valAddr, false, periodDelegationId, sharesAmount)
 	if err != nil {
 		return time.Time{}, math.Int{}, err
 	}
@@ -1320,7 +1323,7 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, err
 	}
 
-	returnAmount, err := k.Unbond(ctx, delAddr, valSrcAddr, periodDelegationId, sharesAmount)
+	returnAmount, err := k.Unbond(ctx, delAddr, valSrcAddr, true, periodDelegationId, sharesAmount)
 	if err != nil {
 		return time.Time{}, err
 	}
