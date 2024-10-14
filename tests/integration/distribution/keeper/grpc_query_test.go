@@ -512,7 +512,6 @@ func TestGRPCDelegationRewards(t *testing.T) {
 	delegation := stakingtypes.NewDelegation(delAddr.String(), f.valAddr.String(), issuedShares, issuedShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0),
-		time.Unix(0, 0),
 	)
 	assert.NilError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, delegation))
 	valBz, err := f.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.GetOperator())

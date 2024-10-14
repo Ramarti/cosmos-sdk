@@ -152,7 +152,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	// NOTE source will always be from a wallet which are unbonded
 	_, _, err = k.Keeper.Delegate(
 		ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true,
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
 	)
 	if err != nil {
 		return nil, err
@@ -311,7 +311,7 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 	// NOTE: source funds are always unbonded
 	newShares, newRewardsShares, err := k.Keeper.Delegate(
 		ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true,
-		msg.PeriodDelegationId, msg.PeriodType,
+		msg.PeriodDelegationId, msg.PeriodType, time.Unix(0, 0),
 	)
 	if err != nil {
 		return nil, err

@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"math/big"
 	"testing"
+	"time"
 
 	cmtprototypes "github.com/cometbft/cometbft/proto/tendermint/types"
 	"gotest.tools/v3/assert"
@@ -80,11 +81,20 @@ func createValidators(t *testing.T, f *fixture, powers []int64) ([]sdk.AccAddres
 	assert.NilError(t, f.stakingKeeper.SetNewValidatorByPowerIndex(f.sdkCtx, val1))
 	assert.NilError(t, f.stakingKeeper.SetNewValidatorByPowerIndex(f.sdkCtx, val2))
 
-	_, _, err := f.stakingKeeper.Delegate(f.sdkCtx, addrs[0], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[0]), types.Unbonded, val1, true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE)
+	_, _, err := f.stakingKeeper.Delegate(
+		f.sdkCtx, addrs[0], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[0]), types.Unbonded, val1,
+		true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+	)
 	assert.NilError(t, err)
-	_, _, err = f.stakingKeeper.Delegate(f.sdkCtx, addrs[1], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[1]), types.Unbonded, val2, true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE)
+	_, _, err = f.stakingKeeper.Delegate(
+		f.sdkCtx, addrs[1], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[1]), types.Unbonded, val2,
+		true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+	)
 	assert.NilError(t, err)
-	_, _, err = f.stakingKeeper.Delegate(f.sdkCtx, addrs[0], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[2]), types.Unbonded, val2, true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE)
+	_, _, err = f.stakingKeeper.Delegate(
+		f.sdkCtx, addrs[0], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[2]), types.Unbonded, val2,
+		true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+	)
 	assert.NilError(t, err)
 	applyValidatorSetUpdates(t, f.sdkCtx, f.stakingKeeper, -1)
 

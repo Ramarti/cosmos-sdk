@@ -260,7 +260,6 @@ func GenesisStateWithValSet(
 			genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec(),
 			stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 			time.Unix(0, 0),
-			time.Unix(0, 0),
 		))
 
 	}

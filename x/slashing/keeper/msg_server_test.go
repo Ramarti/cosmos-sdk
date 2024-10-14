@@ -219,7 +219,6 @@ func (s *KeeperTestSuite) TestUnjail() {
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
 					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 					time.Unix(0, 0),
-					time.Unix(0, 0),
 				)
 
 				s.stakingKeeper.EXPECT().Delegation(s.ctx, addr, valAddr).Return(del, nil)
@@ -253,7 +252,6 @@ func (s *KeeperTestSuite) TestUnjail() {
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
 					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-					time.Unix(0, 0),
 					time.Unix(0, 0),
 				)
 
@@ -289,7 +287,6 @@ func (s *KeeperTestSuite) TestUnjail() {
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(10000), sdkmath.LegacyNewDec(10000),
 					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 					time.Unix(0, 0),
-					time.Unix(0, 0),
 				)
 
 				s.stakingKeeper.EXPECT().Delegation(s.ctx, addr, valAddr).Return(del, nil)
@@ -323,7 +320,6 @@ func (s *KeeperTestSuite) TestUnjail() {
 				del := types.NewDelegation(
 					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
 					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-					time.Unix(0, 0),
 					time.Unix(0, 0),
 				)
 

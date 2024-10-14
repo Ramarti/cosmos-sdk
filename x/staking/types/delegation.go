@@ -23,7 +23,7 @@ var _ DelegationI = Delegation{}
 func NewDelegation(
 	delegatorAddr, validatorAddr string,
 	shares, rewardsShares math.LegacyDec,
-	periodDelID string, periodType PeriodType, startTime time.Time, endTime time.Time,
+	periodDelID string, periodType PeriodType, endTime time.Time,
 ) Delegation {
 	return Delegation{
 		DelegatorAddress: delegatorAddr,
@@ -31,7 +31,7 @@ func NewDelegation(
 		Shares:           shares,
 		RewardsShares:    rewardsShares,
 		PeriodDelegations: map[string]*PeriodDelegation{
-			periodDelID: NewPeriodDelegation(periodDelID, shares, rewardsShares, periodType, startTime, endTime),
+			periodDelID: NewPeriodDelegation(periodDelID, shares, rewardsShares, periodType, endTime),
 		},
 	}
 }
@@ -76,7 +76,7 @@ func (d Delegation) GetPeriodDelegation(id string) *PeriodDelegation { return d.
 func (d *Delegation) AddPeriodDelegation(
 	id string,
 	shares, rewardsShares math.LegacyDec,
-	periodType PeriodType, startTime, endTime time.Time,
+	periodType PeriodType, endTime time.Time,
 ) bool {
 	_, ok := d.PeriodDelegations[id]
 	if ok {
@@ -89,7 +89,7 @@ func (d *Delegation) AddPeriodDelegation(
 		d.PeriodDelegations[id].RewardsShares = d.PeriodDelegations[id].RewardsShares.Add(rewardsShares)
 	} else {
 		// not found, create new period delegation
-		d.PeriodDelegations[id] = NewPeriodDelegation(id, shares, rewardsShares, periodType, startTime, endTime)
+		d.PeriodDelegations[id] = NewPeriodDelegation(id, shares, rewardsShares, periodType, endTime)
 	}
 
 	// update overall shares
@@ -437,7 +437,7 @@ func (r RedelegationResponses) String() (out string) {
 func NewPeriodDelegation(
 	id string,
 	shares, rewardsShares math.LegacyDec,
-	periodType PeriodType, startTime, endTime time.Time,
+	periodType PeriodType, endTime time.Time,
 ) *PeriodDelegation {
 	return &PeriodDelegation{
 		PeriodDelegationId: id,

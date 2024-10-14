@@ -132,7 +132,6 @@ func Delegate(
 			delegator.String(), validator.GetOperator(), math.LegacyZeroDec(), math.LegacyZeroDec(),
 			stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 			time.Unix(0, 0),
-			time.Unix(0, 0),
 		)
 		delegation = &del
 	}

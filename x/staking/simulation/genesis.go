@@ -90,7 +90,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 			simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake), sdkmath.LegacyNewDecFromInt(simState.InitialStake),
 			types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 			time.Unix(0, 0),
-			time.Unix(0, 0),
 		)
 
 		validators = append(validators, validator)

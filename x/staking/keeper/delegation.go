@@ -861,7 +861,7 @@ func (k Keeper) DequeueAllMatureRedelegationQueue(ctx context.Context, currTime 
 // tokenSrc indicates the bond status of the incoming funds.
 func (k Keeper) Delegate(
 	ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc types.BondStatus,
-	validator types.Validator, subtractAccount bool, periodDelID string, periodType types.PeriodType,
+	validator types.Validator, subtractAccount bool, periodDelID string, periodType types.PeriodType, endTime time.Time,
 ) (newShares, newRewardsShares math.LegacyDec, err error) {
 	// In some situations, the exchange rate becomes invalid, e.g. if
 	// Validator loses all tokens due to slashing. In this case,
@@ -943,13 +943,19 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
+	// if subtractAccount is true then we are
+	// performing a delegation and not a redelegation,
+	// thus the endTime should be calculated based on current block time
+	if subtractAccount {
+		endTime = sdkCtx.BlockTime().Add(period.Duration)
+	}
 	// Get or create the delegation object and call the appropriate hook if present
 	delegation, err := k.GetDelegation(ctx, delAddr, valbz)
 	if err == nil {
 		// found, and add period delegation
 		delegation.AddPeriodDelegation(
 			periodDelID, newShares, newRewardsShares,
-			period.PeriodType, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
+			period.PeriodType, endTime,
 		)
 		err = k.Hooks().BeforeDelegationSharesModified(ctx, delAddr, valbz)
 	} else if errors.Is(err, types.ErrNoDelegation) {
@@ -960,7 +966,7 @@ func (k Keeper) Delegate(
 		delegation = types.NewDelegation(
 			delAddrStr, validator.GetOperator(),
 			newShares, newRewardsShares,
-			periodDelID, period.PeriodType, sdkCtx.BlockTime(), sdkCtx.BlockTime().Add(period.Duration),
+			periodDelID, period.PeriodType, endTime,
 		)
 		err = k.Hooks().BeforeDelegationCreated(ctx, delAddr, valbz)
 	} else {
@@ -1335,7 +1341,7 @@ func (k Keeper) BeginRedelegation(
 	// Since we already unbond successfully, there's no need to check if the period delegation exists.
 	sharesCreated, _, err := k.Delegate(
 		ctx, delAddr, returnAmount, srcValidator.GetStatus(), dstValidator, false,
-		periodDelegationId, delegation.PeriodDelegations[periodDelegationId].PeriodType,
+		periodDelegationId, delegation.PeriodDelegations[periodDelegationId].PeriodType, time.Unix(0, 0),
 	)
 	if err != nil {
 		return time.Time{}, err

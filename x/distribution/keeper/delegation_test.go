@@ -66,7 +66,6 @@ func TestCalculateRewardsBasic(t *testing.T) {
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr).Return(val, nil).Times(3)
 	stakingKeeper.EXPECT().Delegation(gomock.Any(), addr, valAddr).Return(del, nil)
@@ -156,7 +155,6 @@ func TestCalculateRewardsAfterSlash(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 
@@ -265,7 +263,6 @@ func TestCalculateRewardsAfterManySlashes(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr).Return(val, nil).Times(4)
@@ -393,7 +390,6 @@ func TestCalculateRewardsMultiDelegator(t *testing.T) {
 		addr0.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 
 	// set mock calls
@@ -496,7 +492,6 @@ func TestWithdrawDelegationRewardsBasic(t *testing.T) {
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr).Return(val, nil).Times(5)
 	stakingKeeper.EXPECT().Delegation(gomock.Any(), addr, valAddr).Return(del, nil).Times(3)
@@ -575,7 +570,6 @@ func TestCalculateRewardsAfterManySlashesInSameBlock(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr).Return(val, nil).Times(5)
@@ -697,7 +691,6 @@ func TestCalculateRewardsMultiDelegatorMultiSlash(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr).Return(val, nil).Times(3)
@@ -837,7 +830,6 @@ func TestCalculateRewardsMultiDelegatorMultWithdraw(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr).Return(val, nil).Times(3)
@@ -1041,7 +1033,6 @@ func Test100PercentCommissionReward(t *testing.T) {
 	del := stakingtypes.NewDelegation(
 		addr.String(), valAddr.String(), val.DelegatorShares, val.DelegatorRewardsShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	stakingKeeper.EXPECT().Validator(gomock.Any(), valAddr).Return(val, nil).Times(3)

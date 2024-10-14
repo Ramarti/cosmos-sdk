@@ -307,7 +307,6 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
 		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
@@ -355,7 +354,6 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
 		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))

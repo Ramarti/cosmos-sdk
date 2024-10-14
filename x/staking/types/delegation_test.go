@@ -21,7 +21,6 @@ func TestDelegationEqual(t *testing.T) {
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(100), math.LegacyNewDec(100),
 		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 	d2 := d1
 
@@ -40,7 +39,7 @@ func TestDelegationString(t *testing.T) {
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(100), math.LegacyNewDec(100),
 		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0),
-		time.Unix(0, 0))
+	)
 	require.NotEmpty(t, d.String())
 }
 
@@ -95,14 +94,12 @@ func TestDelegationResponses(t *testing.T) {
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(5), math.LegacyNewDec(5),
 		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 	dr1 := types.NewDelegationResp(del1, sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(5)))
 
 	del2 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr3.String(), math.LegacyNewDec(5), math.LegacyNewDec(5),
 		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	dr2 := types.NewDelegationResp(del2, sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(5)))

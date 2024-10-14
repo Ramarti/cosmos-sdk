@@ -242,7 +242,10 @@ func setValidator(f *deterministicFixture, t *testing.T, validator stakingtypes.
 	coins := sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, validator.BondedTokens()))
 	assert.NilError(t, banktestutil.FundAccount(f.ctx, f.bankKeeper, delegatorAddress, coins))
 
-	_, _, err = f.stakingKeeper.Delegate(f.ctx, delegatorAddress, validator.BondedTokens(), stakingtypes.Unbonded, validator, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
+	_, _, err = f.stakingKeeper.Delegate(
+		f.ctx, delegatorAddress, validator.BondedTokens(), stakingtypes.Unbonded, validator,
+		true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0),
+	)
 	assert.NilError(t, err)
 }
 
@@ -327,7 +330,10 @@ func fundAccountAndDelegate(f *deterministicFixture, t *testing.T, delegator sdk
 	assert.NilError(t, f.bankKeeper.MintCoins(f.ctx, minttypes.ModuleName, coins))
 	assert.NilError(t, banktestutil.FundAccount(f.ctx, f.bankKeeper, delegator, coins))
 
-	shares, _, err := f.stakingKeeper.Delegate(f.ctx, delegator, amt, stakingtypes.Unbonded, validator, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
+	shares, _, err := f.stakingKeeper.Delegate(
+		f.ctx, delegator, amt, stakingtypes.Unbonded, validator,
+		true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0),
+	)
 	return shares, err
 }
 

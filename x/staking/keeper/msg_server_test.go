@@ -585,7 +585,6 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 		Addr.String(), srcValAddr.String(), shares, shares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(keeper.SetDelegation(ctx, del))
 	_, err = keeper.GetDelegation(ctx, Addr, srcValAddr)
@@ -746,7 +745,6 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 		Addr.String(), ValAddr.String(), shares, shares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(keeper.SetDelegation(ctx, del))
 	_, err = keeper.GetDelegation(ctx, Addr, ValAddr)
@@ -888,7 +886,6 @@ func (s *KeeperTestSuite) TestMsgCancelUnbondingDelegation() {
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
 		},
-		time.Unix(0, 0).UTC(),
 		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(keeper.SetDelegation(ctx, del))

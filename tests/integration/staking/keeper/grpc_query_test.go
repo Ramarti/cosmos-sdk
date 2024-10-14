@@ -4,6 +4,7 @@ import (
 	gocontext "context"
 	"fmt"
 	"testing"
+	"time"
 
 	cmtproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"gotest.tools/v3/assert"
@@ -806,7 +807,7 @@ func TestGRPCQueryRedelegations(t *testing.T) {
 	delAmount := f.stakingKeeper.TokensFromConsensusPower(ctx, 1)
 	_, _, err := f.stakingKeeper.Delegate(
 		ctx, addrAcc1, delAmount, types.Unbonded, val1, true,
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
 	)
 	assert.NilError(t, err)
 	applyValidatorSetUpdates(t, ctx, f.stakingKeeper, -1)

@@ -115,7 +115,6 @@ func (suite *SimTestSuite) TestSimulateMsgWithdrawDelegatorReward() {
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0).UTC(),
-		time.Unix(0, 0).UTC(),
 	)
 	suite.Require().NoError(suite.stakingKeeper.SetDelegation(suite.ctx, delegation))
 	valBz, err := address.NewBech32Codec("cosmosvaloper").StringToBytes(validator0.GetOperator())
