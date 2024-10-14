@@ -252,7 +252,6 @@ func GenesisStateWithValSet(
 			Commission:             stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
 			MinSelfDelegation:      sdkmath.ZeroInt(),
 			SupportTokenType:       stakingtypes.TokenType_LOCKED,
-			RewardsTokens:          sdkmath.LegacyNewDecFromInt(bondAmt),
 			DelegatorRewardsShares: sdkmath.LegacyOneDec(),
 		}
 		validators = append(validators, validator)

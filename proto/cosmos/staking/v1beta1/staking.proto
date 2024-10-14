@@ -156,13 +156,7 @@ message Validator {
 
   TokenType support_token_type = 14;
 
-  string rewards_tokens = 15 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
-    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable)   = false
-  ];
-
-  string delegator_rewards_shares = 16 [
+  string delegator_rewards_shares = 15 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false

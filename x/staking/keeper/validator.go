@@ -137,7 +137,6 @@ func (k Keeper) AddValidatorTokensAndShares(ctx context.Context, validator types
 	validator, addedShares = validator.AddTokensFromDel(tokensToAdd)
 	addedRewardsShares = addedShares.Mul(tokenTypeMultiplier).Mul(periodMultiplier)
 
-	validator.RewardsTokens = validator.RewardsTokens.Add(math.LegacyNewDecFromBigInt(tokensToAdd.BigInt()).Mul(tokenTypeMultiplier).Mul(periodMultiplier))
 	validator.DelegatorRewardsShares = validator.DelegatorRewardsShares.Add(addedRewardsShares)
 
 	err = k.SetValidator(ctx, validator)

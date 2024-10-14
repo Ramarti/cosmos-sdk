@@ -61,7 +61,6 @@ func NewValidator(operator string, pubKey cryptotypes.PubKey, description Descri
 		MinSelfDelegation:       math.OneInt(),
 		UnbondingOnHoldRefCount: 0,
 		SupportTokenType:        supportTokenType,
-		RewardsTokens:           math.LegacyZeroDec(),
 		DelegatorRewardsShares:  math.LegacyZeroDec(),
 	}, nil
 }
@@ -532,5 +531,4 @@ func (v Validator) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 }
 
 func (v Validator) GetSupportTokenType() TokenType            { return TokenType(v.SupportTokenType) }
-func (v Validator) GetRewardsTokens() math.LegacyDec          { return v.RewardsTokens }
 func (v Validator) GetDelegatorRewardsShares() math.LegacyDec { return v.DelegatorRewardsShares }

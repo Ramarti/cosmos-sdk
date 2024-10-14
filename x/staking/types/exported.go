@@ -44,6 +44,5 @@ type ValidatorI interface {
 	SharesFromTokens(amt math.Int) (math.LegacyDec, error)          // shares worth of delegator's bond
 	SharesFromTokensTruncated(amt math.Int) (math.LegacyDec, error) // truncated shares worth of delegator's bond
 	GetSupportTokenType() TokenType
-	GetRewardsTokens() math.LegacyDec
 	GetDelegatorRewardsShares() math.LegacyDec
 }
