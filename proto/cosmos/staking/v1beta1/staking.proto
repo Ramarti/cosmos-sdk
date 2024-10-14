@@ -217,9 +217,10 @@ message DVVTriplets {
 }
 
 enum PeriodType {
-  FLEXIBLE     = 0;
-  THREE_MONTHS = 1;
-  ONE_YEAR     = 2;
+  FLEXIBLE        = 0;
+  THREE_MONTHS    = 1;
+  ONE_YEAR        = 2;
+  EIGHTEEN_MONTHS = 3;
 }
 // Message representing the Period
 message Period {
