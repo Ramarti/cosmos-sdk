@@ -1341,7 +1341,8 @@ func (k Keeper) BeginRedelegation(
 	// Since we already unbond successfully, there's no need to check if the period delegation exists.
 	sharesCreated, _, err := k.Delegate(
 		ctx, delAddr, returnAmount, srcValidator.GetStatus(), dstValidator, false,
-		periodDelegationId, delegation.PeriodDelegations[periodDelegationId].PeriodType, time.Unix(0, 0),
+		periodDelegationId, delegation.PeriodDelegations[periodDelegationId].PeriodType,
+		delegation.PeriodDelegations[periodDelegationId].EndTime,
 	)
 	if err != nil {
 		return time.Time{}, err
