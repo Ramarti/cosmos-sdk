@@ -14,7 +14,7 @@ func TestParams_ValidateBasic(t *testing.T) {
 	toDec := sdkmath.LegacyMustNewDecFromStr
 
 	type fields struct {
-		UbiPool             sdkmath.LegacyDec
+		Ubi                 sdkmath.LegacyDec
 		BaseProposerReward  sdkmath.LegacyDec
 		BonusProposerReward sdkmath.LegacyDec
 		WithdrawAddrEnabled bool
@@ -35,7 +35,7 @@ func TestParams_ValidateBasic(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := types.Params{
-				UbiPool:             tt.fields.UbiPool,
+				Ubi:                 tt.fields.Ubi,
 				WithdrawAddrEnabled: tt.fields.WithdrawAddrEnabled,
 			}
 			if err := p.ValidateBasic(); (err != nil) != tt.wantErr {

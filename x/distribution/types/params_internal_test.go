@@ -26,7 +26,7 @@ func Test_validateAuxFuncs(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			require.Equal(t, tt.wantErr, validateUbiPool(tt.args.i) != nil)
+			require.Equal(t, tt.wantErr, validateUbi(tt.args.i) != nil)
 		})
 	}
 }

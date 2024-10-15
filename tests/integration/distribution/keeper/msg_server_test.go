@@ -157,7 +157,7 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 	f := initFixture(t)
 
 	err := f.distrKeeper.FeePool.Set(f.sdkCtx, distrtypes.FeePool{
-		UbiPool: sdk.NewDecCoins(sdk.DecCoin{Denom: "stake", Amount: math.LegacyNewDec(10000)}),
+		Ubi: sdk.NewDecCoins(sdk.DecCoin{Denom: "stake", Amount: math.LegacyNewDec(10000)}),
 	})
 	require.NoError(t, err)
 	require.NoError(t, f.distrKeeper.Params.Set(f.sdkCtx, distrtypes.DefaultParams()))
@@ -314,7 +314,7 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 
 				// check rewards
 				curFeePool, _ := f.distrKeeper.FeePool.Get(f.sdkCtx)
-				rewards := curFeePool.GetUbiPool().Sub(initFeePool.UbiPool)
+				rewards := curFeePool.GetUbi().Sub(initFeePool.Ubi)
 				curOutstandingRewards, _ := f.distrKeeper.GetValidatorOutstandingRewards(f.sdkCtx, f.valAddr)
 				assert.DeepEqual(t, rewards, initOutstandingRewards.Sub(curOutstandingRewards.Rewards))
 			}
@@ -571,7 +571,7 @@ func TestMsgUpdateParams(t *testing.T) {
 	f := initFixture(t)
 
 	// default params
-	ubiPool := math.LegacyNewDecWithPrec(2, 2) // 2%
+	ubi := math.LegacyNewDecWithPrec(2, 2) // 2%
 	withdrawAddrEnabled := true
 
 	testCases := []struct {
@@ -585,7 +585,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: "invalid",
 				Params: distrtypes.Params{
-					UbiPool:             math.LegacyNewDecWithPrec(2, 0),
+					Ubi:             math.LegacyNewDecWithPrec(2, 0),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
@@ -599,7 +599,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					UbiPool:             math.LegacyDec{},
+					Ubi:             math.LegacyDec{},
 					WithdrawAddrEnabled: withdrawAddrEnabled,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
@@ -613,7 +613,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					UbiPool:             math.LegacyNewDecWithPrec(2, 0),
+					Ubi:             math.LegacyNewDecWithPrec(2, 0),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
@@ -627,7 +627,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					UbiPool:             math.LegacyNewDecWithPrec(-2, 1),
+					Ubi:             math.LegacyNewDecWithPrec(-2, 1),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
@@ -641,7 +641,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					UbiPool:             ubiPool,
+					Ubi:             ubi,
 					BaseProposerReward:  math.LegacyNewDecWithPrec(1, 2),
 					BonusProposerReward: math.LegacyZeroDec(),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
@@ -655,7 +655,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					UbiPool:             ubiPool,
+					Ubi:             ubi,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyNewDecWithPrec(1, 2),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
@@ -669,7 +669,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					UbiPool:             ubiPool,
+					Ubi:             ubi,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
@@ -712,7 +712,7 @@ func TestMsgDepositValidatorRewardsPool(t *testing.T) {
 
 	require.NoError(t, f.distrKeeper.Params.Set(f.sdkCtx, distrtypes.DefaultParams()))
 	err := f.distrKeeper.FeePool.Set(f.sdkCtx, distrtypes.FeePool{
-		UbiPool: sdk.NewDecCoins(sdk.DecCoin{Denom: "stake", Amount: math.LegacyNewDec(100)}),
+		Ubi: sdk.NewDecCoins(sdk.DecCoin{Denom: "stake", Amount: math.LegacyNewDec(100)}),
 	})
 	require.NoError(t, err)
 	initTokens := f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, int64(10000))

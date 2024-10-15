@@ -9,7 +9,7 @@ import (
 // DefaultParams returns default distribution parameters
 func DefaultParams() Params {
 	return Params{
-		UbiPool:             math.LegacyNewDecWithPrec(2, 2), // 2%
+		Ubi:                 math.LegacyNewDecWithPrec(2, 2), // 2%
 		BaseProposerReward:  math.LegacyZeroDec(),            // deprecated
 		BonusProposerReward: math.LegacyZeroDec(),            // deprecated
 		WithdrawAddrEnabled: true,
@@ -18,10 +18,10 @@ func DefaultParams() Params {
 
 // ValidateBasic performs basic validation on distribution parameters.
 func (p Params) ValidateBasic() error {
-	return validateUbiPool(p.UbiPool)
+	return validateUbi(p.Ubi)
 }
 
-func validateUbiPool(i interface{}) error {
+func validateUbi(i interface{}) error {
 	v, ok := i.(math.LegacyDec)
 	if !ok {
 		return fmt.Errorf("invalid parameter type: %T", i)

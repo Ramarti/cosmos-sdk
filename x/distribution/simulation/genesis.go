@@ -13,12 +13,12 @@ import (
 
 // Simulation parameter constants
 const (
-	UbiPool         = "ubi_pool"
+	Ubi             = "ubi"
 	WithdrawEnabled = "withdraw_enabled"
 )
 
-// GenUbiPool randomized UbiPool parameter.
-func GenUbiPool(r *rand.Rand) math.LegacyDec {
+// GenUbi randomized Ubi parameter.
+func GenUbi(r *rand.Rand) math.LegacyDec {
 	return math.LegacyNewDecWithPrec(1, 2).Add(math.LegacyNewDecWithPrec(int64(r.Intn(30)), 2))
 }
 
@@ -29,8 +29,8 @@ func GenWithdrawEnabled(r *rand.Rand) bool {
 
 // RandomizedGenState generates a random GenesisState for distribution
 func RandomizedGenState(simState *module.SimulationState) {
-	var ubiPool math.LegacyDec
-	simState.AppParams.GetOrGenerate(UbiPool, &ubiPool, simState.Rand, func(r *rand.Rand) { ubiPool = GenUbiPool(r) })
+	var ubi math.LegacyDec
+	simState.AppParams.GetOrGenerate(Ubi, &ubi, simState.Rand, func(r *rand.Rand) { ubi = GenUbi(r) })
 
 	var withdrawEnabled bool
 	simState.AppParams.GetOrGenerate(WithdrawEnabled, &withdrawEnabled, simState.Rand, func(r *rand.Rand) { withdrawEnabled = GenWithdrawEnabled(r) })
@@ -38,7 +38,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 	distrGenesis := types.GenesisState{
 		FeePool: types.InitialFeePool(),
 		Params: types.Params{
-			UbiPool:             ubiPool,
+			Ubi:                 ubi,
 			WithdrawAddrEnabled: withdrawEnabled,
 		},
 	}

@@ -6,14 +6,14 @@ import (
 	"cosmossdk.io/math"
 )
 
-// GetUbiPool returns the current distribution ubi pool.
-func (k Keeper) GetUbiPool(ctx context.Context) (math.LegacyDec, error) {
+// GetUbi returns the current distribution ubi.
+func (k Keeper) GetUbi(ctx context.Context) (math.LegacyDec, error) {
 	params, err := k.Params.Get(ctx)
 	if err != nil {
 		return math.LegacyDec{}, err
 	}
 
-	return params.UbiPool, nil
+	return params.Ubi, nil
 }
 
 // GetWithdrawAddrEnabled returns the current distribution withdraw address

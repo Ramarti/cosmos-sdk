@@ -53,18 +53,18 @@ func (k Keeper) AllocateTokens(ctx context.Context, bondedVotes []abci.VoteInfo)
 	}
 
 	if totalPreviousPower == 0 {
-		feePool.UbiPool = feePool.UbiPool.Add(feesCollected...)
+		feePool.Ubi = feePool.Ubi.Add(feesCollected...)
 		return k.FeePool.Set(ctx, feePool)
 	}
 
 	// calculate fraction allocated to validators
 	remaining := feesCollected
-	ubiPool, err := k.GetUbiPool(ctx)
+	ubi, err := k.GetUbi(ctx)
 	if err != nil {
 		return err
 	}
 
-	voteMultiplier := math.LegacyOneDec().Sub(ubiPool)
+	voteMultiplier := math.LegacyOneDec().Sub(ubi)
 	feeMultiplier := feesCollected.MulDecTruncate(voteMultiplier)
 
 	// allocate tokens proportionally to voting power
@@ -88,7 +88,7 @@ func (k Keeper) AllocateTokens(ctx context.Context, bondedVotes []abci.VoteInfo)
 	}
 
 	// allocate community funding
-	feePool.UbiPool = feePool.UbiPool.Add(remaining...)
+	feePool.Ubi = feePool.Ubi.Add(remaining...)
 	return k.FeePool.Set(ctx, feePool)
 }
 

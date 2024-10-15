@@ -13,7 +13,7 @@ import "amino/amino.proto";
 message Params {
   option (amino.name) = "cosmos-sdk/x/distribution/Params";
 
-  string ubi_pool = 1 [
+  string ubi = 1 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (amino.dont_omitempty) = true,
@@ -116,7 +116,7 @@ message ValidatorSlashEvents {
 
 // FeePool is the global fee pool for distribution.
 message FeePool {
-  repeated cosmos.base.v1beta1.DecCoin ubi_pool = 1 [
+  repeated cosmos.base.v1beta1.DecCoin ubi = 1 [
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins"

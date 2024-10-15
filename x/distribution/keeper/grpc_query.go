@@ -361,12 +361,12 @@ func (k Querier) DelegatorWithdrawAddress(ctx context.Context, req *types.QueryD
 	return &types.QueryDelegatorWithdrawAddressResponse{WithdrawAddress: withdrawAddr.String()}, nil
 }
 
-// UbiPool queries the ubi pool coins
-func (k Querier) UbiPool(ctx context.Context, req *types.QueryUbiPoolRequest) (*types.QueryUbiPoolResponse, error) {
+// Ubi queries the ubi coins
+func (k Querier) Ubi(ctx context.Context, req *types.QueryUbiRequest) (*types.QueryUbiResponse, error) {
 	pool, err := k.FeePool.Get(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return &types.QueryUbiPoolResponse{Pool: pool.UbiPool}, nil
+	return &types.QueryUbiResponse{Pool: pool.Ubi}, nil
 }

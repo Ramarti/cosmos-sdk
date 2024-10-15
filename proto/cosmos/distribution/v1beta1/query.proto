@@ -66,9 +66,9 @@ service Query {
                                    "{delegator_address}/withdraw_address";
   }
 
-  // UbiPool queries the community pool coins.
-  rpc UbiPool(QueryUbiPoolRequest) returns (QueryUbiPoolResponse) {
-    option (google.api.http).get = "/cosmos/distribution/v1beta1/ubi_pool";
+  // Ubi queries the ubi coins.
+  rpc Ubi(QueryUbiRequest) returns (QueryUbiResponse) {
+    option (google.api.http).get = "/cosmos/distribution/v1beta1/ubi";
   }
 }
 
@@ -239,13 +239,13 @@ message QueryDelegatorWithdrawAddressResponse {
   string withdraw_address = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 }
 
-// QueryUbiPoolRequest is the request type for the Query/UbiPool RPC
+// QueryUbiRequest is the request type for the Query/Ubi RPC
 // method.
-message QueryUbiPoolRequest {}
+message QueryUbiRequest {}
 
-// QueryUbiPoolResponse is the response type for the Query/UbiPool
+// QueryUbiResponse is the response type for the Query/Ubi
 // RPC method.
-message QueryUbiPoolResponse {
+message QueryUbiResponse {
   // pool defines community pool's coins.
   repeated cosmos.base.v1beta1.DecCoin pool = 1 [
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.DecCoins",

@@ -223,7 +223,7 @@ through the messages `FundCommunityPool`, `WithdrawValidatorCommission` and
 
 #### Reward to the UBI Pool
 
-The ubi pool gets `ubi_pool * fees`, plus any remaining dust after
+The ubi pool gets `ubi * fees`, plus any remaining dust after
 validators get their rewards that are always rounded down to the nearest
 integer value.
 
@@ -234,7 +234,7 @@ bonded validators, including the proposer, in proportion to their consensus powe
 
 ```text
 powFrac = validator power / total bonded validator power
-voteMul = 1 - ubi_pool
+voteMul = 1 - ubi
 ```
 
 All validators receive `fees * voteMul * powFrac`.
@@ -518,15 +518,15 @@ The distribution module contains the following parameters:
 
 | Key                 | Type         | Example                    |
 | ------------------- | ------------ | -------------------------- |
-| ubipool             | string (dec) | "0.020000000000000000" [0] |
+| ubi                 | string (dec) | "0.020000000000000000" [0] |
 | withdrawaddrenabled | bool         | true                       |
 
-* [0] `ubipool` must be positive and cannot exceed 1.00.
+* [0] `ubi` must be positive and cannot exceed 1.00.
 * `baseproposerreward` and `bonusproposerreward` were parameters that are deprecated in v0.47 and are not used.
 
 :::note
-The reserve pool is the pool of collected funds for use by governance taken via the `UbiPool`.
-Currently with the Cosmos SDK, tokens collected by the UbiPool are accounted for but unspendable.
+The reserve pool is the pool of collected funds for use by governance taken via the `Ubi`.
+Currently with the Cosmos SDK, tokens collected by the Ubi are accounted for but unspendable.
 :::
 
 ## Client
@@ -606,7 +606,7 @@ Example Output:
 ```yml
 base_proposer_reward: "0.000000000000000000"
 bonus_proposer_reward: "0.000000000000000000"
-ubi_pool: "0.020000000000000000"
+ubi: "0.020000000000000000"
 withdraw_addr_enabled: true
 ```
 
@@ -790,7 +790,7 @@ Example Output:
 ```json
 {
   "params": {
-    "ubiPool": "20000000000000000",
+    "ubi": "20000000000000000",
     "baseProposerReward": "00000000000000000",
     "bonusProposerReward": "00000000000000000",
     "withdrawAddrEnabled": true

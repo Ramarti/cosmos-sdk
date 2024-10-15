@@ -271,7 +271,7 @@ func (k Keeper) withdrawDelegationRewards(ctx context.Context, val stakingtypes.
 		return nil, err
 	}
 
-	feePool.UbiPool = feePool.UbiPool.Add(remainder...)
+	feePool.Ubi = feePool.Ubi.Add(remainder...)
 	err = k.FeePool.Set(ctx, feePool)
 	if err != nil {
 		return nil, err
