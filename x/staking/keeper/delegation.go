@@ -1302,6 +1302,11 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, err
 	}
 
+	// check if srcVal has the same token type as dstVal
+	if srcValidator.SupportTokenType != dstValidator.SupportTokenType {
+		return time.Time{}, types.ErrTokenTypeMismatch
+	}
+
 	// check if this is a transitive redelegation
 	hasRecRedel, err := k.HasReceivingRedelegation(ctx, delAddr, valSrcAddr)
 	if err != nil {
