@@ -58,6 +58,11 @@ func (k Keeper) BlockValidatorUpdates(ctx context.Context) ([]abci.ValidatorUpda
 
 		balances, err := k.CompleteUnbonding(ctx, delegatorAddress, addr)
 		if err != nil {
+			k.Logger(ctx).Error(
+				"failed to complete unbonding",
+				"error", err,
+				"val_addr", string(addr),
+				"del_addr", string(delegatorAddress))
 			continue
 		}
 
@@ -98,6 +103,12 @@ func (k Keeper) BlockValidatorUpdates(ctx context.Context) ([]abci.ValidatorUpda
 			valDstAddr,
 		)
 		if err != nil {
+			k.Logger(ctx).Error(
+				"failed to complete redelegation",
+				"error", err,
+				"val_src_addr", string(valSrcAddr),
+				"val_dst_addr", string(valDstAddr),
+				"del_addr", string(delegatorAddress))
 			continue
 		}
 
