@@ -79,6 +79,25 @@ message Description {
   string details = 5;
 }
 
+enum TokenType {
+  LOCKED   = 0;
+  UNLOCKED = 1;
+}
+
+message TokenTypeInfo {
+  TokenType token_type         = 1;
+  string    rewards_multiplier = 2 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message TokenTypes {
+  map<int32, TokenTypeInfo> token_type_info_map = 1;
+}
+
 // Validator defines a validator, together with the total amount of the
 // Validator's bond shares and their exchange rate to coins. Slashing results in
 // a decrease in the exchange rate, allowing correct calculation of future
@@ -134,6 +153,14 @@ message Validator {
 
   // list of unbonding ids, each uniquely identifing an unbonding of this validator
   repeated uint64 unbonding_ids = 13;
+
+  TokenType support_token_type = 14;
+
+  string delegator_rewards_shares = 15 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
 }
 
 // BondStatus is the status of a validator.
@@ -189,6 +216,53 @@ message DVVTriplets {
   repeated DVVTriplet triplets = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
+enum PeriodType {
+  FLEXIBLE        = 0;
+  THREE_MONTHS    = 1;
+  ONE_YEAR        = 2;
+  EIGHTEEN_MONTHS = 3;
+}
+// Message representing the Period
+message Period {
+  // type defines the type of the staking period.
+  PeriodType period_type = 1; // Enum for period type
+  // duration defines, if staked, the min time for the delegation.
+  google.protobuf.Duration duration = 2
+      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdduration) = true];
+  // rewards_multiplier defines the rewards multiplier for the staking period.
+  string rewards_multiplier = 3 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message Periods {
+  map<int32, Period> period_map = 1;
+}
+
+message PeriodDelegation {
+  string period_delegation_id = 1 [(amino.dont_omitempty) = true];
+
+  string shares = 2 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+
+  string rewards_shares = 3 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+
+  PeriodType period_type = 4;
+
+  google.protobuf.Timestamp end_time = 5
+      [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];
+}
+
 // Delegation represents the bond with tokens held by an account. It is
 // owned by one delegator, and is associated with the voting power of one
 // validator.
@@ -206,6 +280,14 @@ message Delegation {
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
+
+  string rewards_shares = 4 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+
+  map<string, PeriodDelegation> period_delegations = 5;
 }
 
 // UnbondingDelegation stores all of a single delegator's unbonding bonds
@@ -249,6 +331,8 @@ message UnbondingDelegationEntry {
 
   // Strictly positive if this entry's unbonding has been stopped by external modules
   int64 unbonding_on_hold_ref_count = 6;
+
+  string period_delegation_id = 7 [(amino.dont_omitempty) = true];
 }
 
 // RedelegationEntry defines a redelegation object with relevant metadata.
@@ -277,6 +361,8 @@ message RedelegationEntry {
 
   // Strictly positive if this entry's unbonding has been stopped by external modules
   int64 unbonding_on_hold_ref_count = 6;
+
+  string period_delegation_id = 7 [(amino.dont_omitempty) = true];
 }
 
 // Redelegation contains the list of a particular delegator's redelegating bonds
@@ -319,6 +405,18 @@ message Params {
     (gogoproto.nullable)   = false,
     (amino.dont_omitempty) = true,
     (cosmos_proto.scalar)  = "cosmos.Dec"
+  ];
+  // min_delegation is the chain-wide minimum delegation that a delegation can set
+  string min_delegation = 7 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false
+  ];
+  // min_undelegation is the chain-wide minimum undelegation that an undelegation can set
+  string min_undelegation = 8 [
+    (cosmos_proto.scalar)  = "cosmos.Int",
+    (gogoproto.customtype) = "cosmossdk.io/math.Int",
+    (gogoproto.nullable)   = false
   ];
 }
 

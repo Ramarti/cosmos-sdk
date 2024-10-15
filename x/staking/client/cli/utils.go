@@ -13,6 +13,7 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -27,6 +28,7 @@ type validator struct {
 	Details           string
 	CommissionRates   types.CommissionRates
 	MinSelfDelegation math.Int
+	SupportTokenType  types.TokenType
 }
 
 func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, error) {
@@ -42,6 +44,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		CommissionMaxRate   string          `json:"commission-max-rate"`
 		CommissionMaxChange string          `json:"commission-max-change-rate"`
 		MinSelfDelegation   string          `json:"min-self-delegation"`
+		SupportTokenType    string          `json:"support-token-type"`
 	}
 
 	contents, err := os.ReadFile(path)
@@ -88,6 +91,11 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum self delegation must be a positive integer")
 	}
 
+	supportTokenType, err := keeper.ParseTokenTypeNormalized(v.SupportTokenType)
+	if err != nil {
+		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "token type must be supported")
+	}
+
 	return validator{
 		Amount:            amount,
 		PubKey:            pk,
@@ -98,6 +106,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		Details:           v.Details,
 		CommissionRates:   commissionRates,
 		MinSelfDelegation: minSelfDelegation,
+		SupportTokenType:  supportTokenType,
 	}, nil
 }
 

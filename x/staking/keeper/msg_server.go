@@ -2,12 +2,9 @@ package keeper
 
 import (
 	"context"
-	"strconv"
 	"time"
 
 	"github.com/hashicorp/go-metrics"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -100,7 +97,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		}
 	}
 
-	validator, err := types.NewValidator(msg.ValidatorAddress, pk, msg.Description)
+	validator, err := types.NewValidator(msg.ValidatorAddress, pk, msg.Description, msg.SupportTokenType)
 	if err != nil {
 		return nil, err
 	}
@@ -115,6 +112,14 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, err
 	}
 
+	minDelegation, err := k.MinDelegation(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to get min delegation")
+	}
+	// minimum self delegation should be greater than or equal to chain-side min delegation
+	if msg.MinSelfDelegation.LT(minDelegation) {
+		return nil, types.ErrMinSelfDelegationBelowMinDelegation
+	}
 	validator.MinSelfDelegation = msg.MinSelfDelegation
 
 	err = k.SetValidator(ctx, validator)
@@ -137,10 +142,18 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, err
 	}
 
+	// delegation amount must be greater than or equal to minimum self delegation when creating validator
+	if msg.Value.Amount.LT(validator.MinSelfDelegation) {
+		return nil, types.ErrSelfDelegationBelowMinimum
+	}
+
 	// move coins from the msg.Address account to a (self-delegation) delegator account
 	// the validator account and global shares are updated within here
 	// NOTE source will always be from a wallet which are unbonded
-	_, err = k.Keeper.Delegate(ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true)
+	_, _, err = k.Keeper.Delegate(
+		ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -265,6 +278,15 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		)
 	}
 
+	minDelegation, err := k.MinDelegation(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to get min delegation")
+	}
+	// delegation amount should be greater than or equal to chain-side min delegation
+	if msg.Amount.Amount.LT(minDelegation) {
+		return nil, types.ErrDelegationBelowMinimum
+	}
+
 	validator, err := k.GetValidator(ctx, valAddr)
 	if err != nil {
 		return nil, err
@@ -281,8 +303,16 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		)
 	}
 
+	// all flexible period delegate use the same period delegation id
+	if msg.PeriodType == types.PeriodType_FLEXIBLE {
+		msg.PeriodDelegationId = types.FlexibleDelegationID
+	}
+
 	// NOTE: source funds are always unbonded
-	newShares, err := k.Keeper.Delegate(ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true)
+	newShares, newRewardsShares, err := k.Keeper.Delegate(
+		ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true,
+		msg.PeriodDelegationId, msg.PeriodType, time.Unix(0, 0),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -306,6 +336,9 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 			sdk.NewAttribute(types.AttributeKeyDelegator, msg.DelegatorAddress),
 			sdk.NewAttribute(sdk.AttributeKeyAmount, msg.Amount.String()),
 			sdk.NewAttribute(types.AttributeKeyNewShares, newShares.String()),
+			sdk.NewAttribute(types.AttributeKeyNewRewardsShares, newRewardsShares.String()),
+			sdk.NewAttribute(types.AttributeKeyPeriodDelegationId, msg.PeriodDelegationId),
+			sdk.NewAttribute(types.AttributeKeyPeriodType, msg.PeriodType.String()),
 		),
 	})
 
@@ -336,8 +369,17 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 		)
 	}
 
+	minDelegation, err := k.MinDelegation(ctx)
+	if err != nil {
+		return nil, errorsmod.Wrap(err, "failed to get min delegation")
+	}
+	// redelegation amount should be greater than or equal to chain-side min delegation
+	if msg.Amount.Amount.LT(minDelegation) {
+		return nil, types.ErrRedelegationBelowMinimum
+	}
+
 	shares, err := k.ValidateUnbondAmount(
-		ctx, delegatorAddress, valSrcAddr, msg.Amount.Amount,
+		ctx, delegatorAddress, valSrcAddr, msg.PeriodDelegationId, msg.Amount.Amount,
 	)
 	if err != nil {
 		return nil, err
@@ -355,7 +397,7 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 	}
 
 	completionTime, err := k.BeginRedelegation(
-		ctx, delegatorAddress, valSrcAddr, valDstAddr, shares,
+		ctx, delegatorAddress, valSrcAddr, valDstAddr, msg.PeriodDelegationId, shares,
 	)
 	if err != nil {
 		return nil, err
@@ -407,11 +449,16 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		)
 	}
 
-	shares, err := k.ValidateUnbondAmount(
-		ctx, delegatorAddress, addr, msg.Amount.Amount,
-	)
+	minUndelegation, err := k.MinUndelegation(ctx)
 	if err != nil {
 		return nil, err
+	}
+	// undelegation amount must be greater than or equal to minimum undelegation
+	if msg.Amount.Amount.LT(minUndelegation) {
+		return nil, errorsmod.Wrap(
+			sdkerrors.ErrInvalidRequest,
+			"undelegation amount is less than the minimum undelegation amount",
+		)
 	}
 
 	bondDenom, err := k.BondDenom(ctx)
@@ -425,7 +472,14 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		)
 	}
 
-	completionTime, undelegatedAmt, err := k.Keeper.Undelegate(ctx, delegatorAddress, addr, shares)
+	shares, err := k.ValidateUnbondAmount(
+		ctx, delegatorAddress, addr, msg.PeriodDelegationId, msg.Amount.Amount,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	completionTime, undelegatedAmt, err := k.Keeper.Undelegate(ctx, delegatorAddress, addr, msg.PeriodDelegationId, shares)
 	if err != nil {
 		return nil, err
 	}
@@ -462,6 +516,7 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 
 // CancelUnbondingDelegation defines a method for canceling the unbonding delegation
 // and delegate back to the validator.
+/* Deprecated since: piplabs/v0.50.7
 func (k msgServer) CancelUnbondingDelegation(ctx context.Context, msg *types.MsgCancelUnbondingDelegation) (*types.MsgCancelUnbondingDelegationResponse, error) {
 	valAddr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
 	if err != nil {
@@ -587,7 +642,7 @@ func (k msgServer) CancelUnbondingDelegation(ctx context.Context, msg *types.Msg
 
 	return &types.MsgCancelUnbondingDelegationResponse{}, nil
 }
-
+*/
 // UpdateParams defines a method to perform updation of params exist in x/staking module.
 func (k msgServer) UpdateParams(ctx context.Context, msg *types.MsgUpdateParams) (*types.MsgUpdateParamsResponse, error) {
 	if k.authority != msg.Authority {

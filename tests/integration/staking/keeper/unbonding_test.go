@@ -67,7 +67,11 @@ func SetupUnbondingTests(t *testing.T, f *fixture, hookCalled *bool, ubdeID *uin
 	assert.Assert(t, validator1.IsBonded())
 
 	// Create a delegator
-	delegation := types.NewDelegation(addrDels[0].String(), addrVals[0].String(), issuedShares1)
+	delegation := types.NewDelegation(
+		addrDels[0].String(), addrVals[0].String(), issuedShares1, issuedShares1,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+		time.Unix(0, 0),
+	)
 	assert.NilError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, delegation))
 
 	// Create a validator to redelegate to
@@ -99,7 +103,7 @@ func doUnbondingDelegation(
 
 	var err error
 	undelegateAmount := math.LegacyNewDec(1)
-	completionTime, undelegatedAmount, err := stakingKeeper.Undelegate(ctx, addrDels[0], addrVals[0], undelegateAmount)
+	completionTime, undelegatedAmount, err := stakingKeeper.Undelegate(ctx, addrDels[0], addrVals[0], types.FlexibleDelegationID, undelegateAmount)
 	assert.NilError(t, err)
 	assert.Assert(t, undelegateAmount.Equal(math.LegacyNewDecFromInt(undelegatedAmount)))
 	// check that the unbonding actually happened
@@ -130,7 +134,7 @@ func doRedelegation(
 	hookCalled *bool,
 ) (completionTime time.Time) {
 	var err error
-	completionTime, err = stakingKeeper.BeginRedelegation(ctx, addrDels[0], addrVals[0], addrVals[1], math.LegacyNewDec(1))
+	completionTime, err = stakingKeeper.BeginRedelegation(ctx, addrDels[0], addrVals[0], addrVals[1], types.FlexibleDelegationID, math.LegacyNewDec(1))
 	assert.NilError(t, err)
 
 	// Check that the redelegation happened- we look up the entry and see that it has the correct number of shares

@@ -12,15 +12,27 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+const (
+	FlexibleDelegationID = "0"
+)
+
 // Implements Delegation interface
 var _ DelegationI = Delegation{}
 
 // NewDelegation creates a new delegation object
-func NewDelegation(delegatorAddr, validatorAddr string, shares math.LegacyDec) Delegation {
+func NewDelegation(
+	delegatorAddr, validatorAddr string,
+	shares, rewardsShares math.LegacyDec,
+	periodDelID string, periodType PeriodType, endTime time.Time,
+) Delegation {
 	return Delegation{
 		DelegatorAddress: delegatorAddr,
 		ValidatorAddress: validatorAddr,
 		Shares:           shares,
+		RewardsShares:    rewardsShares,
+		PeriodDelegations: map[string]*PeriodDelegation{
+			periodDelID: NewPeriodDelegation(periodDelID, shares, rewardsShares, periodType, endTime),
+		},
 	}
 }
 
@@ -54,6 +66,49 @@ func (d Delegation) GetValidatorAddr() string {
 	return d.ValidatorAddress
 }
 func (d Delegation) GetShares() math.LegacyDec { return d.Shares }
+
+func (d Delegation) GetRewardsShares() math.LegacyDec { return d.RewardsShares }
+
+func (d Delegation) GetPeriodDelegations() map[string]*PeriodDelegation { return d.PeriodDelegations }
+
+func (d Delegation) GetPeriodDelegation(id string) *PeriodDelegation { return d.PeriodDelegations[id] }
+
+func (d *Delegation) AddPeriodDelegation(
+	id string,
+	shares, rewardsShares math.LegacyDec,
+	periodType PeriodType, endTime time.Time,
+) bool {
+	_, ok := d.PeriodDelegations[id]
+	if ok {
+		// found, check if it's a flexible delegation
+		if id != FlexibleDelegationID {
+			return false
+		}
+		// all flexible delegations will be in the same period delegation
+		d.PeriodDelegations[id].Shares = d.PeriodDelegations[id].Shares.Add(shares)
+		d.PeriodDelegations[id].RewardsShares = d.PeriodDelegations[id].RewardsShares.Add(rewardsShares)
+	} else {
+		// not found, create new period delegation
+		d.PeriodDelegations[id] = NewPeriodDelegation(id, shares, rewardsShares, periodType, endTime)
+	}
+
+	// update overall shares
+	d.Shares = d.Shares.Add(shares)
+	d.RewardsShares = d.RewardsShares.Add(rewardsShares)
+
+	return true
+}
+
+func (d *Delegation) RemovePeriodDelegation(id string) {
+	pd, ok := d.PeriodDelegations[id]
+	if !ok {
+		return
+	}
+
+	d.Shares = d.Shares.Sub(pd.Shares)
+	d.RewardsShares = d.RewardsShares.Sub(pd.RewardsShares)
+	delete(d.PeriodDelegations, id)
+}
 
 // Delegations is a collection of delegations
 type Delegations []Delegation
@@ -194,8 +249,9 @@ func (ubds UnbondingDelegations) String() (out string) {
 	return strings.TrimSpace(out)
 }
 
-func NewRedelegationEntry(creationHeight int64, completionTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64) RedelegationEntry {
+func NewRedelegationEntry(periodDelegationId string, creationHeight int64, completionTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64) RedelegationEntry {
 	return RedelegationEntry{
+		PeriodDelegationId:      periodDelegationId,
 		CreationHeight:          creationHeight,
 		CompletionTime:          completionTime,
 		InitialBalance:          balance,
@@ -216,7 +272,7 @@ func (e RedelegationEntry) OnHold() bool {
 }
 
 func NewRedelegation(
-	delegatorAddr sdk.AccAddress, validatorSrcAddr, validatorDstAddr sdk.ValAddress,
+	delegatorAddr sdk.AccAddress, validatorSrcAddr, validatorDstAddr sdk.ValAddress, periodDelegationId string,
 	creationHeight int64, minTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64,
 	valAc, delAc address.Codec,
 ) Redelegation {
@@ -238,14 +294,14 @@ func NewRedelegation(
 		ValidatorSrcAddress: valSrcAddr,
 		ValidatorDstAddress: valDstAddr,
 		Entries: []RedelegationEntry{
-			NewRedelegationEntry(creationHeight, minTime, balance, sharesDst, id),
+			NewRedelegationEntry(periodDelegationId, creationHeight, minTime, balance, sharesDst, id),
 		},
 	}
 }
 
 // AddEntry - append entry to the unbonding delegation
-func (red *Redelegation) AddEntry(creationHeight int64, minTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64) {
-	entry := NewRedelegationEntry(creationHeight, minTime, balance, sharesDst, id)
+func (red *Redelegation) AddEntry(periodDelegationId string, creationHeight int64, minTime time.Time, balance math.Int, sharesDst math.LegacyDec, id uint64) {
+	entry := NewRedelegationEntry(periodDelegationId, creationHeight, minTime, balance, sharesDst, id)
 	red.Entries = append(red.Entries, entry)
 }
 
@@ -291,10 +347,10 @@ func (d Redelegations) String() (out string) {
 
 // NewDelegationResp creates a new DelegationResponse instance
 func NewDelegationResp(
-	delegatorAddr, validatorAddr string, shares math.LegacyDec, balance sdk.Coin,
+	delegation Delegation, balance sdk.Coin,
 ) DelegationResponse {
 	return DelegationResponse{
-		Delegation: NewDelegation(delegatorAddr, validatorAddr, shares),
+		Delegation: delegation,
 		Balance:    balance,
 	}
 }
@@ -341,11 +397,15 @@ func NewRedelegationResponse(
 
 // NewRedelegationEntryResponse creates a new RedelegationEntryResponse instance.
 func NewRedelegationEntryResponse(
-	creationHeight int64, completionTime time.Time, sharesDst math.LegacyDec, initialBalance, balance math.Int, unbondingID uint64,
+	periodDelegationId string, creationHeight int64, completionTime time.Time,
+	sharesDst math.LegacyDec, initialBalance, balance math.Int, unbondingID uint64,
 ) RedelegationEntryResponse {
 	return RedelegationEntryResponse{
-		RedelegationEntry: NewRedelegationEntry(creationHeight, completionTime, initialBalance, sharesDst, unbondingID),
-		Balance:           balance,
+		RedelegationEntry: NewRedelegationEntry(
+			periodDelegationId, creationHeight, completionTime,
+			initialBalance, sharesDst, unbondingID,
+		),
+		Balance: balance,
 	}
 }
 
@@ -372,4 +432,18 @@ func (r RedelegationResponses) String() (out string) {
 	}
 
 	return strings.TrimSpace(out)
+}
+
+func NewPeriodDelegation(
+	id string,
+	shares, rewardsShares math.LegacyDec,
+	periodType PeriodType, endTime time.Time,
+) *PeriodDelegation {
+	return &PeriodDelegation{
+		PeriodDelegationId: id,
+		Shares:             shares,
+		RewardsShares:      rewardsShares,
+		PeriodType:         periodType,
+		EndTime:            endTime,
+	}
 }

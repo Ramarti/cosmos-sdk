@@ -240,25 +240,34 @@ func GenesisStateWithValSet(
 		}
 
 		validator := stakingtypes.Validator{
-			OperatorAddress:   sdk.ValAddress(val.Address).String(),
-			ConsensusPubkey:   pkAny,
-			Jailed:            false,
-			Status:            stakingtypes.Bonded,
-			Tokens:            bondAmt,
-			DelegatorShares:   sdkmath.LegacyOneDec(),
-			Description:       stakingtypes.Description{},
-			UnbondingHeight:   int64(0),
-			UnbondingTime:     time.Unix(0, 0).UTC(),
-			Commission:        stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
-			MinSelfDelegation: sdkmath.ZeroInt(),
+			OperatorAddress:        sdk.ValAddress(val.Address).String(),
+			ConsensusPubkey:        pkAny,
+			Jailed:                 false,
+			Status:                 stakingtypes.Bonded,
+			Tokens:                 bondAmt,
+			DelegatorShares:        sdkmath.LegacyOneDec(),
+			Description:            stakingtypes.Description{},
+			UnbondingHeight:        int64(0),
+			UnbondingTime:          time.Unix(0, 0).UTC(),
+			Commission:             stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
+			MinSelfDelegation:      sdkmath.ZeroInt(),
+			SupportTokenType:       stakingtypes.TokenType_LOCKED,
+			DelegatorRewardsShares: sdkmath.LegacyOneDec(),
 		}
 		validators = append(validators, validator)
-		delegations = append(delegations, stakingtypes.NewDelegation(genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec()))
+		delegations = append(delegations, stakingtypes.NewDelegation(
+			genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec(),
+			stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
+			time.Unix(0, 0),
+		))
 
 	}
 
 	// set validators and delegations
-	stakingGenesis := stakingtypes.NewGenesisState(stakingtypes.DefaultParams(), validators, delegations)
+	stakingGenesis := stakingtypes.NewGenesisState(
+		stakingtypes.DefaultParams(), stakingtypes.DefaultPeriods(), stakingtypes.DefaultTokenTypes(),
+		validators, delegations,
+	)
 	genesisState[stakingtypes.ModuleName] = codec.MustMarshalJSON(stakingGenesis)
 
 	totalSupply := sdk.NewCoins()

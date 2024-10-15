@@ -171,7 +171,10 @@ func SimulateMsgCreateValidator(
 			simtypes.RandomDecAmount(r, maxCommission),
 		)
 
-		msg, err := types.NewMsgCreateValidator(address.String(), simAccount.ConsKey.PubKey(), selfDelegation, description, commission, math.OneInt())
+		msg, err := types.NewMsgCreateValidator(
+			address.String(), simAccount.ConsKey.PubKey(), selfDelegation, description, commission, math.OneInt(),
+			types.TokenType_LOCKED,
+		)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), "unable to create CreateValidator message"), nil, err
 		}
@@ -327,7 +330,10 @@ func SimulateMsgDelegate(
 			}
 		}
 
-		msg := types.NewMsgDelegate(simAccount.Address.String(), val.GetOperator(), bondAmt)
+		msg := types.NewMsgDelegate(
+			simAccount.Address.String(), val.GetOperator(), bondAmt,
+			types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+		)
 
 		txCtx := simulation.OperationInput{
 			R:             r,
@@ -422,7 +428,7 @@ func SimulateMsgUndelegate(
 		}
 
 		msg := types.NewMsgUndelegate(
-			delAddr, val.GetOperator(), sdk.NewCoin(bondDenom, unbondAmt),
+			delAddr, val.GetOperator(), types.FlexibleDelegationID, sdk.NewCoin(bondDenom, unbondAmt),
 		)
 
 		// need to retrieve the simulation account associated with delegation to retrieve PrivKey
@@ -685,6 +691,7 @@ func SimulateMsgBeginRedelegate(
 
 		msg := types.NewMsgBeginRedelegate(
 			delAddr, srcVal.GetOperator(), destVal.GetOperator(),
+			types.FlexibleDelegationID,
 			sdk.NewCoin(bondDenom, redAmt),
 		)
 

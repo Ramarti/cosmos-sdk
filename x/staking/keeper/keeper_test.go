@@ -68,6 +68,8 @@ func (s *KeeperTestSuite) SetupTest() {
 		address.NewBech32Codec("cosmosvalcons"),
 	)
 	require.NoError(keeper.SetParams(ctx, stakingtypes.DefaultParams()))
+	require.NoError(keeper.SetPeriods(ctx, stakingtypes.DefaultPeriods()))
+	require.NoError(keeper.SetTokenTypes(ctx, stakingtypes.DefaultTokenTypes()))
 
 	s.ctx = ctx
 	s.stakingKeeper = keeper

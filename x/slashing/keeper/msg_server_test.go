@@ -9,6 +9,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 func (s *KeeperTestSuite) TestUpdateParams() {
@@ -167,7 +168,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 			malleate: func() *slashingtypes.MsgUnjail {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"})
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				s.Require().NoError(err)
 
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
@@ -201,7 +202,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
 
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"})
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				val.Tokens = sdkmath.NewInt(1000)
 				val.DelegatorShares = sdkmath.LegacyNewDec(1)
 				val.Jailed = false
@@ -214,7 +215,11 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.slashingKeeper.SetValidatorSigningInfo(s.ctx, sdk.ConsAddress(addr), info)
 
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
-				del := types.NewDelegation(addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100))
+				del := types.NewDelegation(
+					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
+					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
+					time.Unix(0, 0),
+				)
 
 				s.stakingKeeper.EXPECT().Delegation(s.ctx, addr, valAddr).Return(del, nil)
 
@@ -231,7 +236,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
 
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"})
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				val.Tokens = sdkmath.NewInt(1000)
 				val.DelegatorShares = sdkmath.LegacyNewDec(1)
 				val.Jailed = true
@@ -244,7 +249,11 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.slashingKeeper.SetValidatorSigningInfo(s.ctx, sdk.ConsAddress(addr), info)
 
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
-				del := types.NewDelegation(addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100))
+				del := types.NewDelegation(
+					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
+					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
+					time.Unix(0, 0),
+				)
 
 				s.stakingKeeper.EXPECT().Delegation(s.ctx, addr, valAddr).Return(del, nil)
 
@@ -261,7 +270,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
 
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"})
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				val.Tokens = sdkmath.NewInt(1000)
 				val.DelegatorShares = sdkmath.LegacyNewDec(1)
 				val.Jailed = true
@@ -274,7 +283,11 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.slashingKeeper.SetValidatorSigningInfo(s.ctx, sdk.ConsAddress(addr), info)
 
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
-				del := types.NewDelegation(addr.String(), valAddr.String(), sdkmath.LegacyNewDec(10000))
+				del := types.NewDelegation(
+					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(10000), sdkmath.LegacyNewDec(10000),
+					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
+					time.Unix(0, 0),
+				)
 
 				s.stakingKeeper.EXPECT().Delegation(s.ctx, addr, valAddr).Return(del, nil)
 
@@ -291,7 +304,7 @@ func (s *KeeperTestSuite) TestUnjail() {
 				_, pubKey, addr := testdata.KeyTestPubAddr()
 				valAddr := sdk.ValAddress(addr)
 
-				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"})
+				val, err := types.NewValidator(valAddr.String(), pubKey, types.Description{Moniker: "test"}, types.TokenType_LOCKED)
 				val.Tokens = sdkmath.NewInt(1000)
 				val.DelegatorShares = sdkmath.LegacyNewDec(1)
 
@@ -304,7 +317,11 @@ func (s *KeeperTestSuite) TestUnjail() {
 				s.slashingKeeper.SetValidatorSigningInfo(s.ctx, sdk.ConsAddress(addr), info)
 
 				s.stakingKeeper.EXPECT().Validator(s.ctx, valAddr).Return(val, nil)
-				del := types.NewDelegation(addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100))
+				del := types.NewDelegation(
+					addr.String(), valAddr.String(), sdkmath.LegacyNewDec(100), sdkmath.LegacyNewDec(100),
+					types.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
+					time.Unix(0, 0),
+				)
 
 				s.stakingKeeper.EXPECT().Delegation(s.ctx, addr, valAddr).Return(del, nil)
 				s.stakingKeeper.EXPECT().Unjail(s.ctx, sdk.ConsAddress(addr)).Return(nil)

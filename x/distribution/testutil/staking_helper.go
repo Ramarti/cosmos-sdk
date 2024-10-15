@@ -2,6 +2,7 @@ package testutil
 
 import (
 	"fmt"
+	"time"
 
 	"cosmossdk.io/math"
 
@@ -13,9 +14,10 @@ import (
 
 func CreateValidator(pk cryptotypes.PubKey, stake math.Int) (stakingtypes.Validator, error) {
 	valConsAddr := sdk.GetConsAddress(pk)
-	val, err := stakingtypes.NewValidator(sdk.ValAddress(valConsAddr).String(), pk, stakingtypes.Description{Moniker: "TestValidator"})
+	val, err := stakingtypes.NewValidator(sdk.ValAddress(valConsAddr).String(), pk, stakingtypes.Description{Moniker: "TestValidator"}, stakingtypes.TokenType_LOCKED)
 	val.Tokens = stake
 	val.DelegatorShares = math.LegacyNewDecFromInt(val.Tokens)
+	val.DelegatorRewardsShares = math.LegacyNewDecFromInt(val.Tokens)
 	return val, err
 }
 
@@ -125,7 +127,11 @@ func Delegate(
 		err = distrKeeper.Hooks().BeforeDelegationSharesModified(ctx, delegator, valBz)
 	} else {
 		err = distrKeeper.Hooks().BeforeDelegationCreated(ctx, delegator, valBz)
-		del := stakingtypes.NewDelegation(delegator.String(), validator.GetOperator(), math.LegacyZeroDec())
+		del := stakingtypes.NewDelegation(
+			delegator.String(), validator.GetOperator(), math.LegacyZeroDec(), math.LegacyZeroDec(),
+			stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
+			time.Unix(0, 0),
+		)
 		delegation = &del
 	}
 
@@ -135,9 +141,11 @@ func Delegate(
 
 	// Add tokens from delegation to validator
 	updateVal, newShares := validator.AddTokensFromDel(amount)
+	updateVal.DelegatorRewardsShares = updateVal.DelegatorRewardsShares.Add(newShares)
 	*validator = updateVal
 
 	delegation.Shares = delegation.Shares.Add(newShares)
+	delegation.RewardsShares = delegation.RewardsShares.Add(newShares)
 
 	return newShares, *delegation, nil
 }

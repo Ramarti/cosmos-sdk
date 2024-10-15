@@ -55,7 +55,9 @@ func RandomizedGenState(simState *module.SimulationState) {
 	// NOTE: the slashing module need to be defined after the staking module on the
 	// NewSimulationManager constructor for this to work
 	simState.UnbondTime = unbondTime
-	params := types.NewParams(simState.UnbondTime, maxVals, 7, histEntries, simState.BondDenom, minCommissionRate)
+	params := types.NewParams(simState.UnbondTime, maxVals, 7, histEntries, simState.BondDenom, minCommissionRate, types.DefaultMinDelegation, types.DefaultMinUndelegation)
+	periods := types.DefaultPeriods()
+	tokenTypes := types.DefaultTokenTypes()
 
 	// validators & delegations
 	var (
@@ -76,7 +78,7 @@ func RandomizedGenState(simState *module.SimulationState) {
 			simulation.RandomDecAmount(simState.Rand, maxCommission),
 		)
 
-		validator, err := types.NewValidator(valAddr.String(), simState.Accounts[i].ConsKey.PubKey(), types.Description{})
+		validator, err := types.NewValidator(valAddr.String(), simState.Accounts[i].ConsKey.PubKey(), types.Description{}, types.TokenType_LOCKED)
 		if err != nil {
 			panic(err)
 		}
@@ -84,13 +86,17 @@ func RandomizedGenState(simState *module.SimulationState) {
 		validator.DelegatorShares = sdkmath.LegacyNewDecFromInt(simState.InitialStake)
 		validator.Commission = commission
 
-		delegation := types.NewDelegation(simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake))
+		delegation := types.NewDelegation(
+			simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake), sdkmath.LegacyNewDecFromInt(simState.InitialStake),
+			types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+			time.Unix(0, 0),
+		)
 
 		validators = append(validators, validator)
 		delegations = append(delegations, delegation)
 	}
 
-	stakingGenesis := types.NewGenesisState(params, validators, delegations)
+	stakingGenesis := types.NewGenesisState(params, periods, tokenTypes, validators, delegations)
 
 	bz, err := json.MarshalIndent(&stakingGenesis.Params, "", " ")
 	if err != nil {

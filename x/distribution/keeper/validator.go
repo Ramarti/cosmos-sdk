@@ -69,7 +69,7 @@ func (k Keeper) IncrementValidatorPeriod(ctx context.Context, val stakingtypes.V
 			return 0, err
 		}
 
-		feePool.CommunityPool = feePool.CommunityPool.Add(rewards.Rewards...)
+		feePool.Ubi = feePool.Ubi.Add(rewards.Rewards...)
 		outstanding.Rewards = outstanding.GetRewards().Sub(rewards.Rewards)
 		err = k.FeePool.Set(ctx, feePool)
 		if err != nil {
@@ -122,10 +122,11 @@ func (k Keeper) incrementReferenceCount(ctx context.Context, valAddr sdk.ValAddr
 	if err != nil {
 		return err
 	}
+
+	historical.ReferenceCount++
 	if historical.ReferenceCount > 2 {
 		panic("reference count should never exceed 2")
 	}
-	historical.ReferenceCount++
 	return k.SetValidatorHistoricalRewards(ctx, valAddr, period, historical)
 }
 

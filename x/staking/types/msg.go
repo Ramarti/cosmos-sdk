@@ -27,6 +27,7 @@ var (
 func NewMsgCreateValidator(
 	valAddr string, pubKey cryptotypes.PubKey,
 	selfDelegation sdk.Coin, description Description, commission CommissionRates, minSelfDelegation math.Int,
+	supportTokenType TokenType,
 ) (*MsgCreateValidator, error) {
 	var pkAny *codectypes.Any
 	if pubKey != nil {
@@ -42,6 +43,7 @@ func NewMsgCreateValidator(
 		Value:             selfDelegation,
 		Commission:        commission,
 		MinSelfDelegation: minSelfDelegation,
+		SupportTokenType:  supportTokenType,
 	}, nil
 }
 
@@ -104,32 +106,36 @@ func NewMsgEditValidator(valAddr string, description Description, newRate *math.
 }
 
 // NewMsgDelegate creates a new MsgDelegate instance.
-func NewMsgDelegate(delAddr, valAddr string, amount sdk.Coin) *MsgDelegate {
+func NewMsgDelegate(delAddr, valAddr string, amount sdk.Coin, periodDelegationId string, periodType PeriodType) *MsgDelegate {
 	return &MsgDelegate{
-		DelegatorAddress: delAddr,
-		ValidatorAddress: valAddr,
-		Amount:           amount,
+		DelegatorAddress:   delAddr,
+		ValidatorAddress:   valAddr,
+		Amount:             amount,
+		PeriodDelegationId: periodDelegationId,
+		PeriodType:         periodType,
 	}
 }
 
 // NewMsgBeginRedelegate creates a new MsgBeginRedelegate instance.
 func NewMsgBeginRedelegate(
-	delAddr, valSrcAddr, valDstAddr string, amount sdk.Coin,
+	delAddr, valSrcAddr, valDstAddr string, periodDelegationId string, amount sdk.Coin,
 ) *MsgBeginRedelegate {
 	return &MsgBeginRedelegate{
 		DelegatorAddress:    delAddr,
 		ValidatorSrcAddress: valSrcAddr,
 		ValidatorDstAddress: valDstAddr,
 		Amount:              amount,
+		PeriodDelegationId:  periodDelegationId,
 	}
 }
 
 // NewMsgUndelegate creates a new MsgUndelegate instance.
-func NewMsgUndelegate(delAddr, valAddr string, amount sdk.Coin) *MsgUndelegate {
+func NewMsgUndelegate(delAddr, valAddr string, periodDelegationId string, amount sdk.Coin) *MsgUndelegate {
 	return &MsgUndelegate{
-		DelegatorAddress: delAddr,
-		ValidatorAddress: valAddr,
-		Amount:           amount,
+		DelegatorAddress:   delAddr,
+		ValidatorAddress:   valAddr,
+		Amount:             amount,
+		PeriodDelegationId: periodDelegationId,
 	}
 }
 

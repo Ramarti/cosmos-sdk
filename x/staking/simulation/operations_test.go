@@ -17,7 +17,6 @@ import (
 	"cosmossdk.io/math"
 
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/codec/address"
 	cryptocodec "github.com/cosmos/cosmos-sdk/crypto/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 	"github.com/cosmos/cosmos-sdk/runtime"
@@ -185,6 +184,7 @@ func (s *SimTestSuite) TestSimulateMsgCreateValidator() {
 
 // TestSimulateMsgCancelUnbondingDelegation tests the normal scenario of a valid message of type TypeMsgCancelUnbondingDelegation.
 // Abonormal scenarios, where the message is
+/* Deprecated since piplabs/v0.50.7
 func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	require := s.Require()
 	blockTime := time.Now().UTC()
@@ -197,7 +197,16 @@ func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	delTokens := s.stakingKeeper.TokensFromConsensusPower(ctx, 2)
 	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
 	delegator := s.accounts[2]
-	delegation := types.NewDelegation(delegator.Address.String(), validator0.GetOperator(), issuedShares)
+	delegation := types.NewDelegation(
+		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
+		types.FlexibleDelegationID, types.Period{
+			PeriodType:        types.PeriodType_FLEXIBLE,
+			Duration:          time.Duration(0),
+			RewardsMultiplier: math.LegacyOneDec(),
+		},
+		time.Unix(0, 0).UTC(),
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)
@@ -228,6 +237,7 @@ func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	require.Equal(validator0.GetOperator(), msg.ValidatorAddress)
 	require.Len(futureOperations, 0)
 }
+*/
 
 // TestSimulateMsgEditValidator tests the normal scenario of a valid message of type TypeMsgEditValidator.
 // Abonormal scenarios, where the message is created by an errors are not tested here.
@@ -293,7 +303,11 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 	delTokens := s.stakingKeeper.TokensFromConsensusPower(ctx, 2)
 	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
 	delegator := s.accounts[2]
-	delegation := types.NewDelegation(delegator.Address.String(), validator0.GetOperator(), issuedShares)
+	delegation := types.NewDelegation(
+		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)
@@ -337,7 +351,11 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 
 	// setup accounts[3] as delegator
 	delegator := s.accounts[3]
-	delegation := types.NewDelegation(delegator.Address.String(), validator0.GetOperator(), issuedShares)
+	delegation := types.NewDelegation(
+		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
+		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+		time.Unix(0, 0).UTC(),
+	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)
@@ -388,6 +406,7 @@ func (s *SimTestSuite) getTestingValidator(ctx sdk.Context, commission types.Com
 	s.Require().NoError(err)
 
 	validator.DelegatorShares = math.LegacyNewDec(100)
+	validator.DelegatorRewardsShares = math.LegacyNewDec(100)
 	validator.Tokens = s.stakingKeeper.TokensFromConsensusPower(ctx, 100)
 
 	s.Require().NoError(s.stakingKeeper.SetValidator(ctx, validator))

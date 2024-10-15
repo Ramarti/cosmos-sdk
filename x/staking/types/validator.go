@@ -41,7 +41,7 @@ var (
 var _ ValidatorI = Validator{}
 
 // NewValidator constructs a new Validator
-func NewValidator(operator string, pubKey cryptotypes.PubKey, description Description) (Validator, error) {
+func NewValidator(operator string, pubKey cryptotypes.PubKey, description Description, supportTokenType TokenType) (Validator, error) {
 	pkAny, err := codectypes.NewAnyWithValue(pubKey)
 	if err != nil {
 		return Validator{}, err
@@ -60,6 +60,8 @@ func NewValidator(operator string, pubKey cryptotypes.PubKey, description Descri
 		Commission:              NewCommission(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec()),
 		MinSelfDelegation:       math.OneInt(),
 		UnbondingOnHoldRefCount: 0,
+		SupportTokenType:        supportTokenType,
+		DelegatorRewardsShares:  math.LegacyZeroDec(),
 	}, nil
 }
 
@@ -303,6 +305,16 @@ func (v Validator) InvalidExRate() bool {
 	return v.Tokens.IsZero() && v.DelegatorShares.IsPositive()
 }
 
+// calculate the token worth of provided rewards shares
+func (v Validator) TokensFromRewardsShares(rewardsShares math.LegacyDec) math.LegacyDec {
+	return (rewardsShares.MulInt(v.Tokens)).Quo(v.DelegatorRewardsShares)
+}
+
+// calculate the token worth of provided rewards shares, truncated
+func (v Validator) TokensFromRewardsSharesTruncated(rewardsShares math.LegacyDec) math.LegacyDec {
+	return (rewardsShares.MulInt(v.Tokens)).QuoTruncate(v.DelegatorRewardsShares)
+}
+
 // calculate the token worth of provided shares
 func (v Validator) TokensFromShares(shares math.LegacyDec) math.LegacyDec {
 	return (shares.MulInt(v.Tokens)).Quo(v.DelegatorShares)
@@ -517,3 +529,6 @@ func (v Validator) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	var pk cryptotypes.PubKey
 	return unpacker.UnpackAny(v.ConsensusPubkey, &pk)
 }
+
+func (v Validator) GetSupportTokenType() TokenType            { return TokenType(v.SupportTokenType) }
+func (v Validator) GetDelegatorRewardsShares() math.LegacyDec { return v.DelegatorRewardsShares }

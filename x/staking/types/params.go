@@ -34,8 +34,15 @@ const (
 // DefaultMinCommissionRate is set to 0%
 var DefaultMinCommissionRate = math.LegacyZeroDec()
 
+var DefaultMinDelegation = math.NewInt(1)
+
+var DefaultMinUndelegation = math.NewInt(1)
+
 // NewParams creates a new Params instance
-func NewParams(unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, minCommissionRate math.LegacyDec) Params {
+func NewParams(
+	unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, minCommissionRate math.LegacyDec,
+	minDelegation, minUndelegation math.Int,
+) Params {
 	return Params{
 		UnbondingTime:     unbondingTime,
 		MaxValidators:     maxValidators,
@@ -43,6 +50,8 @@ func NewParams(unbondingTime time.Duration, maxValidators, maxEntries, historica
 		HistoricalEntries: historicalEntries,
 		BondDenom:         bondDenom,
 		MinCommissionRate: minCommissionRate,
+		MinDelegation:     minDelegation,
+		MinUndelegation:   minUndelegation,
 	}
 }
 
@@ -55,6 +64,8 @@ func DefaultParams() Params {
 		DefaultHistoricalEntries,
 		sdk.DefaultBondDenom,
 		DefaultMinCommissionRate,
+		DefaultMinDelegation,
+		DefaultMinUndelegation,
 	)
 }
 
@@ -202,4 +213,41 @@ func validateMinCommissionRate(i interface{}) error {
 	}
 
 	return nil
+}
+
+func DefaultPeriods() Periods {
+	return Periods{
+		PeriodMap: map[int32]*Period{
+			int32(PeriodType_FLEXIBLE): {
+				PeriodType:        PeriodType_FLEXIBLE,
+				Duration:          time.Duration(0),
+				RewardsMultiplier: math.LegacyOneDec(),
+			},
+			int32(PeriodType_THREE_MONTHS): {
+				PeriodType:        PeriodType_THREE_MONTHS,
+				Duration:          time.Hour * 24 * 30 * 3,
+				RewardsMultiplier: math.LegacyNewDecWithPrec(11, 1),
+			},
+			int32(PeriodType_ONE_YEAR): {
+				PeriodType:        PeriodType_ONE_YEAR,
+				Duration:          time.Hour * 24 * 365,
+				RewardsMultiplier: math.LegacyNewDecWithPrec(12, 1),
+			},
+		},
+	}
+}
+
+func DefaultTokenTypes() TokenTypes {
+	return TokenTypes{
+		TokenTypeInfoMap: map[int32]*TokenTypeInfo{
+			int32(TokenType_LOCKED): {
+				TokenType:         TokenType_LOCKED,
+				RewardsMultiplier: math.LegacyOneDec(),
+			},
+			int32(TokenType_UNLOCKED): {
+				TokenType:         TokenType_UNLOCKED,
+				RewardsMultiplier: math.LegacyNewDec(2),
+			},
+		},
+	}
 }

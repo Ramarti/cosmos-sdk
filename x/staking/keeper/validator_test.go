@@ -358,13 +358,13 @@ func (s *KeeperTestSuite) TestValidatorToken() {
 	delTokens := keeper.TokensFromConsensusPower(ctx, 5)
 
 	validator := testutil.NewValidator(s.T(), valAddr, valPubKey)
-	validator, _, err := keeper.AddValidatorTokensAndShares(ctx, validator, addTokens)
+	validator, _, _, err := keeper.AddValidatorTokensAndShares(ctx, validator, addTokens, math.LegacyOneDec(), math.LegacyOneDec())
 	require.NoError(err)
 	require.Equal(addTokens, validator.Tokens)
 	validator, _ = keeper.GetValidator(ctx, valAddr)
 	require.Equal(math.LegacyNewDecFromInt(addTokens), validator.DelegatorShares)
 
-	_, _, err = keeper.RemoveValidatorTokensAndShares(ctx, validator, math.LegacyNewDecFromInt(delTokens))
+	_, _, err = keeper.RemoveValidatorTokensAndShares(ctx, validator, math.LegacyNewDecFromInt(delTokens), math.LegacyNewDecFromInt(delTokens))
 	require.NoError(err)
 	validator, _ = keeper.GetValidator(ctx, valAddr)
 	require.Equal(delTokens, validator.Tokens)

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"testing"
+	"time"
 
 	"cosmossdk.io/math"
 	storetypes "cosmossdk.io/store/types"
@@ -60,7 +61,10 @@ func BenchmarkGetValidatorDelegations(b *testing.B) {
 			delegator := sdk.AccAddress(fmt.Sprintf("address%d", i))
 			banktestutil.FundAccount(f.sdkCtx, f.bankKeeper, delegator,
 				sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(i)))))
-			NewDel := types.NewDelegation(delegator.String(), val.String(), math.LegacyNewDec(int64(i)))
+			NewDel := types.NewDelegation(delegator.String(), val.String(), math.LegacyNewDec(int64(i)), math.LegacyNewDec(int64(i)),
+				types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+				time.Unix(0, 0),
+			)
 
 			if err := f.stakingKeeper.SetDelegation(f.sdkCtx, NewDel); err != nil {
 				panic(err)
@@ -95,7 +99,11 @@ func BenchmarkGetValidatorDelegationsLegacy(b *testing.B) {
 		for i := 0; i < delegationsNum; i++ {
 			delegator := sdk.AccAddress(fmt.Sprintf("address%d", i))
 			banktestutil.FundAccount(f.sdkCtx, f.bankKeeper, delegator, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(i)))))
-			NewDel := types.NewDelegation(delegator.String(), val.String(), math.LegacyNewDec(int64(i)))
+			NewDel := types.NewDelegation(
+				delegator.String(), val.String(), math.LegacyNewDec(int64(i)), math.LegacyNewDec(int64(i)),
+				types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+				time.Unix(0, 0),
+			)
 			if err := f.stakingKeeper.SetDelegation(f.sdkCtx, NewDel); err != nil {
 				panic(err)
 			}

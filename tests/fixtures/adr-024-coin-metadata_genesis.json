@@ -167,13 +167,13 @@
     },
     "distribution": {
       "params": {
-        "community_tax": "0.020000000000000000",
+        "ubi": "0.020000000000000000",
         "base_proposer_reward": "0.000000000000000000",
         "bonus_proposer_reward": "0.000000000000000000",
         "withdraw_addr_enabled": true
       },
       "fee_pool": {
-        "community_pool": []
+        "ubi": []
       },
       "delegator_withdraw_infos": [],
       "previous_proposer": "",
@@ -201,7 +201,9 @@
         "max_validators": 100,
         "max_entries": 7,
         "historical_entries": 100,
-        "bond_denom": "stake"
+        "bond_denom": "stake",
+        "min_delegation": "1",
+        "min_undelegation": "1"
       },
       "last_total_power": "0",
       "last_validator_powers": null,
@@ -209,6 +211,37 @@
       "delegations": null,
       "unbonding_delegations": null,
       "redelegations": null,
+      "periods": {
+        "period_map": {
+          "0":{
+            "duration": "0s",
+            "period_type": 0,
+            "rewards_multiplier": "1.000000000000000000"
+          },
+          "1": {
+            "duration": "7776000s",
+            "period_type": 1,
+            "rewards_multiplier": "1.100000000000000000"
+          },
+          "2": {
+            "duration": "31536000s",
+            "period_type": 2,
+            "rewards_multiplier": "1.200000000000000000"
+          }
+        }
+      },
+      "token_types": {
+        "token_type_info_map": {
+          "0": {
+            "rewards_multiplier": "1.000000000000000000",
+            "token_type": 0
+          },
+          "1": {
+            "rewards_multiplier": "2.000000000000000000",
+            "token_type": 1
+          }
+        }
+      },
       "exported": false
     }
   }

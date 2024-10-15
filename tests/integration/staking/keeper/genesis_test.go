@@ -46,6 +46,12 @@ func TestInitGenesis(t *testing.T) {
 	params, err := f.stakingKeeper.GetParams(f.sdkCtx)
 	assert.NilError(t, err)
 
+	periods, err := f.stakingKeeper.GetPeriods(f.sdkCtx)
+	assert.NilError(t, err)
+
+	tokenTypes, err := f.stakingKeeper.GetTokenTypes(f.sdkCtx)
+	assert.NilError(t, err)
+
 	validators, err := f.stakingKeeper.GetAllValidators(f.sdkCtx)
 	assert.NilError(t, err)
 
@@ -96,7 +102,7 @@ func TestInitGenesis(t *testing.T) {
 	assert.NilError(t, err)
 	delegations = append(delegations, genesisDelegations...)
 
-	genesisState := types.NewGenesisState(params, validators, delegations)
+	genesisState := types.NewGenesisState(params, periods, tokenTypes, validators, delegations)
 	vals := (f.stakingKeeper.InitGenesis(f.sdkCtx, genesisState))
 
 	actualGenesis := (f.stakingKeeper.ExportGenesis(f.sdkCtx))
@@ -189,6 +195,10 @@ func TestInitGenesisLargeValidatorSet(t *testing.T) {
 
 	params, err := f.stakingKeeper.GetParams(f.sdkCtx)
 	assert.NilError(t, err)
+	periods, err := f.stakingKeeper.GetPeriods(f.sdkCtx)
+	assert.NilError(t, err)
+	tokenTypes, err := f.stakingKeeper.GetTokenTypes(f.sdkCtx)
+	assert.NilError(t, err)
 	delegations := []types.Delegation{}
 	validators := make([]types.Validator, size)
 
@@ -198,6 +208,7 @@ func TestInitGenesisLargeValidatorSet(t *testing.T) {
 			sdk.ValAddress(addrs[i]).String(),
 			PKs[i],
 			types.NewDescription(fmt.Sprintf("#%d", i), "", "", "", ""),
+			types.TokenType_LOCKED,
 		)
 		assert.NilError(t, err)
 		validators[i].Status = types.Bonded
@@ -215,7 +226,7 @@ func TestInitGenesisLargeValidatorSet(t *testing.T) {
 	}
 
 	validators = append(validators, genesisValidators...)
-	genesisState := types.NewGenesisState(params, validators, delegations)
+	genesisState := types.NewGenesisState(params, periods, tokenTypes, validators, delegations)
 
 	// mint coins in the bonded pool representing the validators coins
 	assert.NilError(t,
