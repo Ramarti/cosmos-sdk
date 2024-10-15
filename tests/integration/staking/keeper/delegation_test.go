@@ -44,7 +44,7 @@ func TestUnbondingDelegationsMaxEntries(t *testing.T) {
 	// create a validator and a delegator to that validator
 	validator := testutil.NewValidator(t, addrVal, PKs[0])
 
-	validator, issuedShares := validator.AddTokensFromDel(startTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(startTokens, math.LegacyOneDec())
 	assert.DeepEqual(t, startTokens, issuedShares.RoundInt())
 
 	validator = keeper.TestingUpdateValidator(f.stakingKeeper, ctx, validator, true)

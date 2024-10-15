@@ -527,9 +527,11 @@ func (s *KeeperTestSuite) TestMsgDelegate() {
 		{
 			name: "valid msg",
 			input: &stakingtypes.MsgDelegate{
-				DelegatorAddress: Addr.String(),
-				ValidatorAddress: ValAddr.String(),
-				Amount:           sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: keeper.TokensFromConsensusPower(s.ctx, int64(100))},
+				DelegatorAddress:   Addr.String(),
+				ValidatorAddress:   ValAddr.String(),
+				Amount:             sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: keeper.TokensFromConsensusPower(s.ctx, int64(100))},
+				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodType:         stakingtypes.PeriodType_FLEXIBLE,
 			},
 			expErr: false,
 		},

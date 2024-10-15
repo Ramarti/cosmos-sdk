@@ -33,7 +33,7 @@ func (s *KeeperTestSuite) TestValidator() {
 
 	// test how the validator is set from a purely unbonbed pool
 	validator := testutil.NewValidator(s.T(), valAddr, valPubKey)
-	validator, _ = validator.AddTokensFromDel(valTokens)
+	validator, _, _ = validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(stakingtypes.Unbonded, validator.Status)
 	require.Equal(valTokens, validator.Tokens)
 	require.Equal(valTokens, validator.DelegatorShares.RoundInt())
@@ -100,7 +100,7 @@ func (s *KeeperTestSuite) TestValidatorBasics() {
 		validators[i].Tokens = math.ZeroInt()
 		tokens := keeper.TokensFromConsensusPower(ctx, power)
 
-		validators[i], _ = validators[i].AddTokensFromDel(tokens)
+		validators[i], _, _ = validators[i].AddTokensFromDel(tokens, math.LegacyOneDec())
 	}
 
 	require.Equal(keeper.TokensFromConsensusPower(ctx, 9), validators[0].Tokens)
@@ -201,7 +201,7 @@ func (s *KeeperTestSuite) TestUpdateValidatorByPowerIndex() {
 
 	// add a validator
 	validator := testutil.NewValidator(s.T(), valAddr, PKs[0])
-	validator, delSharesCreated := validator.AddTokensFromDel(valTokens)
+	validator, delSharesCreated, _ := validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(stakingtypes.Unbonded, validator.Status)
 	require.Equal(valTokens, validator.Tokens)
 
@@ -244,8 +244,7 @@ func (s *KeeperTestSuite) TestApplyAndReturnValidatorSetUpdatesPowerDecrease() {
 	for i, power := range powers {
 		validators[i] = testutil.NewValidator(s.T(), sdk.ValAddress(PKs[i].Address().Bytes()), PKs[i])
 		tokens := keeper.TokensFromConsensusPower(ctx, power)
-		validators[i], _ = validators[i].AddTokensFromDel(tokens)
-
+		validators[i], _, _ = validators[i].AddTokensFromDel(tokens, math.LegacyOneDec())
 	}
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -358,7 +357,7 @@ func (s *KeeperTestSuite) TestValidatorToken() {
 	delTokens := keeper.TokensFromConsensusPower(ctx, 5)
 
 	validator := testutil.NewValidator(s.T(), valAddr, valPubKey)
-	validator, _, _, err := keeper.AddValidatorTokensAndShares(ctx, validator, addTokens, math.LegacyOneDec(), math.LegacyOneDec())
+	validator, _, _, err := keeper.AddValidatorTokensAndShares(ctx, validator, addTokens, math.LegacyOneDec())
 	require.NoError(err)
 	require.Equal(addTokens, validator.Tokens)
 	validator, _ = keeper.GetValidator(ctx, valAddr)
@@ -432,7 +431,7 @@ func (s *KeeperTestSuite) TestUnbondingValidator() {
 
 	require.NoError(keeper.SetUnbondingValidatorsQueue(ctx, endTime, endHeight, []string{valAddr.String()}))
 	validator = testutil.NewValidator(s.T(), valAddr, valPubKey)
-	validator, _ = validator.AddTokensFromDel(addTokens)
+	validator, _, _ = validator.AddTokensFromDel(addTokens, math.LegacyOneDec())
 	validator.Status = stakingtypes.Unbonding
 	require.NoError(keeper.SetValidator(ctx, validator))
 	require.NoError(keeper.UnbondAllMatureValidators(ctx))

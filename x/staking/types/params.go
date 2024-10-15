@@ -226,12 +226,17 @@ func DefaultPeriods() Periods {
 			int32(PeriodType_THREE_MONTHS): {
 				PeriodType:        PeriodType_THREE_MONTHS,
 				Duration:          time.Hour * 24 * 30 * 3,
-				RewardsMultiplier: math.LegacyNewDecWithPrec(11, 1),
+				RewardsMultiplier: math.LegacyNewDecWithPrec(1051, 3), // 1.051
 			},
 			int32(PeriodType_ONE_YEAR): {
 				PeriodType:        PeriodType_ONE_YEAR,
 				Duration:          time.Hour * 24 * 365,
-				RewardsMultiplier: math.LegacyNewDecWithPrec(12, 1),
+				RewardsMultiplier: math.LegacyNewDecWithPrec(116, 2), // 1.16
+			},
+			int32(PeriodType_EIGHTEEN_MONTHS): {
+				PeriodType:        PeriodType_EIGHTEEN_MONTHS,
+				Duration:          time.Hour * 24 * 30 * 18,
+				RewardsMultiplier: math.LegacyNewDecWithPrec(134, 2), // 1.34
 			},
 		},
 	}
@@ -242,11 +247,11 @@ func DefaultTokenTypes() TokenTypes {
 		TokenTypeInfoMap: map[int32]*TokenTypeInfo{
 			int32(TokenType_LOCKED): {
 				TokenType:         TokenType_LOCKED,
-				RewardsMultiplier: math.LegacyOneDec(),
+				RewardsMultiplier: math.LegacyNewDecWithPrec(5, 1),
 			},
 			int32(TokenType_UNLOCKED): {
 				TokenType:         TokenType_UNLOCKED,
-				RewardsMultiplier: math.LegacyNewDec(2),
+				RewardsMultiplier: math.LegacyNewDec(1),
 			},
 		},
 	}

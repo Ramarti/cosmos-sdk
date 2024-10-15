@@ -938,7 +938,7 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
-	_, newShares, newRewardsShares, err = k.AddValidatorTokensAndShares(ctx, validator, bondAmt, tokenTypeRewardsMultiplier, period.RewardsMultiplier)
+	_, newShares, newRewardsShares, err = k.AddValidatorTokensAndShares(ctx, validator, bondAmt, tokenTypeRewardsMultiplier.Mul(period.RewardsMultiplier))
 	if err != nil {
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}

@@ -508,7 +508,7 @@ func TestGRPCDelegationRewards(t *testing.T) {
 
 	// setup delegation
 	delTokens := sdk.TokensFromConsensusPower(2, sdk.DefaultPowerReduction)
-	validator, issuedShares := val.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ := val.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	delegation := stakingtypes.NewDelegation(delAddr.String(), f.valAddr.String(), issuedShares, issuedShares,
 		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
 		time.Unix(0, 0),

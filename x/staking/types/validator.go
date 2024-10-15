@@ -383,7 +383,7 @@ func (v Validator) UpdateStatus(newStatus BondStatus) Validator {
 }
 
 // AddTokensFromDel adds tokens to a validator
-func (v Validator) AddTokensFromDel(amount math.Int) (Validator, math.LegacyDec) {
+func (v Validator) AddTokensFromDel(amount math.Int, rewardsMultiplier math.LegacyDec) (Validator, math.LegacyDec, math.LegacyDec) {
 	// calculate the shares to issue
 	var issuedShares math.LegacyDec
 	if v.DelegatorShares.IsZero() {
@@ -398,10 +398,13 @@ func (v Validator) AddTokensFromDel(amount math.Int) (Validator, math.LegacyDec)
 		issuedShares = shares
 	}
 
+	issuedRewardsShares := issuedShares.Mul(rewardsMultiplier)
+
 	v.Tokens = v.Tokens.Add(amount)
 	v.DelegatorShares = v.DelegatorShares.Add(issuedShares)
+	v.DelegatorRewardsShares = v.DelegatorRewardsShares.Add(issuedRewardsShares)
 
-	return v, issuedShares
+	return v, issuedShares, issuedRewardsShares
 }
 
 // RemoveTokens removes tokens from a validator
