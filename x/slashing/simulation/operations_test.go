@@ -172,7 +172,7 @@ func (suite *SimTestSuite) TestSimulateMsgUnjail() {
 
 	// setup self delegation
 	delTokens := suite.stakingKeeper.TokensFromConsensusPower(ctx, 2)
-	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
+	validator0, issuedShares, _ := validator0.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	val0AccAddress, err := sdk.ValAddressFromBech32(validator0.OperatorAddress)
 	suite.Require().NoError(err)
 

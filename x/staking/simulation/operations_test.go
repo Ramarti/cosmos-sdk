@@ -301,7 +301,7 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 
 	// setup delegation
 	delTokens := s.stakingKeeper.TokensFromConsensusPower(ctx, 2)
-	validator0, issuedShares := validator0.AddTokensFromDel(delTokens)
+	validator0, issuedShares, _ := validator0.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	delegator := s.accounts[2]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
@@ -347,7 +347,7 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	validator1 := s.getTestingValidator1(ctx)
 
 	delTokens := s.stakingKeeper.TokensFromConsensusPower(ctx, 2)
-	validator1, issuedShares := validator1.AddTokensFromDel(delTokens)
+	validator1, issuedShares, _ := validator1.AddTokensFromDel(delTokens, math.LegacyOneDec())
 
 	// setup accounts[3] as delegator
 	delegator := s.accounts[3]

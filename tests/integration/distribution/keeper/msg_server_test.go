@@ -194,7 +194,7 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 
 	// setup delegation
 	delTokens := sdk.TokensFromConsensusPower(2, sdk.DefaultPowerReduction)
-	validator, issuedShares := validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 
 	valBz, err := f.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
 	require.NoError(t, err)
@@ -585,7 +585,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: "invalid",
 				Params: distrtypes.Params{
-					Ubi:             math.LegacyNewDecWithPrec(2, 0),
+					Ubi:                 math.LegacyNewDecWithPrec(2, 0),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
@@ -599,7 +599,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					Ubi:             math.LegacyDec{},
+					Ubi:                 math.LegacyDec{},
 					WithdrawAddrEnabled: withdrawAddrEnabled,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
@@ -613,7 +613,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					Ubi:             math.LegacyNewDecWithPrec(2, 0),
+					Ubi:                 math.LegacyNewDecWithPrec(2, 0),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
@@ -627,7 +627,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					Ubi:             math.LegacyNewDecWithPrec(-2, 1),
+					Ubi:                 math.LegacyNewDecWithPrec(-2, 1),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
@@ -641,7 +641,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					Ubi:             ubi,
+					Ubi:                 ubi,
 					BaseProposerReward:  math.LegacyNewDecWithPrec(1, 2),
 					BonusProposerReward: math.LegacyZeroDec(),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
@@ -655,7 +655,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					Ubi:             ubi,
+					Ubi:                 ubi,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyNewDecWithPrec(1, 2),
 					WithdrawAddrEnabled: withdrawAddrEnabled,
@@ -669,7 +669,7 @@ func TestMsgUpdateParams(t *testing.T) {
 			msg: &distrtypes.MsgUpdateParams{
 				Authority: f.distrKeeper.GetAuthority(),
 				Params: distrtypes.Params{
-					Ubi:             ubi,
+					Ubi:                 ubi,
 					BaseProposerReward:  math.LegacyZeroDec(),
 					BonusProposerReward: math.LegacyZeroDec(),
 					WithdrawAddrEnabled: withdrawAddrEnabled,

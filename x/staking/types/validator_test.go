@@ -105,7 +105,7 @@ func TestRemoveTokens(t *testing.T) {
 func TestAddTokensValidatorBonded(t *testing.T) {
 	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	validator = validator.UpdateStatus(types.Bonded)
-	validator, delShares := validator.AddTokensFromDel(math.NewInt(10))
+	validator, delShares, _ := validator.AddTokensFromDel(math.NewInt(10), math.LegacyOneDec())
 
 	assert.True(math.LegacyDecEq(t, math.LegacyNewDec(10), delShares))
 	assert.True(math.IntEq(t, math.NewInt(10), validator.BondedTokens()))
@@ -115,7 +115,7 @@ func TestAddTokensValidatorBonded(t *testing.T) {
 func TestAddTokensValidatorUnbonding(t *testing.T) {
 	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	validator = validator.UpdateStatus(types.Unbonding)
-	validator, delShares := validator.AddTokensFromDel(math.NewInt(10))
+	validator, delShares, _ := validator.AddTokensFromDel(math.NewInt(10), math.LegacyOneDec())
 
 	assert.True(math.LegacyDecEq(t, math.LegacyNewDec(10), delShares))
 	assert.Equal(t, types.Unbonding, validator.Status)
@@ -126,7 +126,7 @@ func TestAddTokensValidatorUnbonding(t *testing.T) {
 func TestAddTokensValidatorUnbonded(t *testing.T) {
 	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 	validator = validator.UpdateStatus(types.Unbonded)
-	validator, delShares := validator.AddTokensFromDel(math.NewInt(10))
+	validator, delShares, _ := validator.AddTokensFromDel(math.NewInt(10), math.LegacyOneDec())
 
 	assert.True(math.LegacyDecEq(t, math.LegacyNewDec(10), delShares))
 	assert.Equal(t, types.Unbonded, validator.Status)
@@ -137,11 +137,13 @@ func TestAddTokensValidatorUnbonded(t *testing.T) {
 // TODO refactor to make simpler like the AddToken tests above
 func TestRemoveDelShares(t *testing.T) {
 	valA := types.Validator{
-		OperatorAddress: valAddr1.String(),
-		ConsensusPubkey: pk1Any,
-		Status:          types.Bonded,
-		Tokens:          math.NewInt(100),
-		DelegatorShares: math.LegacyNewDec(100),
+		OperatorAddress:        valAddr1.String(),
+		ConsensusPubkey:        pk1Any,
+		Status:                 types.Bonded,
+		Tokens:                 math.NewInt(100),
+		DelegatorShares:        math.LegacyNewDec(100),
+		DelegatorRewardsShares: math.LegacyNewDec(100),
+		SupportTokenType:       types.TokenType_LOCKED,
 	}
 
 	// Remove delegator shares
@@ -160,12 +162,12 @@ func TestRemoveDelShares(t *testing.T) {
 func TestAddTokensFromDel(t *testing.T) {
 	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
 
-	validator, shares := validator.AddTokensFromDel(math.NewInt(6))
+	validator, shares, _ := validator.AddTokensFromDel(math.NewInt(6), math.LegacyOneDec())
 	require.True(math.LegacyDecEq(t, math.LegacyNewDec(6), shares))
 	require.True(math.LegacyDecEq(t, math.LegacyNewDec(6), validator.DelegatorShares))
 	require.True(math.IntEq(t, math.NewInt(6), validator.Tokens))
 
-	validator, shares = validator.AddTokensFromDel(math.NewInt(3))
+	validator, shares, _ = validator.AddTokensFromDel(math.NewInt(3), math.LegacyOneDec())
 	require.True(math.LegacyDecEq(t, math.LegacyNewDec(3), shares))
 	require.True(math.LegacyDecEq(t, math.LegacyNewDec(9), validator.DelegatorShares))
 	require.True(math.IntEq(t, math.NewInt(9), validator.Tokens))
@@ -173,7 +175,7 @@ func TestAddTokensFromDel(t *testing.T) {
 
 func TestUpdateStatus(t *testing.T) {
 	validator := newValidator(t, valAddr1, pk1, types.TokenType_LOCKED)
-	validator, _ = validator.AddTokensFromDel(math.NewInt(100))
+	validator, _, _ = validator.AddTokensFromDel(math.NewInt(100), math.LegacyOneDec())
 	require.Equal(t, types.Unbonded, validator.Status)
 	require.Equal(t, int64(100), validator.Tokens.Int64())
 
@@ -193,7 +195,7 @@ func TestUpdateStatus(t *testing.T) {
 func TestPossibleOverflow(t *testing.T) {
 	delShares := math.LegacyNewDec(391432570689183511).Quo(math.LegacyNewDec(40113011844664))
 	validator := mkValidator(2159, delShares)
-	newValidator, _ := validator.AddTokensFromDel(math.NewInt(71))
+	newValidator, _, _ := validator.AddTokensFromDel(math.NewInt(71), math.LegacyOneDec())
 
 	require.False(t, newValidator.DelegatorShares.IsNegative())
 	require.False(t, newValidator.Tokens.IsNegative())
@@ -336,11 +338,13 @@ func TestBondStatus(t *testing.T) {
 
 func mkValidator(tokens int64, shares math.LegacyDec) types.Validator {
 	return types.Validator{
-		OperatorAddress: valAddr1.String(),
-		ConsensusPubkey: pk1Any,
-		Status:          types.Bonded,
-		Tokens:          math.NewInt(tokens),
-		DelegatorShares: shares,
+		OperatorAddress:        valAddr1.String(),
+		ConsensusPubkey:        pk1Any,
+		Status:                 types.Bonded,
+		Tokens:                 math.NewInt(tokens),
+		DelegatorShares:        shares,
+		DelegatorRewardsShares: shares,
+		SupportTokenType:       types.TokenType_LOCKED,
 	}
 }
 

@@ -36,7 +36,7 @@ func (s *KeeperTestSuite) TestDelegation() {
 	var validators [3]stakingtypes.Validator
 	for i, amt := range amts {
 		validators[i] = testutil.NewValidator(s.T(), valAddrs[i], PKs[i])
-		validators[i], _ = validators[i].AddTokensFromDel(amt)
+		validators[i], _, _ = validators[i].AddTokensFromDel(amt, math.LegacyOneDec())
 
 		validators[i] = stakingkeeper.TestingUpdateValidator(keeper, ctx, validators[i], true)
 	}
@@ -195,7 +195,7 @@ func (s *KeeperTestSuite) TestDelegationsByValIndex() {
 	var validators [3]stakingtypes.Validator
 	for i, amt := range amts {
 		validators[i] = testutil.NewValidator(s.T(), valAddrs[i], PKs[i])
-		validators[i], _ = validators[i].AddTokensFromDel(amt)
+		validators[i], _, _ = validators[i].AddTokensFromDel(amt, math.LegacyOneDec())
 
 		validators[i] = stakingkeeper.TestingUpdateValidator(keeper, ctx, validators[i], true)
 	}
@@ -401,7 +401,7 @@ func (s *KeeperTestSuite) TestUnbondDelegation() {
 	startTokens := keeper.TokensFromConsensusPower(ctx, 10)
 	validator := testutil.NewValidator(s.T(), valAddrs[0], PKs[0])
 
-	validator, issuedShares := validator.AddTokensFromDel(startTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(startTokens, math.LegacyOneDec())
 	require.Equal(startTokens, issuedShares.RoundInt())
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -443,7 +443,7 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 	validator := testutil.NewValidator(s.T(), addrVals[0], PKs[0])
 
 	validator.MinSelfDelegation = delTokens
-	validator, issuedShares := validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.Equal(delTokens, issuedShares.RoundInt())
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -460,7 +460,7 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 
 	// create a second delegation to this validator
 	require.NoError(keeper.DeleteValidatorByPowerIndex(ctx, validator))
-	validator, issuedShares = validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ = validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.True(validator.IsBonded())
 	require.Equal(delTokens, issuedShares.RoundInt())
 
@@ -499,7 +499,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 	validator := testutil.NewValidator(s.T(), addrVals[0], PKs[0])
 	require.NoError(keeper.SetValidatorByConsAddr(ctx, validator))
 
-	validator, issuedShares := validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.Equal(delTokens, issuedShares.RoundInt())
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -516,7 +516,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 	// create a second delegation to this validator
 	require.NoError(keeper.DeleteValidatorByPowerIndex(ctx, validator))
 
-	validator, issuedShares = validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ = validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.Equal(delTokens, issuedShares.RoundInt())
 
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
@@ -584,7 +584,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 	require.NoError(keeper.SetValidatorByConsAddr(ctx, validator))
 
 	valTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares := validator.AddTokensFromDel(valTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
@@ -600,7 +600,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 
 	// create a second delegation to this validator
 	require.NoError(keeper.DeleteValidatorByPowerIndex(ctx, validator))
-	validator, issuedShares = validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ = validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.Equal(delTokens, issuedShares.RoundInt())
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	require.True(validator.IsBonded())
@@ -670,7 +670,7 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 	require.NoError(keeper.SetValidatorByConsAddr(ctx, validator))
 
 	valTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares := validator.AddTokensFromDel(valTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -687,7 +687,7 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 
 	// create a second delegation to this validator
 	require.NoError(keeper.DeleteValidatorByPowerIndex(ctx, validator))
-	validator, issuedShares = validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ = validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.Equal(delTokens, issuedShares.RoundInt())
 
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
@@ -848,7 +848,7 @@ func (s *KeeperTestSuite) TestRedelegateToSameValidator() {
 
 	// create a validator with a self-delegation
 	validator := testutil.NewValidator(s.T(), addrVals[0], PKs[0])
-	validator, issuedShares := validator.AddTokensFromDel(valTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -877,7 +877,7 @@ func (s *KeeperTestSuite) TestRedelegationMaxEntries() {
 	// create a validator with a self-delegation
 	validator := testutil.NewValidator(s.T(), addrVals[0], PKs[0])
 	valTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares := validator.AddTokensFromDel(valTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -892,7 +892,7 @@ func (s *KeeperTestSuite) TestRedelegationMaxEntries() {
 
 	// create a second validator
 	validator2 := testutil.NewValidator(s.T(), addrVals[1], PKs[1])
-	validator2, issuedShares = validator2.AddTokensFromDel(valTokens)
+	validator2, issuedShares, _ = validator2.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -935,7 +935,7 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 	require.NoError(keeper.SetValidatorByConsAddr(ctx, validator))
 
 	valTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares := validator.AddTokensFromDel(valTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
@@ -951,7 +951,7 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 
 	// create a second validator
 	validator2 := testutil.NewValidator(s.T(), addrVals[1], PKs[1])
-	validator2, issuedShares = validator2.AddTokensFromDel(valTokens)
+	validator2, issuedShares, _ = validator2.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	validator2 = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator2, true)
@@ -959,7 +959,7 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 
 	// create a second delegation to validator 1
 	delTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares = validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ = validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.Equal(delTokens, issuedShares.RoundInt())
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 
@@ -994,7 +994,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 	require.NoError(keeper.SetValidatorByConsAddr(ctx, validator))
 
 	valTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares := validator.AddTokensFromDel(valTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
@@ -1009,7 +1009,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 	// create a second delegation to this validator
 	require.NoError(keeper.DeleteValidatorByPowerIndex(ctx, validator))
 	delTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares = validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ = validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.Equal(delTokens, issuedShares.RoundInt())
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	delegation := stakingtypes.NewDelegation(
@@ -1021,7 +1021,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 
 	// create a second validator
 	validator2 := testutil.NewValidator(s.T(), addrVals[1], PKs[1])
-	validator2, issuedShares = validator2.AddTokensFromDel(valTokens)
+	validator2, issuedShares, _ = validator2.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	_ = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator2, true)
@@ -1083,7 +1083,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 	require.NoError(keeper.SetValidatorByConsAddr(ctx, validator))
 
 	valTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares := validator.AddTokensFromDel(valTokens)
+	validator, issuedShares, _ := validator.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	validator = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
@@ -1098,7 +1098,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 	// create a second delegation to this validator
 	require.NoError(keeper.DeleteValidatorByPowerIndex(ctx, validator))
 	delTokens := keeper.TokensFromConsensusPower(ctx, 10)
-	validator, issuedShares = validator.AddTokensFromDel(delTokens)
+	validator, issuedShares, _ = validator.AddTokensFromDel(delTokens, math.LegacyOneDec())
 	require.Equal(delTokens, issuedShares.RoundInt())
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true)
 	delegation := stakingtypes.NewDelegation(
@@ -1110,7 +1110,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 
 	// create a second validator
 	validator2 := testutil.NewValidator(s.T(), addrVals[1], PKs[1])
-	validator2, issuedShares = validator2.AddTokensFromDel(valTokens)
+	validator2, issuedShares, _ = validator2.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	require.Equal(valTokens, issuedShares.RoundInt())
 	s.bankKeeper.EXPECT().SendCoinsFromModuleToModule(gomock.Any(), stakingtypes.NotBondedPoolName, stakingtypes.BondedPoolName, gomock.Any())
 	validator2 = stakingkeeper.TestingUpdateValidator(keeper, ctx, validator2, true)

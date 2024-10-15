@@ -59,7 +59,7 @@ func SetupUnbondingTests(t *testing.T, f *fixture, hookCalled *bool, ubdeID *uin
 
 	// Create a validator
 	validator1 := testutil.NewValidator(t, addrVals[0], PKs[0])
-	validator1, issuedShares1 := validator1.AddTokensFromDel(valTokens)
+	validator1, issuedShares1, _ := validator1.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	assert.DeepEqual(t, valTokens, issuedShares1.RoundInt())
 
 	validator1 = stakingkeeper.TestingUpdateValidator(f.stakingKeeper, f.sdkCtx, validator1, true)
@@ -76,7 +76,7 @@ func SetupUnbondingTests(t *testing.T, f *fixture, hookCalled *bool, ubdeID *uin
 
 	// Create a validator to redelegate to
 	validator2 := testutil.NewValidator(t, addrVals[1], PKs[1])
-	validator2, issuedShares2 := validator2.AddTokensFromDel(valTokens)
+	validator2, issuedShares2, _ := validator2.AddTokensFromDel(valTokens, math.LegacyOneDec())
 	assert.DeepEqual(t, valTokens, issuedShares2.RoundInt())
 
 	validator2 = stakingkeeper.TestingUpdateValidator(f.stakingKeeper, f.sdkCtx, validator2, true)

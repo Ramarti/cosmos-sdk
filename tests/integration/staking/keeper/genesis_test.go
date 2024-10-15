@@ -34,12 +34,14 @@ func TestInitGenesis(t *testing.T) {
 	assert.NilError(t, err)
 
 	bondedVal := types.Validator{
-		OperatorAddress: sdk.ValAddress(addrs[0]).String(),
-		ConsensusPubkey: pk0,
-		Status:          types.Bonded,
-		Tokens:          valTokens,
-		DelegatorShares: math.LegacyNewDecFromInt(valTokens),
-		Description:     types.NewDescription("hoop", "", "", "", ""),
+		OperatorAddress:        sdk.ValAddress(addrs[0]).String(),
+		ConsensusPubkey:        pk0,
+		Status:                 types.Bonded,
+		Tokens:                 valTokens,
+		DelegatorShares:        math.LegacyNewDecFromInt(valTokens),
+		DelegatorRewardsShares: math.LegacyNewDecFromInt(valTokens),
+		Description:            types.NewDescription("hoop", "", "", "", ""),
+		SupportTokenType:       types.TokenType_LOCKED,
 	}
 	assert.NilError(t, f.stakingKeeper.SetValidator(f.sdkCtx, bondedVal))
 
@@ -66,20 +68,24 @@ func TestInitGenesis(t *testing.T) {
 
 	// initialize the validators
 	bondedVal1 := types.Validator{
-		OperatorAddress: sdk.ValAddress(addrs[1]).String(),
-		ConsensusPubkey: pk1,
-		Status:          types.Bonded,
-		Tokens:          valTokens,
-		DelegatorShares: math.LegacyNewDecFromInt(valTokens),
-		Description:     types.NewDescription("hoop", "", "", "", ""),
+		OperatorAddress:        sdk.ValAddress(addrs[1]).String(),
+		ConsensusPubkey:        pk1,
+		Status:                 types.Bonded,
+		Tokens:                 valTokens,
+		DelegatorShares:        math.LegacyNewDecFromInt(valTokens),
+		DelegatorRewardsShares: math.LegacyNewDecFromInt(valTokens),
+		Description:            types.NewDescription("hoop", "", "", "", ""),
+		SupportTokenType:       types.TokenType_LOCKED,
 	}
 	bondedVal2 := types.Validator{
-		OperatorAddress: sdk.ValAddress(addrs[2]).String(),
-		ConsensusPubkey: pk2,
-		Status:          types.Bonded,
-		Tokens:          valTokens,
-		DelegatorShares: math.LegacyNewDecFromInt(valTokens),
-		Description:     types.NewDescription("bloop", "", "", "", ""),
+		OperatorAddress:        sdk.ValAddress(addrs[2]).String(),
+		ConsensusPubkey:        pk2,
+		Status:                 types.Bonded,
+		Tokens:                 valTokens,
+		DelegatorShares:        math.LegacyNewDecFromInt(valTokens),
+		DelegatorRewardsShares: math.LegacyNewDecFromInt(valTokens),
+		Description:            types.NewDescription("bloop", "", "", "", ""),
+		SupportTokenType:       types.TokenType_LOCKED,
 	}
 
 	// append new bonded validators to the list
@@ -147,12 +153,14 @@ func TestInitGenesis_PoolsBalanceMismatch(t *testing.T) {
 	assert.NilError(t, err)
 
 	validator := types.Validator{
-		OperatorAddress: sdk.ValAddress("12345678901234567890").String(),
-		ConsensusPubkey: consPub,
-		Jailed:          false,
-		Tokens:          math.NewInt(10),
-		DelegatorShares: math.LegacyNewDecFromInt(math.NewInt(10)),
-		Description:     types.NewDescription("bloop", "", "", "", ""),
+		OperatorAddress:        sdk.ValAddress("12345678901234567890").String(),
+		ConsensusPubkey:        consPub,
+		Jailed:                 false,
+		Tokens:                 math.NewInt(10),
+		DelegatorShares:        math.LegacyNewDecFromInt(math.NewInt(10)),
+		DelegatorRewardsShares: math.LegacyNewDecFromInt(math.NewInt(10)),
+		Description:            types.NewDescription("bloop", "", "", "", ""),
+		SupportTokenType:       types.TokenType_LOCKED,
 	}
 
 	params := types.Params{
