@@ -1239,15 +1239,15 @@ func (k Keeper) Undelegate(
 // CompleteUnbonding completes the unbonding of all mature entries in the
 // retrieved unbonding delegation object and returns the total unbonding balance
 // or an error upon failure.
-func (k Keeper) CompleteUnbonding(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, error) {
+func (k Keeper) CompleteUnbonding(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (sdk.Coins, *types.UnbondedEntry, error) {
 	ubd, err := k.GetUnbondingDelegation(ctx, delAddr, valAddr)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	bondDenom, err := k.BondDenom(ctx)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	balances := sdk.NewCoins()
@@ -1256,7 +1256,13 @@ func (k Keeper) CompleteUnbonding(ctx context.Context, delAddr sdk.AccAddress, v
 
 	delegatorAddress, err := k.authKeeper.AddressCodec().StringToBytes(ubd.DelegatorAddress)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
+	}
+
+	unbondedEntry := &types.UnbondedEntry{
+		DelegatorAddress: delAddr.String(),
+		ValidatorAddress: valAddr.String(),
+		Amount:           math.NewInt(0),
 	}
 
 	// loop through all the entries and complete unbonding mature entries
@@ -1266,7 +1272,7 @@ func (k Keeper) CompleteUnbonding(ctx context.Context, delAddr sdk.AccAddress, v
 			ubd.RemoveEntry(int64(i))
 			i--
 			if err = k.DeleteUnbondingIndex(ctx, entry.UnbondingId); err != nil {
-				return nil, err
+				return nil, unbondedEntry, err
 			}
 
 			// track undelegation only when remaining or truncated shares are non-zero
@@ -1275,10 +1281,11 @@ func (k Keeper) CompleteUnbonding(ctx context.Context, delAddr sdk.AccAddress, v
 				if err := k.bankKeeper.UndelegateCoinsFromModuleToAccount(
 					ctx, types.NotBondedPoolName, delegatorAddress, sdk.NewCoins(amt),
 				); err != nil {
-					return nil, err
+					return nil, unbondedEntry, err
 				}
 
 				balances = balances.Add(amt)
+				unbondedEntry.Amount = balances.AmountOf(bondDenom)
 			}
 		}
 	}
@@ -1291,10 +1298,10 @@ func (k Keeper) CompleteUnbonding(ctx context.Context, delAddr sdk.AccAddress, v
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, unbondedEntry, err
 	}
 
-	return balances, nil
+	return balances, unbondedEntry, nil
 }
 
 // BeginRedelegation begins unbonding / redelegation and creates a redelegation

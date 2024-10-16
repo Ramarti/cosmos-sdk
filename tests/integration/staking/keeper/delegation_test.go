@@ -103,7 +103,7 @@ func TestUnbondingDelegationsMaxEntries(t *testing.T) {
 
 	// mature unbonding delegations
 	ctx = ctx.WithBlockTime(completionTime)
-	_, err = f.stakingKeeper.CompleteUnbonding(ctx, addrDel, addrVal)
+	_, _, err = f.stakingKeeper.CompleteUnbonding(ctx, addrDel, addrVal)
 	assert.NilError(t, err)
 
 	newBonded = f.bankKeeper.GetBalance(ctx, f.stakingKeeper.GetBondedPool(ctx).GetAddress(), bondDenom).Amount
