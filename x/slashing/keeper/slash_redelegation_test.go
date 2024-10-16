@@ -91,12 +91,12 @@ func TestSlashRedelegation(t *testing.T) {
 	require.NoError(t, err)
 
 	// Acc 2 delegate
-	delMsg := stakingtypes.NewMsgDelegate(testAcc2.String(), evilValAddr.String(), testCoins[0], stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
+	delMsg := stakingtypes.NewMsgDelegate(testAcc2.String(), evilValAddr.String(), testCoins[0], stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	_, err = stakingMsgServer.Delegate(ctx, delMsg)
 	require.NoError(t, err)
 
 	// Acc 1 delegate
-	delMsg = stakingtypes.NewMsgDelegate(testAcc1.String(), evilValAddr.String(), testCoins[0], stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE)
+	delMsg = stakingtypes.NewMsgDelegate(testAcc1.String(), evilValAddr.String(), testCoins[0], stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE)
 	_, err = stakingMsgServer.Delegate(ctx, delMsg)
 	require.NoError(t, err)
 
@@ -112,17 +112,17 @@ func TestSlashRedelegation(t *testing.T) {
 	evilPower := stakingKeeper.TokensToConsensusPower(ctx, evilVal.Tokens)
 
 	// Acc 1 redelegate from evil val to good val
-	redelMsg := stakingtypes.NewMsgBeginRedelegate(testAcc1.String(), evilValAddr.String(), goodValAddr.String(), stakingtypes.FlexibleDelegationID, testCoins[0])
+	redelMsg := stakingtypes.NewMsgBeginRedelegate(testAcc1.String(), evilValAddr.String(), goodValAddr.String(), stakingtypes.FlexiblePeriodDelegationID, testCoins[0])
 	_, err = stakingMsgServer.BeginRedelegate(ctx, redelMsg)
 	require.NoError(t, err)
 
 	// Acc 1 undelegate from good val
-	undelMsg := stakingtypes.NewMsgUndelegate(testAcc1.String(), goodValAddr.String(), stakingtypes.FlexibleDelegationID, testCoins[0])
+	undelMsg := stakingtypes.NewMsgUndelegate(testAcc1.String(), goodValAddr.String(), stakingtypes.FlexiblePeriodDelegationID, testCoins[0])
 	_, err = stakingMsgServer.Undelegate(ctx, undelMsg)
 	require.NoError(t, err)
 
 	// Acc 2 undelegate from evil val
-	undelMsg = stakingtypes.NewMsgUndelegate(testAcc2.String(), evilValAddr.String(), stakingtypes.FlexibleDelegationID, testCoins[0])
+	undelMsg = stakingtypes.NewMsgUndelegate(testAcc2.String(), evilValAddr.String(), stakingtypes.FlexiblePeriodDelegationID, testCoins[0])
 	_, err = stakingMsgServer.Undelegate(ctx, undelMsg)
 	require.NoError(t, err)
 

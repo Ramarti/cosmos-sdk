@@ -14,8 +14,6 @@ type DelegationI interface {
 	GetValidatorAddr() string  // validator operator address
 	GetShares() math.LegacyDec // amount of validator's shares held in this delegation
 	GetRewardsShares() math.LegacyDec
-	GetPeriodDelegations() map[string]*PeriodDelegation
-	GetPeriodDelegation(id string) *PeriodDelegation
 }
 
 // ValidatorI expected validator functions

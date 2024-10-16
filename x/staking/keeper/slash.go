@@ -371,24 +371,12 @@ func (k Keeper) SlashRedelegation(ctx context.Context, srcValidator types.Valida
 			continue
 		}
 
-		delegation, err := k.GetDelegation(ctx, delegatorAddress, valDstAddr)
-		if err != nil {
-			// If deleted, delegation has zero shares, and we can't unbond any more
-			continue
-		}
-		if delegation.PeriodDelegations == nil {
-			// Should not happen, but we can log it and skip
-			k.Logger(ctx).Error(
-				"unexpected nil period delegations while slashing redelegation",
-				"delegatorAddress", delegatorAddress,
-				"dstValidator", valDstAddr,
-			)
-			continue
-		}
-		periodDelegation, ok := delegation.PeriodDelegations[entry.PeriodDelegationId]
-		if !ok {
+		periodDelegation, err := k.GetPeriodDelegation(ctx, delegatorAddress, valDstAddr, entry.PeriodDelegationId)
+		if errors.Is(err, types.ErrNoPeriodDelegation) {
 			// If deleted, period delegation has zero shares, and we can't unbond any more
 			continue
+		} else if err != nil {
+			return math.ZeroInt(), err
 		}
 
 		if sharesToUnbond.GT(periodDelegation.Shares) {

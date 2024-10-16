@@ -58,9 +58,9 @@ func createValidators(t *testing.T, f *fixture, powers []int64) ([]sdk.AccAddres
 	f.stakingKeeper.SetNewValidatorByPowerIndex(f.ctx, val2)
 	f.stakingKeeper.SetNewValidatorByPowerIndex(f.ctx, val3)
 
-	_, _, _ = f.stakingKeeper.Delegate(f.ctx, addrs[0], f.stakingKeeper.TokensFromConsensusPower(f.ctx, powers[0]), stakingtypes.Unbonded, val1, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0))
-	_, _, _ = f.stakingKeeper.Delegate(f.ctx, addrs[1], f.stakingKeeper.TokensFromConsensusPower(f.ctx, powers[1]), stakingtypes.Unbonded, val2, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0))
-	_, _, _ = f.stakingKeeper.Delegate(f.ctx, addrs[2], f.stakingKeeper.TokensFromConsensusPower(f.ctx, powers[2]), stakingtypes.Unbonded, val3, true, stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0))
+	_, _, _ = f.stakingKeeper.Delegate(f.ctx, addrs[0], f.stakingKeeper.TokensFromConsensusPower(f.ctx, powers[0]), stakingtypes.Unbonded, val1, true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0))
+	_, _, _ = f.stakingKeeper.Delegate(f.ctx, addrs[1], f.stakingKeeper.TokensFromConsensusPower(f.ctx, powers[1]), stakingtypes.Unbonded, val2, true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0))
+	_, _, _ = f.stakingKeeper.Delegate(f.ctx, addrs[2], f.stakingKeeper.TokensFromConsensusPower(f.ctx, powers[2]), stakingtypes.Unbonded, val3, true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0))
 
 	f.stakingKeeper.EndBlocker(f.ctx)
 

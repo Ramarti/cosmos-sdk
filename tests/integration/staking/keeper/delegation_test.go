@@ -52,11 +52,16 @@ func TestUnbondingDelegationsMaxEntries(t *testing.T) {
 	assert.Assert(t, validator.IsBonded())
 
 	delegation := types.NewDelegation(
-		addrDel.String(), addrVal.String(), issuedShares, issuedShares, types.FlexibleDelegationID,
-		types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0),
-	)
+		addrDel.String(), addrVal.String(), issuedShares, issuedShares)
 	assert.NilError(t, f.stakingKeeper.SetDelegation(ctx, delegation))
+	periodDel := types.NewPeriodDelegation(
+		types.FlexiblePeriodDelegationID,
+		issuedShares,
+		issuedShares,
+		types.PeriodType_FLEXIBLE,
+		time.Time{},
+	)
+	assert.NilError(t, f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, addrDel, addrVal, periodDel))
 
 	maxEntries, err := f.stakingKeeper.MaxEntries(ctx)
 	assert.NilError(t, err)
@@ -71,7 +76,7 @@ func TestUnbondingDelegationsMaxEntries(t *testing.T) {
 		var err error
 		ctx = ctx.WithBlockHeight(i)
 		var amount math.Int
-		completionTime, amount, err = f.stakingKeeper.Undelegate(ctx, addrDel, addrVal, types.FlexibleDelegationID, math.LegacyNewDec(1))
+		completionTime, amount, err = f.stakingKeeper.Undelegate(ctx, addrDel, addrVal, types.FlexiblePeriodDelegationID, math.LegacyNewDec(1))
 		assert.NilError(t, err)
 		totalUnbonded = totalUnbonded.Add(amount)
 	}
@@ -87,7 +92,7 @@ func TestUnbondingDelegationsMaxEntries(t *testing.T) {
 	oldNotBonded = f.bankKeeper.GetBalance(ctx, f.stakingKeeper.GetNotBondedPool(ctx).GetAddress(), bondDenom).Amount
 
 	// an additional unbond should fail due to max entries
-	_, _, err = f.stakingKeeper.Undelegate(ctx, addrDel, addrVal, types.FlexibleDelegationID, math.LegacyNewDec(1))
+	_, _, err = f.stakingKeeper.Undelegate(ctx, addrDel, addrVal, types.FlexiblePeriodDelegationID, math.LegacyNewDec(1))
 	assert.Error(t, err, "too many unbonding delegation entries for (delegator, validator) tuple")
 
 	newBonded = f.bankKeeper.GetBalance(ctx, f.stakingKeeper.GetBondedPool(ctx).GetAddress(), bondDenom).Amount
@@ -109,7 +114,7 @@ func TestUnbondingDelegationsMaxEntries(t *testing.T) {
 	oldNotBonded = f.bankKeeper.GetBalance(ctx, f.stakingKeeper.GetNotBondedPool(ctx).GetAddress(), bondDenom).Amount
 
 	// unbonding  should work again
-	_, _, err = f.stakingKeeper.Undelegate(ctx, addrDel, addrVal, types.FlexibleDelegationID, math.LegacyNewDec(1))
+	_, _, err = f.stakingKeeper.Undelegate(ctx, addrDel, addrVal, types.FlexiblePeriodDelegationID, math.LegacyNewDec(1))
 	assert.NilError(t, err)
 
 	newBonded = f.bankKeeper.GetBalance(ctx, f.stakingKeeper.GetBondedPool(ctx).GetAddress(), bondDenom).Amount

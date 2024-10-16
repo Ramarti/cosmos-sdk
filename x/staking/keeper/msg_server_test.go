@@ -530,7 +530,7 @@ func (s *KeeperTestSuite) TestMsgDelegate() {
 				DelegatorAddress:   Addr.String(),
 				ValidatorAddress:   ValAddr.String(),
 				Amount:             sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: keeper.TokensFromConsensusPower(s.ctx, int64(100))},
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				PeriodType:         stakingtypes.PeriodType_FLEXIBLE,
 			},
 			expErr: false,
@@ -585,10 +585,16 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 	shares := math.LegacyNewDec(100)
 	del := stakingtypes.NewDelegation(
 		Addr.String(), srcValAddr.String(), shares, shares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(keeper.SetDelegation(ctx, del))
+	periodDel := stakingtypes.NewPeriodDelegation(
+		stakingtypes.FlexiblePeriodDelegationID,
+		shares,
+		shares,
+		stakingtypes.PeriodType_FLEXIBLE,
+		time.Time{},
+	)
+	require.NoError(keeper.SetPeriodDelegation(ctx, Addr, srcValAddr, periodDel))
 	_, err = keeper.GetDelegation(ctx, Addr, srcValAddr)
 	require.NoError(err)
 
@@ -605,7 +611,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: sdk.AccAddress([]byte("invalid")).String(),
 				ValidatorDstAddress: dstValAddr.String(),
 				Amount:              sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr:    true,
 			expErrMsg: "invalid source validator address",
@@ -617,7 +623,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: srcValAddr.String(),
 				ValidatorDstAddress: dstValAddr.String(),
 				Amount:              sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: keeper.TokensFromConsensusPower(s.ctx, int64(100))},
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr:    true,
 			expErrMsg: "invalid delegator address: empty address string is not allowed",
@@ -629,7 +635,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: srcValAddr.String(),
 				ValidatorDstAddress: dstValAddr.String(),
 				Amount:              sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: keeper.TokensFromConsensusPower(s.ctx, int64(100))},
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr:    true,
 			expErrMsg: "invalid delegator address: decoding bech32 failed: invalid bech32 string length 7",
@@ -641,7 +647,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: srcValAddr.String(),
 				ValidatorDstAddress: sdk.AccAddress([]byte("invalid")).String(),
 				Amount:              sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr:    true,
 			expErrMsg: "invalid destination validator address",
@@ -653,7 +659,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: sdk.ValAddress([]byte("invalid")).String(),
 				ValidatorDstAddress: dstValAddr.String(),
 				Amount:              sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr:    true,
 			expErrMsg: "validator does not exist",
@@ -665,7 +671,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: srcValAddr.String(),
 				ValidatorDstAddress: srcValAddr.String(),
 				Amount:              sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr:    true,
 			expErrMsg: "cannot redelegate to the same validator",
@@ -677,7 +683,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: srcValAddr.String(),
 				ValidatorDstAddress: dstValAddr.String(),
 				Amount:              sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(0)),
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr:    true,
 			expErrMsg: "invalid shares amount",
@@ -689,7 +695,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: srcValAddr.String(),
 				ValidatorDstAddress: dstValAddr.String(),
 				Amount:              sdk.NewCoin("test", shares.RoundInt()),
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr:    true,
 			expErrMsg: "invalid coin denomination",
@@ -701,7 +707,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 				ValidatorSrcAddress: srcValAddr.String(),
 				ValidatorDstAddress: dstValAddr.String(),
 				Amount:              sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(101)),
-				PeriodDelegationId:  stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId:  stakingtypes.FlexiblePeriodDelegationID,
 			},
 			expErr: false,
 		},
@@ -745,10 +751,16 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 	shares := math.LegacyNewDec(100)
 	del := stakingtypes.NewDelegation(
 		Addr.String(), ValAddr.String(), shares, shares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(keeper.SetDelegation(ctx, del))
+	periodDel := stakingtypes.NewPeriodDelegation(
+		stakingtypes.FlexiblePeriodDelegationID,
+		shares,
+		shares,
+		stakingtypes.PeriodType_FLEXIBLE,
+		time.Time{},
+	)
+	require.NoError(keeper.SetPeriodDelegation(ctx, Addr, ValAddr, periodDel))
 	_, err = keeper.GetDelegation(ctx, Addr, ValAddr)
 	require.NoError(err)
 
@@ -763,7 +775,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 			input: &stakingtypes.MsgUndelegate{
 				DelegatorAddress:   Addr.String(),
 				ValidatorAddress:   sdk.AccAddress([]byte("invalid")).String(),
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
 			},
 			expErr:    true,
@@ -774,7 +786,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 			input: &stakingtypes.MsgUndelegate{
 				DelegatorAddress:   "",
 				ValidatorAddress:   ValAddr.String(),
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				Amount:             sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: shares.RoundInt()},
 			},
 			expErr:    true,
@@ -785,7 +797,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 			input: &stakingtypes.MsgUndelegate{
 				DelegatorAddress:   "invalid",
 				ValidatorAddress:   ValAddr.String(),
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				Amount:             sdk.Coin{Denom: sdk.DefaultBondDenom, Amount: shares.RoundInt()},
 			},
 			expErr:    true,
@@ -796,7 +808,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 			input: &stakingtypes.MsgUndelegate{
 				DelegatorAddress:   Addr.String(),
 				ValidatorAddress:   sdk.ValAddress([]byte("invalid")).String(),
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
 			},
 			expErr:    true,
@@ -807,7 +819,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 			input: &stakingtypes.MsgUndelegate{
 				DelegatorAddress:   Addr.String(),
 				ValidatorAddress:   ValAddr.String(),
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(0)),
 			},
 			expErr:    true,
@@ -818,7 +830,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 			input: &stakingtypes.MsgUndelegate{
 				DelegatorAddress:   Addr.String(),
 				ValidatorAddress:   ValAddr.String(),
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				Amount:             sdk.NewCoin("test", shares.RoundInt()),
 			},
 			expErr:    true,
@@ -829,7 +841,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 			input: &stakingtypes.MsgUndelegate{
 				DelegatorAddress:   Addr.String(),
 				ValidatorAddress:   ValAddr.String(),
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(101)),
 			},
 			expErr: false,
@@ -839,11 +851,11 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 			input: &stakingtypes.MsgUndelegate{
 				DelegatorAddress:   Addr.String(),
 				ValidatorAddress:   ValAddr.String(),
-				PeriodDelegationId: stakingtypes.FlexibleDelegationID,
+				PeriodDelegationId: stakingtypes.FlexiblePeriodDelegationID,
 				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
 			},
 			expErr:    true,
-			expErrMsg: "no delegation",
+			expErrMsg: "period delegation does not exist",
 		},
 	}
 

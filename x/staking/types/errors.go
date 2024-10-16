@@ -58,4 +58,5 @@ var (
 	ErrUndelegationBelowMinimum               = errors.Register(ModuleName, 53, "undelegation amount must be greater than or equal to minimum undelegation")
 	ErrRedelegationBelowMinimum               = errors.Register(ModuleName, 54, "redelegation amount must be greater than or equal to minimum delegation")
 	ErrTokenTypeMismatch                      = errors.Register(ModuleName, 55, "mismatch token type for redelegation")
+	ErrPeriodDelegationExists                 = errors.Register(ModuleName, 56, "period delegation already exists")
 )

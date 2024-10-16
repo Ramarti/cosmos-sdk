@@ -41,6 +41,7 @@ var (
 	RedelegationKey                  = []byte{0x34} // key for a redelegation
 	RedelegationByValSrcIndexKey     = []byte{0x35} // prefix for each key for an redelegation, by source validator operator
 	RedelegationByValDstIndexKey     = []byte{0x36} // prefix for each key for an redelegation, by destination validator operator
+	PeriodDelegationKey              = []byte{0x37} // key for a period delegation
 
 	UnbondingIDKey    = []byte{0x37} // key for the counter for the incrementing id for UnbondingOperations
 	UnbondingIndexKey = []byte{0x38} // prefix for an index for looking up unbonding operations by their IDs
@@ -53,9 +54,7 @@ var (
 	HistoricalInfoKey   = []byte{0x50} // prefix for the historical info
 	ValidatorUpdatesKey = []byte{0x61} // prefix for the end block validator updates key
 
-	ParamsKey     = []byte{0x51} // prefix for parameters for module x/staking
-	PeriodsKey    = []byte{0x52} // prefix for periods for module x/staking
-	TokenTypesKey = []byte{0x53} // prefix for token types for module x/staking
+	ParamsKey = []byte{0x51} // prefix for parameters for module x/staking
 
 	DelegationByValIndexKey = []byte{0x71} // key for delegations by a validator
 )
@@ -215,6 +214,12 @@ func GetDelegationKey(delAddr sdk.AccAddress, valAddr sdk.ValAddress) []byte {
 	return append(GetDelegationsKey(delAddr), address.MustLengthPrefix(valAddr)...)
 }
 
+// GetPeriodDelegationKey creates the key for delegator bond with validator
+// VALUE: staking/Delegation
+func GetPeriodDelegationKey(delAddr sdk.AccAddress, valAddr sdk.ValAddress, periodDelegationID string) []byte {
+	return append(GetPeriodDelegationsKey(delAddr, valAddr), []byte(periodDelegationID)...)
+}
+
 // GetDelegationsByValKey creates the key for delegations by validator address
 // VALUE: staking/Delegation
 func GetDelegationsByValKey(valAddr sdk.ValAddress, delAddr sdk.AccAddress) []byte {
@@ -259,6 +264,14 @@ func ParseDelegationsByValKey(bz []byte) (sdk.ValAddress, sdk.AccAddress, error)
 // GetDelegationsKey creates the prefix for a delegator for all validators
 func GetDelegationsKey(delAddr sdk.AccAddress) []byte {
 	return append(DelegationKey, address.MustLengthPrefix(delAddr)...)
+}
+
+// GetPeriodDelegationsKey creates the prefix for a <delegator, validator> for all period delegations
+func GetPeriodDelegationsKey(delAddr sdk.AccAddress, valAddr sdk.ValAddress) []byte {
+	return append(
+		append(PeriodDelegationKey, address.MustLengthPrefix(delAddr)...),
+		address.MustLengthPrefix(valAddr)...,
+	)
 }
 
 // GetUBDKey creates the key for an unbonding delegation by delegator and validator addr

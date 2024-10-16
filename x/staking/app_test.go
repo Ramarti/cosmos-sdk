@@ -110,7 +110,7 @@ func TestStakingMsgs(t *testing.T) {
 	require.True(t, sdk.Coins{genCoin}.Equal(bankKeeper.GetAllBalances(ctxCheck, addr2)))
 	delegateMsg := types.NewMsgDelegate(
 		addr2.String(), sdk.ValAddress(addr1).String(), bondCoin,
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+		types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE,
 	)
 
 	header = cmtproto.Header{Height: app.LastBlockHeight() + 1}
@@ -123,7 +123,7 @@ func TestStakingMsgs(t *testing.T) {
 	require.NoError(t, err)
 
 	// begin unbonding
-	beginUnbondingMsg := types.NewMsgUndelegate(addr2.String(), sdk.ValAddress(addr1).String(), types.FlexibleDelegationID, bondCoin)
+	beginUnbondingMsg := types.NewMsgUndelegate(addr2.String(), sdk.ValAddress(addr1).String(), types.FlexiblePeriodDelegationID, bondCoin)
 	header = cmtproto.Header{Height: app.LastBlockHeight() + 1}
 	_, _, err = simtestutil.SignCheckDeliver(t, txConfig, app.BaseApp, header, []sdk.Msg{beginUnbondingMsg}, "", []uint64{1}, []uint64{1}, true, true, priv2)
 	require.NoError(t, err)

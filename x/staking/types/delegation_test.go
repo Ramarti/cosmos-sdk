@@ -19,8 +19,6 @@ import (
 func TestDelegationEqual(t *testing.T) {
 	d1 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(100), math.LegacyNewDec(100),
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 	)
 	d2 := d1
 
@@ -37,8 +35,6 @@ func TestDelegationEqual(t *testing.T) {
 func TestDelegationString(t *testing.T) {
 	d := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(100), math.LegacyNewDec(100),
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0),
 	)
 	require.NotEmpty(t, d.String())
 }
@@ -66,10 +62,10 @@ func TestUnbondingDelegationString(t *testing.T) {
 }
 
 func TestRedelegationEqual(t *testing.T) {
-	r1 := types.NewRedelegation(sdk.AccAddress(valAddr1), valAddr2, valAddr3, types.FlexibleDelegationID, 0,
+	r1 := types.NewRedelegation(sdk.AccAddress(valAddr1), valAddr2, valAddr3, types.FlexiblePeriodDelegationID, 0,
 		time.Unix(0, 0), math.NewInt(0),
 		math.LegacyNewDec(0), 1, addresscodec.NewBech32Codec("cosmosvaloper"), addresscodec.NewBech32Codec("cosmos"))
-	r2 := types.NewRedelegation(sdk.AccAddress(valAddr1), valAddr2, valAddr3, types.FlexibleDelegationID, 0,
+	r2 := types.NewRedelegation(sdk.AccAddress(valAddr1), valAddr2, valAddr3, types.FlexiblePeriodDelegationID, 0,
 		time.Unix(0, 0), math.NewInt(0),
 		math.LegacyNewDec(0), 1, addresscodec.NewBech32Codec("cosmosvaloper"), addresscodec.NewBech32Codec("cosmos"))
 	require.True(t, proto.Equal(&r1, &r2))
@@ -80,7 +76,7 @@ func TestRedelegationEqual(t *testing.T) {
 }
 
 func TestRedelegationString(t *testing.T) {
-	r := types.NewRedelegation(sdk.AccAddress(valAddr1), valAddr2, valAddr3, types.FlexibleDelegationID, 0,
+	r := types.NewRedelegation(sdk.AccAddress(valAddr1), valAddr2, valAddr3, types.FlexiblePeriodDelegationID, 0,
 		time.Unix(0, 0), math.NewInt(0),
 		math.LegacyNewDec(10), 1, addresscodec.NewBech32Codec("cosmosvaloper"), addresscodec.NewBech32Codec("cosmos"))
 
@@ -92,15 +88,11 @@ func TestDelegationResponses(t *testing.T) {
 
 	del1 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr2.String(), math.LegacyNewDec(5), math.LegacyNewDec(5),
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 	)
 	dr1 := types.NewDelegationResp(del1, sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(5)))
 
 	del2 := types.NewDelegation(
 		sdk.AccAddress(valAddr1).String(), valAddr3.String(), math.LegacyNewDec(5), math.LegacyNewDec(5),
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 	)
 	dr2 := types.NewDelegationResp(del2, sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(5)))
 
@@ -130,8 +122,8 @@ func TestDelegationResponses(t *testing.T) {
 func TestRedelegationResponses(t *testing.T) {
 	cdc := codec.NewLegacyAmino()
 	entries := []types.RedelegationEntryResponse{
-		types.NewRedelegationEntryResponse(types.FlexibleDelegationID, 0, time.Unix(0, 0), math.LegacyNewDec(5), math.NewInt(5), math.NewInt(5), 0),
-		types.NewRedelegationEntryResponse(types.FlexibleDelegationID, 0, time.Unix(0, 0), math.LegacyNewDec(5), math.NewInt(5), math.NewInt(5), 0),
+		types.NewRedelegationEntryResponse(types.FlexiblePeriodDelegationID, 0, time.Unix(0, 0), math.LegacyNewDec(5), math.NewInt(5), math.NewInt(5), 0),
+		types.NewRedelegationEntryResponse(types.FlexiblePeriodDelegationID, 0, time.Unix(0, 0), math.LegacyNewDec(5), math.NewInt(5), math.NewInt(5), 0),
 	}
 	rdr1 := types.NewRedelegationResponse(sdk.AccAddress(valAddr1).String(), valAddr2.String(), valAddr3.String(), entries)
 	rdr2 := types.NewRedelegationResponse(sdk.AccAddress(valAddr2).String(), valAddr1.String(), valAddr3.String(), entries)

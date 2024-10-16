@@ -877,6 +877,52 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
+	tokenTypeInfo, ok := types.GetTokenTypeInfo(validator.GetSupportTokenType())
+	if !ok {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), errors.New("invalid token type")
+	}
+	periodInfo, ok := types.GetStakingPeriodInfo(periodType)
+	if !ok {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), errors.New("invalid period type")
+	}
+
+	// if subtractAccount is true then we are
+	// performing a delegation and not a redelegation,
+	// thus the endTime should be calculated based on current block time
+	if subtractAccount {
+		endTime = sdkCtx.BlockTime().Add(periodInfo.Duration)
+	}
+	// Get or create the delegation object and call the appropriate hook if present
+	delegation, err := k.GetDelegation(ctx, delAddr, valbz)
+	if err == nil {
+		// found
+		err = k.Hooks().BeforeDelegationSharesModified(ctx, delAddr, valbz)
+	} else if errors.Is(err, types.ErrNoDelegation) {
+		delAddrStr, err1 := k.authKeeper.AddressCodec().BytesToString(delAddr)
+		if err1 != nil {
+			return math.LegacyZeroDec(), math.LegacyZeroDec(), err1
+		}
+		delegation = types.NewDelegation(
+			delAddrStr, validator.GetOperator(),
+			math.LegacyZeroDec(), math.LegacyZeroDec(),
+		)
+		err = k.Hooks().BeforeDelegationCreated(ctx, delAddr, valbz)
+	} else {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
+	}
+	// check err from BeforeDelegationCreated
+	if err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
+	}
+
+	periodDelegation, err := k.ValidateNewPeriodDelegation(
+		ctx, delAddr, valbz,
+		periodDelID, periodType, endTime,
+	)
+	if err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
+	}
+
 	// if subtractAccount is true then we are
 	// performing a delegation and not a redelegation, thus the source tokens are
 	// all non bonded
@@ -929,55 +975,22 @@ func (k Keeper) Delegate(
 		}
 	}
 
-	tokenTypeRewardsMultiplier, err := k.GetTokenTypeRewardsMultiplier(ctx, validator.GetSupportTokenType())
-	if err != nil {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
-	}
-	period, err := k.GetPeriod(ctx, periodType)
-	if err != nil {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
-	}
-
-	_, newShares, newRewardsShares, err = k.AddValidatorTokensAndShares(ctx, validator, bondAmt, tokenTypeRewardsMultiplier.Mul(period.RewardsMultiplier))
+	_, newShares, newRewardsShares, err = k.AddValidatorTokensAndShares(
+		ctx, validator, bondAmt, tokenTypeInfo.RewardsMultiplier.Mul(periodInfo.RewardsMultiplier),
+	)
 	if err != nil {
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
-	// if subtractAccount is true then we are
-	// performing a delegation and not a redelegation,
-	// thus the endTime should be calculated based on current block time
-	if subtractAccount {
-		endTime = sdkCtx.BlockTime().Add(period.Duration)
-	}
-	// Get or create the delegation object and call the appropriate hook if present
-	delegation, err := k.GetDelegation(ctx, delAddr, valbz)
-	if err == nil {
-		// found, and add period delegation
-		delegation.AddPeriodDelegation(
-			periodDelID, newShares, newRewardsShares,
-			period.PeriodType, endTime,
-		)
-		err = k.Hooks().BeforeDelegationSharesModified(ctx, delAddr, valbz)
-	} else if errors.Is(err, types.ErrNoDelegation) {
-		delAddrStr, err1 := k.authKeeper.AddressCodec().BytesToString(delAddr)
-		if err1 != nil {
-			return math.LegacyZeroDec(), math.LegacyZeroDec(), err1
-		}
-		delegation = types.NewDelegation(
-			delAddrStr, validator.GetOperator(),
-			newShares, newRewardsShares,
-			periodDelID, period.PeriodType, endTime,
-		)
-		err = k.Hooks().BeforeDelegationCreated(ctx, delAddr, valbz)
-	} else {
+	// Update period delegation
+	periodDelegation.Shares = periodDelegation.Shares.Add(newShares)
+	periodDelegation.RewardsShares = periodDelegation.RewardsShares.Add(newRewardsShares)
+	if err = k.SetPeriodDelegation(ctx, delAddr, valbz, periodDelegation); err != nil {
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
-	// check err from BeforeDelegationCreated
-	if err != nil {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
-	}
-
 	// Update delegation
+	delegation.Shares = delegation.Shares.Add(newShares)
+	delegation.RewardsShares = delegation.RewardsShares.Add(newRewardsShares)
 	if err = k.SetDelegation(ctx, delegation); err != nil {
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
@@ -1005,13 +1018,14 @@ func (k Keeper) Unbond(
 	}
 
 	// check if the period delegation exists
-	if _, ok := delegation.PeriodDelegations[periodDelegationId]; !ok {
-		return amount, types.ErrNoPeriodDelegation
+	periodDelegation, err := k.GetPeriodDelegation(ctx, delAddr, valAddr, periodDelegationId)
+	if err != nil {
+		return amount, err
 	}
 	// check if the period delegation reached the end time, ignore if it's a force unbond
-	if delPeriod := delegation.PeriodDelegations[periodDelegationId]; !forceUnbond &&
-		delPeriod.PeriodType != types.PeriodType_FLEXIBLE &&
-		delPeriod.EndTime.After(sdk.UnwrapSDKContext(ctx).BlockTime()) {
+	if !forceUnbond &&
+		periodDelegation.PeriodType != types.PeriodType_FLEXIBLE &&
+		periodDelegation.EndTime.After(sdk.UnwrapSDKContext(ctx).BlockTime()) {
 		return amount, types.ErrPeriodDelegationNotCompleted
 	}
 
@@ -1026,43 +1040,43 @@ func (k Keeper) Unbond(
 		return amount, err
 	}
 
-	tokenTypeRewardsMultiplier, err := k.GetTokenTypeRewardsMultiplier(ctx, validator.SupportTokenType)
-	if err != nil {
-		return amount, err
+	tokenTypeInfo, ok := types.GetTokenTypeInfo(validator.SupportTokenType)
+	if !ok {
+		return amount, errors.New("invalid token type")
 	}
-	periodMultiplier, err := k.GetPeriodRewardsMultiplier(ctx, delegation.PeriodDelegations[periodDelegationId].PeriodType)
-	if err != nil {
-		return amount, err
+	periodInfo, ok := types.GetStakingPeriodInfo(periodDelegation.PeriodType)
+	if !ok {
+		return amount, errors.New("invalid period type")
 	}
-	rewardsShares := shares.Mul(tokenTypeRewardsMultiplier).Mul(periodMultiplier)
+	rewardsShares := shares.Mul(tokenTypeInfo.RewardsMultiplier).Mul(periodInfo.RewardsMultiplier)
 
 	// ensure that we have enough shares to remove
 	if delegation.Shares.LT(shares) {
 		return amount, errorsmod.Wrap(types.ErrNotEnoughDelegationShares, delegation.Shares.String())
 	}
-	if delegation.PeriodDelegations[periodDelegationId].Shares.LT(shares) {
+	if periodDelegation.Shares.LT(shares) {
 		return amount, errorsmod.Wrap(
 			types.ErrNotEnoughPeriodDelegationShares,
-			delegation.PeriodDelegations[periodDelegationId].Shares.String(),
+			periodDelegation.Shares.String(),
 		)
 	}
 	// ensure that we have enough rewards shares to remove
 	if delegation.RewardsShares.LT(rewardsShares) {
 		return amount, errorsmod.Wrap(types.ErrNotEnoughDelegationRewardsShares, delegation.RewardsShares.String())
 	}
-	if delegation.PeriodDelegations[periodDelegationId].RewardsShares.LT(rewardsShares) {
+	if periodDelegation.RewardsShares.LT(rewardsShares) {
 		return amount, errorsmod.Wrap(
 			types.ErrNotEnoughPeriodDelegationRewardsShares,
-			delegation.PeriodDelegations[periodDelegationId].RewardsShares.String(),
+			periodDelegation.RewardsShares.String(),
 		)
 	}
 
 	// subtract shares from delegation
 	delegation.Shares = delegation.Shares.Sub(shares)
-	delegation.PeriodDelegations[periodDelegationId].Shares = delegation.PeriodDelegations[periodDelegationId].Shares.Sub(shares)
+	periodDelegation.Shares = periodDelegation.Shares.Sub(shares)
 	// subtract rewards shares from delegation
 	delegation.RewardsShares = delegation.RewardsShares.Sub(rewardsShares)
-	delegation.PeriodDelegations[periodDelegationId].RewardsShares = delegation.PeriodDelegations[periodDelegationId].RewardsShares.Sub(rewardsShares)
+	periodDelegation.RewardsShares = periodDelegation.RewardsShares.Sub(rewardsShares)
 
 	delegatorAddress, err := k.authKeeper.AddressCodec().StringToBytes(delegation.DelegatorAddress)
 	if err != nil {
@@ -1087,12 +1101,18 @@ func (k Keeper) Unbond(
 		validator = k.mustGetValidator(ctx, valbz)
 	}
 
+	if periodDelegation.Shares.IsZero() {
+		err = k.RemovePeriodDelegation(ctx, delAddr, valAddr, periodDelegationId)
+	} else {
+		err = k.SetPeriodDelegation(ctx, delAddr, valAddr, periodDelegation)
+	}
+	if err != nil {
+		return amount, err
+	}
+
 	if delegation.Shares.IsZero() {
 		err = k.RemoveDelegation(ctx, delegation)
 	} else {
-		if delegation.PeriodDelegations[periodDelegationId].Shares.IsZero() {
-			delegation.RemovePeriodDelegation(periodDelegationId)
-		}
 		if err = k.SetDelegation(ctx, delegation); err != nil {
 			return amount, err
 		}
@@ -1105,7 +1125,6 @@ func (k Keeper) Unbond(
 		// call the after delegation modification hook
 		err = k.Hooks().AfterDelegationModified(ctx, delegatorAddress, valAddr)
 	}
-
 	if err != nil {
 		return amount, err
 	}
@@ -1326,11 +1345,9 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, types.ErrMaxRedelegationEntries
 	}
 
-	// Get the delegation info before unbond in case the period delegation is pruned after unbond.
-	delegation, err := k.GetDelegation(ctx, delAddr, valSrcAddr)
-	if errors.Is(err, types.ErrNoDelegation) {
-		return time.Time{}, types.ErrNoDelegatorForAddress
-	} else if err != nil {
+	// check period delegation existence
+	periodDelegation, err := k.GetPeriodDelegation(ctx, delAddr, valSrcAddr, periodDelegationId)
+	if err != nil {
 		return time.Time{}, err
 	}
 
@@ -1343,11 +1360,10 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, types.ErrTinyRedelegationAmount
 	}
 
-	// Since we already unbond successfully, there's no need to check if the period delegation exists.
 	sharesCreated, _, err := k.Delegate(
 		ctx, delAddr, returnAmount, srcValidator.GetStatus(), dstValidator, false,
-		periodDelegationId, delegation.PeriodDelegations[periodDelegationId].PeriodType,
-		delegation.PeriodDelegations[periodDelegationId].EndTime,
+		periodDelegationId, periodDelegation.PeriodType,
+		periodDelegation.EndTime,
 	)
 	if err != nil {
 		return time.Time{}, err
@@ -1445,32 +1461,41 @@ func (k Keeper) ValidateUnbondAmount(
 		return shares, err
 	}
 
-	del, err := k.GetDelegation(ctx, delAddr, valAddr)
-	if err != nil {
-		return shares, err
+	if amt.GT(validator.GetTokens()) {
+		amt = validator.GetTokens()
 	}
 
-	if del.PeriodDelegations[periodDelegationId] == nil {
-		return shares, errors.New("no period delegation found")
-	}
-	delPeriod, ok := del.PeriodDelegations[periodDelegationId]
-	if !ok {
-		return shares, fmt.Errorf("period delegation %s not found", periodDelegationId)
+	periodDelegation, err := k.GetPeriodDelegation(ctx, delAddr, valAddr, periodDelegationId)
+	if err != nil {
+		return shares, err
 	}
 
 	shares, err = validator.SharesFromTokens(amt)
 	if err != nil {
 		return shares, err
 	}
+
+	// SHOULD NOT HAPPEN
+	if shares.GT(validator.GetDelegatorShares()) {
+		k.Logger(ctx).Error(
+			"unexpected unbond shares",
+			"delAddr", delAddr.String(),
+			"valAddr", valAddr.String(),
+			"delShares", shares.String(),
+			"valShares", validator.GetDelegatorShares().String(),
+		)
+		return shares, errors.New("unbond shares are greater than validator shares")
+	}
+
 	// unbond all shares for following conditions:
 	// 1. the shares are greater than all period delegation shares
 	// 2. the tokens of remaining shares are less than the minimum delegation amount
-	if shares.GT(delPeriod.Shares) {
-		shares = delPeriod.Shares
+	if shares.GT(periodDelegation.Shares) {
+		shares = periodDelegation.Shares
 	}
-	tokenRemaining := validator.TokensFromShares(delPeriod.Shares.Sub(shares))
+	tokenRemaining := validator.TokensFromShares(periodDelegation.Shares.Sub(shares))
 	if tokenRemaining.LT(math.LegacyNewDecFromInt(params.MinDelegation)) {
-		shares = delPeriod.Shares
+		shares = periodDelegation.Shares
 	}
 
 	return shares, nil

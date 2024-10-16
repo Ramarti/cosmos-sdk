@@ -520,7 +520,7 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(), // src-validator-addr
 				sdk.ValAddress(s.addrs[1]).String(), // dst-validator-addr
-				types.FlexibleDelegationID,
+				types.FlexiblePeriodDelegationID,
 				"fooCoin",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -534,7 +534,7 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 			[]string{
 				"invalid",                           // wrong src-validator-addr
 				sdk.ValAddress(s.addrs[1]).String(), // dst-validator-addr
-				types.FlexibleDelegationID,
+				types.FlexiblePeriodDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(), // amount
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=%d", flags.FlagGas, 300000),
@@ -549,7 +549,7 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(), // src-validator-addr
 				"invalid",                           // wrong dst-validator-addr
-				types.FlexibleDelegationID,
+				types.FlexiblePeriodDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(), // amount
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=%d", flags.FlagGas, 300000),
@@ -564,7 +564,7 @@ func (s *CLITestSuite) TestNewRedelegateCmd() {
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(), // src-validator-addr
 				sdk.ValAddress(s.addrs[1]).String(), // dst-validator-addr
-				types.FlexibleDelegationID,
+				types.FlexiblePeriodDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(), // amount
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=%d", flags.FlagGas, 300000),
@@ -605,7 +605,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"invalid unbond amount",
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(),
-				types.FlexibleDelegationID,
+				types.FlexiblePeriodDelegationID,
 				"foo",
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -618,7 +618,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"invalid validator address",
 			[]string{
 				"foo",
-				types.FlexibleDelegationID,
+				types.FlexiblePeriodDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
@@ -631,7 +631,7 @@ func (s *CLITestSuite) TestNewUnbondCmd() {
 			"valid transaction of unbond",
 			[]string{
 				sdk.ValAddress(s.addrs[0]).String(),
-				types.FlexibleDelegationID,
+				types.FlexiblePeriodDelegationID,
 				sdk.NewCoin(sdk.DefaultBondDenom, sdkmath.NewInt(150)).String(),
 				fmt.Sprintf("--%s=%s", flags.FlagFrom, s.addrs[0]),
 				fmt.Sprintf("--%s=true", flags.FlagSkipConfirmation),
