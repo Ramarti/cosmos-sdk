@@ -373,3 +373,9 @@ func (r RedelegationResponses) String() (out string) {
 
 	return strings.TrimSpace(out)
 }
+
+type UnbondedEntry struct {
+	ValidatorAddress string
+	DelegatorAddress string
+	Amount           math.Int
+}
