@@ -257,15 +257,13 @@ func GenesisStateWithValSet(
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(
 			genAccs[0].GetAddress().String(), sdk.ValAddress(val.Address).String(), sdkmath.LegacyOneDec(), sdkmath.LegacyOneDec(),
-			stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-			time.Unix(0, 0),
 		))
 
 	}
 
 	// set validators and delegations
 	stakingGenesis := stakingtypes.NewGenesisState(
-		stakingtypes.DefaultParams(), stakingtypes.DefaultPeriods(), stakingtypes.DefaultTokenTypes(),
+		stakingtypes.DefaultParams(),
 		validators, delegations,
 	)
 	genesisState[stakingtypes.ModuleName] = codec.MustMarshalJSON(stakingGenesis)

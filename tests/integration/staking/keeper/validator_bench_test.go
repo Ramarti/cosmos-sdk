@@ -61,12 +61,19 @@ func BenchmarkGetValidatorDelegations(b *testing.B) {
 			delegator := sdk.AccAddress(fmt.Sprintf("address%d", i))
 			banktestutil.FundAccount(f.sdkCtx, f.bankKeeper, delegator,
 				sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(i)))))
-			NewDel := types.NewDelegation(delegator.String(), val.String(), math.LegacyNewDec(int64(i)), math.LegacyNewDec(int64(i)),
-				types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-				time.Unix(0, 0),
-			)
-
+			NewDel := types.NewDelegation(delegator.String(), val.String(), math.LegacyNewDec(int64(i)), math.LegacyNewDec(int64(i)))
 			if err := f.stakingKeeper.SetDelegation(f.sdkCtx, NewDel); err != nil {
+				panic(err)
+			}
+
+			periodDel := types.NewPeriodDelegation(
+				types.FlexiblePeriodDelegationID,
+				math.LegacyNewDec(int64(i)),
+				math.LegacyNewDec(int64(i)),
+				types.PeriodType_FLEXIBLE,
+				time.Time{},
+			)
+			if err := f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, delegator, val, periodDel); err != nil {
 				panic(err)
 			}
 		}
@@ -100,11 +107,19 @@ func BenchmarkGetValidatorDelegationsLegacy(b *testing.B) {
 			delegator := sdk.AccAddress(fmt.Sprintf("address%d", i))
 			banktestutil.FundAccount(f.sdkCtx, f.bankKeeper, delegator, sdk.NewCoins(sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(int64(i)))))
 			NewDel := types.NewDelegation(
-				delegator.String(), val.String(), math.LegacyNewDec(int64(i)), math.LegacyNewDec(int64(i)),
-				types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-				time.Unix(0, 0),
-			)
+				delegator.String(), val.String(), math.LegacyNewDec(int64(i)), math.LegacyNewDec(int64(i)))
 			if err := f.stakingKeeper.SetDelegation(f.sdkCtx, NewDel); err != nil {
+				panic(err)
+			}
+
+			periodDel := types.NewPeriodDelegation(
+				types.FlexiblePeriodDelegationID,
+				math.LegacyNewDec(int64(i)),
+				math.LegacyNewDec(int64(i)),
+				types.PeriodType_FLEXIBLE,
+				time.Time{},
+			)
+			if err := f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, delegator, val, periodDel); err != nil {
 				panic(err)
 			}
 		}

@@ -13,7 +13,6 @@ import (
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -91,7 +90,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum self delegation must be a positive integer")
 	}
 
-	supportTokenType, err := keeper.ParseTokenTypeNormalized(v.SupportTokenType)
+	supportTokenType, err := types.ParseTokenTypeNormalized(v.SupportTokenType)
 	if err != nil {
 		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "token type must be supported")
 	}

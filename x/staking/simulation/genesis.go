@@ -56,8 +56,6 @@ func RandomizedGenState(simState *module.SimulationState) {
 	// NewSimulationManager constructor for this to work
 	simState.UnbondTime = unbondTime
 	params := types.NewParams(simState.UnbondTime, maxVals, 7, histEntries, simState.BondDenom, minCommissionRate, types.DefaultMinDelegation, types.DefaultMinUndelegation)
-	periods := types.DefaultPeriods()
-	tokenTypes := types.DefaultTokenTypes()
 
 	// validators & delegations
 	var (
@@ -88,15 +86,13 @@ func RandomizedGenState(simState *module.SimulationState) {
 
 		delegation := types.NewDelegation(
 			simState.Accounts[i].Address.String(), valAddr.String(), sdkmath.LegacyNewDecFromInt(simState.InitialStake), sdkmath.LegacyNewDecFromInt(simState.InitialStake),
-			types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-			time.Unix(0, 0),
 		)
 
 		validators = append(validators, validator)
 		delegations = append(delegations, delegation)
 	}
 
-	stakingGenesis := types.NewGenesisState(params, periods, tokenTypes, validators, delegations)
+	stakingGenesis := types.NewGenesisState(params, validators, delegations)
 
 	bz, err := json.MarshalIndent(&stakingGenesis.Params, "", " ")
 	if err != nil {

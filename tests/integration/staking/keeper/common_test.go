@@ -83,17 +83,17 @@ func createValidators(t *testing.T, f *fixture, powers []int64) ([]sdk.AccAddres
 
 	_, _, err := f.stakingKeeper.Delegate(
 		f.sdkCtx, addrs[0], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[0]), types.Unbonded, val1,
-		true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+		true, types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
 	)
 	assert.NilError(t, err)
 	_, _, err = f.stakingKeeper.Delegate(
 		f.sdkCtx, addrs[1], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[1]), types.Unbonded, val2,
-		true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+		true, types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
 	)
 	assert.NilError(t, err)
 	_, _, err = f.stakingKeeper.Delegate(
 		f.sdkCtx, addrs[0], f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, powers[2]), types.Unbonded, val2,
-		true, types.FlexibleDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+		true, types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
 	)
 	assert.NilError(t, err)
 	applyValidatorSetUpdates(t, f.sdkCtx, f.stakingKeeper, -1)

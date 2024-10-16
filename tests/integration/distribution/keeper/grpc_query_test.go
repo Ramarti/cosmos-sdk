@@ -509,11 +509,17 @@ func TestGRPCDelegationRewards(t *testing.T) {
 	// setup delegation
 	delTokens := sdk.TokensFromConsensusPower(2, sdk.DefaultPowerReduction)
 	validator, issuedShares, _ := val.AddTokensFromDel(delTokens, math.LegacyOneDec())
-	delegation := stakingtypes.NewDelegation(delAddr.String(), f.valAddr.String(), issuedShares, issuedShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0),
-	)
+	delegation := stakingtypes.NewDelegation(delAddr.String(), f.valAddr.String(), issuedShares, issuedShares)
 	assert.NilError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, delegation))
+	periodDel := stakingtypes.NewPeriodDelegation(
+		stakingtypes.FlexiblePeriodDelegationID,
+		issuedShares,
+		issuedShares,
+		stakingtypes.PeriodType_FLEXIBLE,
+		time.Time{},
+	)
+	assert.NilError(t, f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, delAddr, f.valAddr, periodDel))
+
 	valBz, err := f.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator.GetOperator())
 	assert.NilError(t, err)
 	assert.NilError(t, f.distrKeeper.SetDelegatorStartingInfo(f.sdkCtx, valBz, delAddr, types.NewDelegatorStartingInfo(2, math.LegacyNewDec(initialStake), 20)))

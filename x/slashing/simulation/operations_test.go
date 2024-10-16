@@ -178,8 +178,6 @@ func (suite *SimTestSuite) TestSimulateMsgUnjail() {
 
 	selfDelegation := stakingtypes.NewDelegation(
 		suite.accounts[0].Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 	)
 	suite.Require().NoError(suite.stakingKeeper.SetDelegation(ctx, selfDelegation))
 	suite.Require().NoError(suite.distrKeeper.SetDelegatorStartingInfo(ctx, val0AccAddress, val0AccAddress.Bytes(), distrtypes.NewDelegatorStartingInfo(2, math.LegacyOneDec(), 200)))

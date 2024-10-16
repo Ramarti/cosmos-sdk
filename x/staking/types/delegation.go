@@ -12,10 +12,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-const (
-	FlexibleDelegationID = "0"
-)
-
 // Implements Delegation interface
 var _ DelegationI = Delegation{}
 
@@ -23,16 +19,12 @@ var _ DelegationI = Delegation{}
 func NewDelegation(
 	delegatorAddr, validatorAddr string,
 	shares, rewardsShares math.LegacyDec,
-	periodDelID string, periodType PeriodType, endTime time.Time,
 ) Delegation {
 	return Delegation{
 		DelegatorAddress: delegatorAddr,
 		ValidatorAddress: validatorAddr,
 		Shares:           shares,
 		RewardsShares:    rewardsShares,
-		PeriodDelegations: map[string]*PeriodDelegation{
-			periodDelID: NewPeriodDelegation(periodDelID, shares, rewardsShares, periodType, endTime),
-		},
 	}
 }
 
@@ -68,47 +60,6 @@ func (d Delegation) GetValidatorAddr() string {
 func (d Delegation) GetShares() math.LegacyDec { return d.Shares }
 
 func (d Delegation) GetRewardsShares() math.LegacyDec { return d.RewardsShares }
-
-func (d Delegation) GetPeriodDelegations() map[string]*PeriodDelegation { return d.PeriodDelegations }
-
-func (d Delegation) GetPeriodDelegation(id string) *PeriodDelegation { return d.PeriodDelegations[id] }
-
-func (d *Delegation) AddPeriodDelegation(
-	id string,
-	shares, rewardsShares math.LegacyDec,
-	periodType PeriodType, endTime time.Time,
-) bool {
-	_, ok := d.PeriodDelegations[id]
-	if ok {
-		// found, check if it's a flexible delegation
-		if id != FlexibleDelegationID {
-			return false
-		}
-		// all flexible delegations will be in the same period delegation
-		d.PeriodDelegations[id].Shares = d.PeriodDelegations[id].Shares.Add(shares)
-		d.PeriodDelegations[id].RewardsShares = d.PeriodDelegations[id].RewardsShares.Add(rewardsShares)
-	} else {
-		// not found, create new period delegation
-		d.PeriodDelegations[id] = NewPeriodDelegation(id, shares, rewardsShares, periodType, endTime)
-	}
-
-	// update overall shares
-	d.Shares = d.Shares.Add(shares)
-	d.RewardsShares = d.RewardsShares.Add(rewardsShares)
-
-	return true
-}
-
-func (d *Delegation) RemovePeriodDelegation(id string) {
-	pd, ok := d.PeriodDelegations[id]
-	if !ok {
-		return
-	}
-
-	d.Shares = d.Shares.Sub(pd.Shares)
-	d.RewardsShares = d.RewardsShares.Sub(pd.RewardsShares)
-	delete(d.PeriodDelegations, id)
-}
 
 // Delegations is a collection of delegations
 type Delegations []Delegation
@@ -432,18 +383,4 @@ func (r RedelegationResponses) String() (out string) {
 	}
 
 	return strings.TrimSpace(out)
-}
-
-func NewPeriodDelegation(
-	id string,
-	shares, rewardsShares math.LegacyDec,
-	periodType PeriodType, endTime time.Time,
-) *PeriodDelegation {
-	return &PeriodDelegation{
-		PeriodDelegationId: id,
-		Shares:             shares,
-		RewardsShares:      rewardsShares,
-		PeriodType:         periodType,
-		EndTime:            endTime,
-	}
 }

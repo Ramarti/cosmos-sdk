@@ -2,7 +2,6 @@ package testutil
 
 import (
 	"fmt"
-	"time"
 
 	"cosmossdk.io/math"
 
@@ -129,8 +128,6 @@ func Delegate(
 		err = distrKeeper.Hooks().BeforeDelegationCreated(ctx, delegator, valBz)
 		del := stakingtypes.NewDelegation(
 			delegator.String(), validator.GetOperator(), math.LegacyZeroDec(), math.LegacyZeroDec(),
-			stakingtypes.FlexibleDelegationID, stakingtypes.PeriodType_FLEXIBLE,
-			time.Unix(0, 0),
 		)
 		delegation = &del
 	}

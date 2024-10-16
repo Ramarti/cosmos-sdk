@@ -332,7 +332,7 @@ func SimulateMsgDelegate(
 
 		msg := types.NewMsgDelegate(
 			simAccount.Address.String(), val.GetOperator(), bondAmt,
-			types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
+			types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE,
 		)
 
 		txCtx := simulation.OperationInput{
@@ -428,7 +428,7 @@ func SimulateMsgUndelegate(
 		}
 
 		msg := types.NewMsgUndelegate(
-			delAddr, val.GetOperator(), types.FlexibleDelegationID, sdk.NewCoin(bondDenom, unbondAmt),
+			delAddr, val.GetOperator(), types.FlexiblePeriodDelegationID, sdk.NewCoin(bondDenom, unbondAmt),
 		)
 
 		// need to retrieve the simulation account associated with delegation to retrieve PrivKey
@@ -691,7 +691,7 @@ func SimulateMsgBeginRedelegate(
 
 		msg := types.NewMsgBeginRedelegate(
 			delAddr, srcVal.GetOperator(), destVal.GetOperator(),
-			types.FlexibleDelegationID,
+			types.FlexiblePeriodDelegationID,
 			sdk.NewCoin(bondDenom, redAmt),
 		)
 

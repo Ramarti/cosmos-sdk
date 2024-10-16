@@ -199,7 +199,7 @@ func (s *SimTestSuite) TestSimulateMsgCancelUnbondingDelegation() {
 	delegator := s.accounts[2]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.Period{
+		types.FlexiblePeriodDelegationID, types.Period{
 			PeriodType:        types.PeriodType_FLEXIBLE,
 			Duration:          time.Duration(0),
 			RewardsMultiplier: math.LegacyOneDec(),
@@ -305,12 +305,17 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 	delegator := s.accounts[2]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)
+	require.NoError(s.stakingKeeper.SetPeriodDelegation(ctx, delegator.Address, val0bz, types.NewPeriodDelegation(
+		types.FlexiblePeriodDelegationID,
+		issuedShares,
+		issuedShares,
+		types.PeriodType_FLEXIBLE,
+		time.Time{},
+	)))
 	require.NoError(s.distrKeeper.SetDelegatorStartingInfo(ctx, val0bz, delegator.Address, distrtypes.NewDelegatorStartingInfo(2, math.LegacyOneDec(), 200)))
 
 	s.setupValidatorRewards(ctx, val0bz)
@@ -353,10 +358,17 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	delegator := s.accounts[3]
 	delegation := types.NewDelegation(
 		delegator.Address.String(), validator0.GetOperator(), issuedShares, issuedShares,
-		types.FlexibleDelegationID, types.PeriodType_FLEXIBLE,
-		time.Unix(0, 0).UTC(),
 	)
 	require.NoError(s.stakingKeeper.SetDelegation(ctx, delegation))
+	valAddrBytes, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
+	require.NoError(err)
+	require.NoError(s.stakingKeeper.SetPeriodDelegation(ctx, delegator.Address, valAddrBytes, types.NewPeriodDelegation(
+		types.FlexiblePeriodDelegationID,
+		issuedShares,
+		issuedShares,
+		types.PeriodType_FLEXIBLE,
+		time.Time{},
+	)))
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)
 	val1bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator1.GetOperator())

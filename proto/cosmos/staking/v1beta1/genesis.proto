@@ -41,11 +41,6 @@ message GenesisState {
 
   // exported defines a bool to identify whether the chain dealing with exported or initialized genesis.
   bool exported = 8;
-
-  // periods defines the supported staking periods.
-  Periods periods = 9 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
-
-  TokenTypes token_types = 10 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
 // LastValidatorPower required for validator set update logic.

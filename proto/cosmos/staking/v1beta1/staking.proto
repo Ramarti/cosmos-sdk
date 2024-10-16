@@ -94,10 +94,6 @@ message TokenTypeInfo {
   ];
 }
 
-message TokenTypes {
-  map<int32, TokenTypeInfo> token_type_info_map = 1;
-}
-
 // Validator defines a validator, together with the total amount of the
 // Validator's bond shares and their exchange rate to coins. Slashing results in
 // a decrease in the exchange rate, allowing correct calculation of future
@@ -238,10 +234,6 @@ message Period {
   ];
 }
 
-message Periods {
-  map<int32, Period> period_map = 1;
-}
-
 message PeriodDelegation {
   string period_delegation_id = 1 [(amino.dont_omitempty) = true];
 
@@ -286,8 +278,6 @@ message Delegation {
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
-
-  map<string, PeriodDelegation> period_delegations = 5;
 }
 
 // UnbondingDelegation stores all of a single delegator's unbonding bonds

@@ -19,7 +19,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
-	"github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
@@ -217,7 +216,7 @@ $ %s tx staking delegate cosmosvalopers1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1
 				return err
 			}
 
-			periodType, err := keeper.ParsePeriodTypeNormalized(args[3])
+			periodType, err := types.ParsePeriodTypeNormalized(args[3])
 			if err != nil {
 				return err
 			}
@@ -626,7 +625,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 		return txBldr, nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum self delegation must be a positive integer")
 	}
 
-	supportTokenType, err := keeper.ParseTokenTypeNormalized(config.SupportTokenType)
+	supportTokenType, err := types.ParseTokenTypeNormalized(config.SupportTokenType)
 	if err != nil {
 		return txBldr, nil, err
 	}
