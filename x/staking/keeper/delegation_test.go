@@ -49,7 +49,7 @@ func (s *KeeperTestSuite) TestDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -78,7 +78,7 @@ func (s *KeeperTestSuite) TestDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 	bond1to3 := stakingtypes.NewDelegation(
@@ -88,7 +88,7 @@ func (s *KeeperTestSuite) TestDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 	bond2to1 := stakingtypes.NewDelegation(
@@ -98,7 +98,7 @@ func (s *KeeperTestSuite) TestDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 	bond2to2 := stakingtypes.NewDelegation(
@@ -108,7 +108,7 @@ func (s *KeeperTestSuite) TestDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 	bond2to3 := stakingtypes.NewDelegation(
@@ -118,7 +118,7 @@ func (s *KeeperTestSuite) TestDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 	require.NoError(keeper.SetDelegation(ctx, bond1to2))
@@ -235,7 +235,7 @@ func (s *KeeperTestSuite) TestDelegationsByValIndex() {
 	// total delegations after delegating: del1 -> 2stake
 	_, err := s.msgServer.Delegate(ctx, stakingtypes.NewMsgDelegate(
 		addrDels[0].String(), valAddrs[0].String(), sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(2)),
-		stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.FlexiblePeriodDelegationID, stakingtypes.DefaultFlexiblePeriodType,
 	))
 	require.NoError(err)
 
@@ -248,7 +248,7 @@ func (s *KeeperTestSuite) TestDelegationsByValIndex() {
 	// total delegations after delegating: del1 -> 2stake, del2 -> 4stake
 	_, err = s.msgServer.Delegate(ctx, stakingtypes.NewMsgDelegate(
 		addrDels[1].String(), valAddrs[0].String(), sdk.NewCoin(sdk.DefaultBondDenom, math.NewInt(4)),
-		stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.FlexiblePeriodDelegationID, stakingtypes.DefaultFlexiblePeriodType,
 	))
 	require.NoError(err)
 
@@ -445,7 +445,7 @@ func (s *KeeperTestSuite) TestUnbondDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -494,7 +494,7 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -513,7 +513,7 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -559,7 +559,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -578,7 +578,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -654,7 +654,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -672,7 +672,7 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -751,7 +751,7 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -771,7 +771,7 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -940,7 +940,7 @@ func (s *KeeperTestSuite) TestRedelegateToSameValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -971,7 +971,7 @@ func (s *KeeperTestSuite) TestRedelegationMaxEntries() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -1035,7 +1035,7 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -1061,7 +1061,7 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -1102,7 +1102,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -1120,7 +1120,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -1201,7 +1201,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 
@@ -1219,7 +1219,7 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)))
 

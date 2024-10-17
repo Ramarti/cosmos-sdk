@@ -203,7 +203,39 @@
         "historical_entries": 100,
         "bond_denom": "stake",
         "min_delegation": "1",
-        "min_undelegation": "1"
+        "flexible_period_type": 0,
+        "periods":[
+          {
+            "period_type": 0,
+            "duration": "0s",
+            "rewards_multiplier": "1"
+          },
+          {
+            "period_type": 1,
+            "duration": "2592000s",
+            "rewards_multiplier": "1.051"
+          },
+          {
+            "period_type": 2,
+            "duration": "31536000s",
+            "rewards_multiplier": "1.16"
+          },
+          {
+            "period_type": 3,
+            "duration": "46656000s",
+            "rewards_multiplier": "1.34"
+          }
+        ],
+        "token_types":[
+          {
+            "token_type": 0,
+            "rewards_multiplier": "0.5"
+          },
+          {
+            "token_type": 1,
+            "rewards_multiplier": "1"
+          }
+        ]
       },
       "last_total_power": "0",
       "last_validator_powers": null,

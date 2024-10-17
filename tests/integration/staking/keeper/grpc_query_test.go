@@ -807,7 +807,7 @@ func TestGRPCQueryRedelegations(t *testing.T) {
 	delAmount := f.stakingKeeper.TokensFromConsensusPower(ctx, 1)
 	_, _, err := f.stakingKeeper.Delegate(
 		ctx, addrAcc1, delAmount, types.Unbonded, val1, true,
-		types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+		types.FlexiblePeriodDelegationID, types.DefaultFlexiblePeriodType, time.Unix(0, 0),
 	)
 	assert.NilError(t, err)
 	applyValidatorSetUpdates(t, ctx, f.stakingKeeper, -1)

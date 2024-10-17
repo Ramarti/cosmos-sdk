@@ -70,7 +70,7 @@ func BenchmarkGetValidatorDelegations(b *testing.B) {
 				types.FlexiblePeriodDelegationID,
 				math.LegacyNewDec(int64(i)),
 				math.LegacyNewDec(int64(i)),
-				types.PeriodType_FLEXIBLE,
+				types.DefaultFlexiblePeriodType,
 				time.Time{},
 			)
 			if err := f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, delegator, val, periodDel); err != nil {
@@ -116,7 +116,7 @@ func BenchmarkGetValidatorDelegationsLegacy(b *testing.B) {
 				types.FlexiblePeriodDelegationID,
 				math.LegacyNewDec(int64(i)),
 				math.LegacyNewDec(int64(i)),
-				types.PeriodType_FLEXIBLE,
+				types.DefaultFlexiblePeriodType,
 				time.Time{},
 			)
 			if err := f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, delegator, val, periodDel); err != nil {

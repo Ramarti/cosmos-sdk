@@ -54,7 +54,7 @@ func (sh *Helper) CreateValidatorMsg(addr sdk.ValAddress, pk cryptotypes.PubKey,
 	coin := sdk.NewCoin(sh.Denom, stakeAmount)
 	msg, err := stakingtypes.NewMsgCreateValidator(
 		addr.String(), pk, coin, stakingtypes.Description{}, sh.Commission, math.OneInt(),
-		types.TokenType_LOCKED,
+		0,
 	)
 	require.NoError(sh.t, err)
 	return msg
@@ -68,7 +68,7 @@ func (sh *Helper) CreateValidatorWithMsg(ctx context.Context, msg *stakingtypes.
 func (sh *Helper) createValidator(addr sdk.ValAddress, pk cryptotypes.PubKey, coin sdk.Coin, ok bool) {
 	msg, err := stakingtypes.NewMsgCreateValidator(
 		addr.String(), pk, coin, stakingtypes.Description{Moniker: "TestValidator"}, sh.Commission, math.OneInt(),
-		types.TokenType_LOCKED,
+		0,
 	)
 	require.NoError(sh.t, err)
 	res, err := sh.msgSrvr.CreateValidator(sh.Ctx, msg)
@@ -86,7 +86,7 @@ func (sh *Helper) Delegate(delegator sdk.AccAddress, val sdk.ValAddress, amount 
 	coin := sdk.NewCoin(sh.Denom, amount)
 	msg := stakingtypes.NewMsgDelegate(
 		delegator.String(), val.String(), coin,
-		types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE,
+		types.FlexiblePeriodDelegationID, 0,
 	)
 	res, err := sh.msgSrvr.Delegate(sh.Ctx, msg)
 	require.NoError(sh.t, err)
@@ -98,7 +98,7 @@ func (sh *Helper) DelegateWithPower(delegator sdk.AccAddress, val sdk.ValAddress
 	coin := sdk.NewCoin(sh.Denom, sh.k.TokensFromConsensusPower(sh.Ctx, power))
 	msg := stakingtypes.NewMsgDelegate(
 		delegator.String(), val.String(), coin,
-		types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE,
+		types.FlexiblePeriodDelegationID, 0,
 	)
 	res, err := sh.msgSrvr.Delegate(sh.Ctx, msg)
 	require.NoError(sh.t, err)

@@ -41,6 +41,6 @@ type ValidatorI interface {
 	TokensFromSharesRoundUp(math.LegacyDec) math.LegacyDec          // token worth of provided delegator shares, rounded up
 	SharesFromTokens(amt math.Int) (math.LegacyDec, error)          // shares worth of delegator's bond
 	SharesFromTokensTruncated(amt math.Int) (math.LegacyDec, error) // truncated shares worth of delegator's bond
-	GetSupportTokenType() TokenType
+	GetSupportTokenType() int32
 	GetDelegatorRewardsShares() math.LegacyDec
 }

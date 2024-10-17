@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strconv"
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
@@ -27,7 +28,7 @@ type validator struct {
 	Details           string
 	CommissionRates   types.CommissionRates
 	MinSelfDelegation math.Int
-	SupportTokenType  types.TokenType
+	SupportTokenType  int32
 }
 
 func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, error) {
@@ -90,9 +91,9 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum self delegation must be a positive integer")
 	}
 
-	supportTokenType, err := types.ParseTokenTypeNormalized(v.SupportTokenType)
+	supportTokenType, err := strconv.Atoi(v.SupportTokenType)
 	if err != nil {
-		return validator{}, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "token type must be supported")
+		return validator{}, err
 	}
 
 	return validator{
@@ -105,7 +106,7 @@ func parseAndValidateValidatorJSON(cdc codec.Codec, path string) (validator, err
 		Details:           v.Details,
 		CommissionRates:   commissionRates,
 		MinSelfDelegation: minSelfDelegation,
-		SupportTokenType:  supportTokenType,
+		SupportTokenType:  int32(supportTokenType),
 	}, nil
 }
 

@@ -515,7 +515,7 @@ func TestGRPCDelegationRewards(t *testing.T) {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)
 	assert.NilError(t, f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, delAddr, f.valAddr, periodDel))

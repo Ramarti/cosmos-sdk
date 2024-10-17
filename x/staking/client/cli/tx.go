@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -216,12 +217,12 @@ $ %s tx staking delegate cosmosvalopers1l2rsakp388kuv9k8qzq6lrm9taddae7fpx59wm 1
 				return err
 			}
 
-			periodType, err := types.ParsePeriodTypeNormalized(args[3])
+			periodType, err := strconv.Atoi(args[3])
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgDelegate(delAddr, args[0], amount, args[2], periodType)
+			msg := types.NewMsgDelegate(delAddr, args[0], amount, args[2], int32(periodType))
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
@@ -625,7 +626,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 		return txBldr, nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "minimum self delegation must be a positive integer")
 	}
 
-	supportTokenType, err := types.ParseTokenTypeNormalized(config.SupportTokenType)
+	supportTokenType, err := strconv.Atoi(config.SupportTokenType)
 	if err != nil {
 		return txBldr, nil, err
 	}
@@ -642,7 +643,7 @@ func BuildCreateValidatorMsg(clientCtx client.Context, config TxCreateValidatorC
 		description,
 		commissionRates,
 		minSelfDelegation,
-		supportTokenType,
+		int32(supportTokenType),
 	)
 	if err != nil {
 		return txBldr, msg, err

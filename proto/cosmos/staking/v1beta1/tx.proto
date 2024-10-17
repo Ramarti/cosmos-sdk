@@ -71,7 +71,7 @@ message MsgCreateValidator {
   string                   validator_address  = 5 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   google.protobuf.Any      pubkey             = 6 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
   cosmos.base.v1beta1.Coin value              = 7 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
-  TokenType                support_token_type = 8 [(amino.dont_omitempty) = true];
+  int32                    support_token_type = 8 [(amino.dont_omitempty) = true];
 }
 
 // MsgCreateValidatorResponse defines the Msg/CreateValidator response type.
@@ -114,7 +114,7 @@ message MsgDelegate {
   string                   validator_address    = 2 [(cosmos_proto.scalar) = "cosmos.ValidatorAddressString"];
   cosmos.base.v1beta1.Coin amount               = 3 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
   string                   period_delegation_id = 4 [(amino.dont_omitempty) = true];
-  PeriodType               period_type          = 5 [(amino.dont_omitempty) = true];
+  int32                    period_type          = 5 [(amino.dont_omitempty) = true];
 }
 
 // MsgDelegateResponse defines the Msg/Delegate response type.

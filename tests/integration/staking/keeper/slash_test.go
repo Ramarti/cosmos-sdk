@@ -133,7 +133,7 @@ func TestSlashRedelegation(t *testing.T) {
 		types.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(10),
 		math.LegacyNewDec(10),
-		types.PeriodType_FLEXIBLE,
+		types.DefaultFlexiblePeriodType,
 		time.Time{},
 	)
 	assert.NilError(t, f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, addrDels[0], addrVals[1], periodDel))
@@ -415,7 +415,7 @@ func TestSlashWithRedelegation(t *testing.T) {
 		types.FlexiblePeriodDelegationID,
 		math.LegacyNewDecFromInt(rdTokens),
 		math.LegacyNewDecFromInt(rdTokens),
-		types.PeriodType_FLEXIBLE,
+		types.DefaultFlexiblePeriodType,
 		time.Time{},
 	)
 	assert.NilError(t, f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, addrDels[0], addrVals[1], periodDel))
@@ -581,7 +581,7 @@ func TestSlashBoth(t *testing.T) {
 		types.FlexiblePeriodDelegationID,
 		math.LegacyNewDecFromInt(rdATokens),
 		math.LegacyNewDecFromInt(rdATokens),
-		types.PeriodType_FLEXIBLE,
+		types.DefaultFlexiblePeriodType,
 		time.Time{},
 	)
 	assert.NilError(t, f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, addrDels[0], addrVals[1], periodDel))

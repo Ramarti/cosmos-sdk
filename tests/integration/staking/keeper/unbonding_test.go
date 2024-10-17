@@ -74,7 +74,7 @@ func SetupUnbondingTests(t *testing.T, f *fixture, hookCalled *bool, ubdeID *uin
 		types.FlexiblePeriodDelegationID,
 		issuedShares1,
 		issuedShares1,
-		types.PeriodType_FLEXIBLE,
+		types.DefaultFlexiblePeriodType,
 		time.Time{},
 	)
 	assert.NilError(t, f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, addrDels[0], addrVals[0], periodDel))

@@ -173,7 +173,7 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 	}
 
 	// setup staking validator
-	validator, err := stakingtypes.NewValidator(f.valAddr.String(), PKS[0], stakingtypes.Description{}, stakingtypes.TokenType_LOCKED)
+	validator, err := stakingtypes.NewValidator(f.valAddr.String(), PKS[0], stakingtypes.Description{}, 0)
 	assert.NilError(t, err)
 	commission := stakingtypes.NewCommission(math.LegacyZeroDec(), math.LegacyOneDec(), math.LegacyOneDec())
 	validator, err = validator.SetInitialCommission(commission)
@@ -204,7 +204,7 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
-		stakingtypes.PeriodType_FLEXIBLE,
+		stakingtypes.DefaultFlexiblePeriodType,
 		time.Time{},
 	)
 	assert.NilError(t, f.stakingKeeper.SetPeriodDelegation(f.sdkCtx, delAddr, f.valAddr, periodDel))

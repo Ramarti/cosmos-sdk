@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/hashicorp/go-metrics"
@@ -122,6 +123,11 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	}
 	validator.MinSelfDelegation = msg.MinSelfDelegation
 
+	// validate token type that the validator is supporting
+	if _, err := k.GetTokenTypeInfo(ctx, msg.SupportTokenType); err != nil {
+		return nil, err
+	}
+
 	err = k.SetValidator(ctx, validator)
 	if err != nil {
 		return nil, err
@@ -147,12 +153,16 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, types.ErrSelfDelegationBelowMinimum
 	}
 
+	flexibleTokenType, err := k.GetFlexiblePeriodType(ctx)
+	if err != nil {
+		return nil, err
+	}
 	// move coins from the msg.Address account to a (self-delegation) delegator account
 	// the validator account and global shares are updated within here
 	// NOTE source will always be from a wallet which are unbonded
 	_, _, err = k.Keeper.Delegate(
 		ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true,
-		types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE, time.Unix(0, 0),
+		types.FlexiblePeriodDelegationID, flexibleTokenType, sdkCtx.BlockTime(),
 	)
 	if err != nil {
 		return nil, err
@@ -303,11 +313,6 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		)
 	}
 
-	// all flexible period delegate use the same period delegation id
-	if msg.PeriodType == types.PeriodType_FLEXIBLE {
-		msg.PeriodDelegationId = types.FlexiblePeriodDelegationID
-	}
-
 	// NOTE: source funds are always unbonded
 	newShares, newRewardsShares, err := k.Keeper.Delegate(
 		ctx, delegatorAddress, msg.Amount.Amount, types.Unbonded, validator, true,
@@ -338,7 +343,7 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 			sdk.NewAttribute(types.AttributeKeyNewShares, newShares.String()),
 			sdk.NewAttribute(types.AttributeKeyNewRewardsShares, newRewardsShares.String()),
 			sdk.NewAttribute(types.AttributeKeyPeriodDelegationId, msg.PeriodDelegationId),
-			sdk.NewAttribute(types.AttributeKeyPeriodType, msg.PeriodType.String()),
+			sdk.NewAttribute(types.AttributeKeyPeriodType, fmt.Sprintf("%d", msg.PeriodType)),
 		),
 	})
 
@@ -449,7 +454,7 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		)
 	}
 
-	minUndelegation, err := k.MinUndelegation(ctx)
+	minUndelegation, err := k.MinDelegation(ctx)
 	if err != nil {
 		return nil, err
 	}

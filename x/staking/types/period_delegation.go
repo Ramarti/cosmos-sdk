@@ -8,8 +8,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 )
 
+const (
+	FlexiblePeriodDelegationID = "0"
+)
+
 func NewPeriodDelegation(
-	periodDelegationID string, shares math.LegacyDec, rewardsShares math.LegacyDec, periodType PeriodType, endTime time.Time,
+	periodDelegationID string, shares math.LegacyDec, rewardsShares math.LegacyDec, periodType int32, endTime time.Time,
 ) PeriodDelegation {
 	return PeriodDelegation{
 		PeriodDelegationId: periodDelegationID,

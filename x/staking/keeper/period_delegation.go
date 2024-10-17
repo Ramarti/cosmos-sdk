@@ -14,11 +14,15 @@ import (
 func (k Keeper) ValidateNewPeriodDelegation(
 	ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress,
 	periodDelegationID string,
-	periodType types.PeriodType, endTime time.Time,
+	periodType int32, endTime time.Time,
 ) (types.PeriodDelegation, error) {
 	periodDelegation, err := k.GetPeriodDelegation(ctx, delAddr, valAddr, periodDelegationID)
 	if err == nil {
-		if periodType != types.PeriodType_FLEXIBLE {
+		flexibleTokenType, err := k.GetFlexiblePeriodType(ctx)
+		if err != nil {
+			return types.PeriodDelegation{}, err
+		}
+		if periodType != flexibleTokenType {
 			return types.PeriodDelegation{}, types.ErrPeriodDelegationExists
 		}
 	} else if errors.Is(err, types.ErrNoPeriodDelegation) {

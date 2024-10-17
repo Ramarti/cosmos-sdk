@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cosmossdk.io/math"
@@ -62,12 +63,6 @@ func (k Keeper) MinDelegation(ctx context.Context) (math.Int, error) {
 	return params.MinDelegation, err
 }
 
-// MinDelegation - Minimum delegation amount
-func (k Keeper) MinUndelegation(ctx context.Context) (math.Int, error) {
-	params, err := k.GetParams(ctx)
-	return params.MinUndelegation, err
-}
-
 // SetParams sets the x/staking module parameters.
 // CONTRACT: This method performs no validation of the parameters.
 func (k Keeper) SetParams(ctx context.Context, params types.Params) error {
@@ -93,4 +88,111 @@ func (k Keeper) GetParams(ctx context.Context) (params types.Params, err error) 
 
 	err = k.cdc.Unmarshal(bz, &params)
 	return params, err
+}
+
+// GetPeriods gets the periods from x/staking module parameters.
+func (k Keeper) GetPeriods(ctx context.Context) ([]types.Period, error) {
+	store := k.storeService.OpenKVStore(ctx)
+
+	var params types.Params
+	bz, err := store.Get(types.ParamsKey)
+	if err != nil {
+		return nil, err
+	} else if bz == nil {
+		return nil, nil
+	}
+
+	if err := k.cdc.Unmarshal(bz, &params); err != nil {
+		return nil, err
+	}
+
+	return params.Periods, err
+}
+
+// GetTokenTypes gets the token types from x/staking module parameters.
+func (k Keeper) GetTokenTypes(ctx context.Context) ([]types.TokenTypeInfo, error) {
+	store := k.storeService.OpenKVStore(ctx)
+
+	var params types.Params
+	bz, err := store.Get(types.ParamsKey)
+	if err != nil {
+		return nil, err
+	} else if bz == nil {
+		return nil, nil
+	}
+
+	if err := k.cdc.Unmarshal(bz, &params); err != nil {
+		return nil, err
+	}
+
+	return params.TokenTypes, err
+}
+
+// GetFlexiblePeriodType gets the flexible period type from x/staking module parameters.
+func (k Keeper) GetFlexiblePeriodType(ctx context.Context) (periodType int32, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+
+	bz, err := store.Get(types.ParamsKey)
+	if err != nil {
+		return 0, err
+	} else if bz == nil {
+		return 0, nil
+	}
+
+	var params types.Params
+	if err := k.cdc.Unmarshal(bz, &params); err != nil {
+		return 0, err
+	}
+
+	return params.FlexiblePeriodType, nil
+}
+
+// GetPeriodInfo gets the period info from x/staking module parameters.
+func (k Keeper) GetPeriodInfo(ctx context.Context, periodType int32) (types.Period, error) {
+	store := k.storeService.OpenKVStore(ctx)
+
+	bz, err := store.Get(types.ParamsKey)
+	if err != nil {
+		return types.Period{}, err
+	} else if bz == nil {
+		return types.Period{}, nil
+	}
+
+	var params types.Params
+	if err := k.cdc.Unmarshal(bz, &params); err != nil {
+		return types.Period{}, err
+	}
+
+	for _, p := range params.Periods {
+		if p.PeriodType == periodType {
+			return p, nil
+		}
+	}
+
+	return types.Period{}, fmt.Errorf("period info not found for period type %d", periodType)
+}
+
+// GetTokenTypeInfo gets the token type info from x/staking module parameters.
+func (k Keeper) GetTokenTypeInfo(ctx context.Context, tokenType int32) (types.TokenTypeInfo, error) {
+	store := k.storeService.OpenKVStore(ctx)
+
+	bz, err := store.Get(types.ParamsKey)
+	if err != nil {
+		return types.TokenTypeInfo{}, err
+	} else if bz == nil {
+		return types.TokenTypeInfo{}, nil
+	}
+
+	var params types.Params
+	if err := k.cdc.Unmarshal(bz, &params); err != nil {
+		return types.TokenTypeInfo{}, err
+	}
+
+	for _, t := range params.TokenTypes {
+		if t.TokenType == tokenType {
+			return t, nil
+		}
+	}
+
+	return types.TokenTypeInfo{}, fmt.Errorf("token type info not found for token type %d", tokenType)
 }
