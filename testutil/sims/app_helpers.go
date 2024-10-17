@@ -251,7 +251,7 @@ func GenesisStateWithValSet(
 			UnbondingTime:          time.Unix(0, 0).UTC(),
 			Commission:             stakingtypes.NewCommission(sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec(), sdkmath.LegacyZeroDec()),
 			MinSelfDelegation:      sdkmath.ZeroInt(),
-			SupportTokenType:       stakingtypes.TokenType_LOCKED,
+			SupportTokenType:       0,
 			DelegatorRewardsShares: sdkmath.LegacyOneDec(),
 		}
 		validators = append(validators, validator)

@@ -70,7 +70,7 @@ func TestStakingMsgs(t *testing.T) {
 	description := types.NewDescription("foo_moniker", "", "", "", "")
 	createValidatorMsg, err := types.NewMsgCreateValidator(
 		sdk.ValAddress(addr1).String(), valKey.PubKey(), bondCoin, description, commissionRates, math.OneInt(),
-		types.TokenType_LOCKED,
+		0,
 	)
 	require.NoError(t, err)
 
@@ -110,7 +110,7 @@ func TestStakingMsgs(t *testing.T) {
 	require.True(t, sdk.Coins{genCoin}.Equal(bankKeeper.GetAllBalances(ctxCheck, addr2)))
 	delegateMsg := types.NewMsgDelegate(
 		addr2.String(), sdk.ValAddress(addr1).String(), bondCoin,
-		types.FlexiblePeriodDelegationID, types.PeriodType_FLEXIBLE,
+		types.FlexiblePeriodDelegationID, 0,
 	)
 
 	header = cmtproto.Header{Height: app.LastBlockHeight() + 1}

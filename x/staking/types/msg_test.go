@@ -38,7 +38,7 @@ func TestMsgDecode(t *testing.T) {
 	commission1 := types.NewCommissionRates(math.LegacyZeroDec(), math.LegacyZeroDec(), math.LegacyZeroDec())
 	msg, err := types.NewMsgCreateValidator(
 		valAddr1.String(), pk1, coinPos, types.Description{}, commission1, math.OneInt(),
-		types.TokenType_LOCKED,
+		0,
 	)
 	require.NoError(t, err)
 	msgSerialized, err := cdc.MarshalInterface(msg)

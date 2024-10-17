@@ -41,7 +41,7 @@ var (
 var _ ValidatorI = Validator{}
 
 // NewValidator constructs a new Validator
-func NewValidator(operator string, pubKey cryptotypes.PubKey, description Description, supportTokenType TokenType) (Validator, error) {
+func NewValidator(operator string, pubKey cryptotypes.PubKey, description Description, supportTokenType int32) (Validator, error) {
 	pkAny, err := codectypes.NewAnyWithValue(pubKey)
 	if err != nil {
 		return Validator{}, err
@@ -533,5 +533,5 @@ func (v Validator) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 	return unpacker.UnpackAny(v.ConsensusPubkey, &pk)
 }
 
-func (v Validator) GetSupportTokenType() TokenType            { return TokenType(v.SupportTokenType) }
+func (v Validator) GetSupportTokenType() int32                { return v.SupportTokenType }
 func (v Validator) GetDelegatorRewardsShares() math.LegacyDec { return v.DelegatorRewardsShares }

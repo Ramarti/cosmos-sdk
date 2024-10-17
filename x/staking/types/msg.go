@@ -27,7 +27,7 @@ var (
 func NewMsgCreateValidator(
 	valAddr string, pubKey cryptotypes.PubKey,
 	selfDelegation sdk.Coin, description Description, commission CommissionRates, minSelfDelegation math.Int,
-	supportTokenType TokenType,
+	supportTokenType int32,
 ) (*MsgCreateValidator, error) {
 	var pkAny *codectypes.Any
 	if pubKey != nil {
@@ -106,7 +106,7 @@ func NewMsgEditValidator(valAddr string, description Description, newRate *math.
 }
 
 // NewMsgDelegate creates a new MsgDelegate instance.
-func NewMsgDelegate(delAddr, valAddr string, amount sdk.Coin, periodDelegationId string, periodType PeriodType) *MsgDelegate {
+func NewMsgDelegate(delAddr, valAddr string, amount sdk.Coin, periodDelegationId string, periodType int32) *MsgDelegate {
 	return &MsgDelegate{
 		DelegatorAddress:   delAddr,
 		ValidatorAddress:   valAddr,

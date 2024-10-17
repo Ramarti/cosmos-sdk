@@ -861,7 +861,7 @@ func (k Keeper) DequeueAllMatureRedelegationQueue(ctx context.Context, currTime 
 // tokenSrc indicates the bond status of the incoming funds.
 func (k Keeper) Delegate(
 	ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc types.BondStatus,
-	validator types.Validator, subtractAccount bool, periodDelID string, periodType types.PeriodType, endTime time.Time,
+	validator types.Validator, subtractAccount bool, periodDelID string, periodType int32, endTime time.Time,
 ) (newShares, newRewardsShares math.LegacyDec, err error) {
 	// In some situations, the exchange rate becomes invalid, e.g. if
 	// Validator loses all tokens due to slashing. In this case,
@@ -877,13 +877,22 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
-	tokenTypeInfo, ok := types.GetTokenTypeInfo(validator.GetSupportTokenType())
-	if !ok {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), errors.New("invalid token type")
+	// incorrect delgation id
+	flexiblePeriodType, err := k.GetFlexiblePeriodType(ctx)
+	if err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
-	periodInfo, ok := types.GetStakingPeriodInfo(periodType)
-	if !ok {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), errors.New("invalid period type")
+	if (periodType == flexiblePeriodType) != (periodDelID == types.FlexiblePeriodDelegationID) {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), errors.New("incorrect delegation id for related period")
+	}
+
+	tokenTypeInfo, err := k.GetTokenTypeInfo(ctx, validator.GetSupportTokenType())
+	if err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
+	}
+	periodInfo, err := k.GetPeriodInfo(ctx, periodType)
+	if err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
 	// if subtractAccount is true then we are
@@ -1023,8 +1032,12 @@ func (k Keeper) Unbond(
 		return amount, err
 	}
 	// check if the period delegation reached the end time, ignore if it's a force unbond
+	flexibleTokenType, err := k.GetFlexiblePeriodType(ctx)
+	if err != nil {
+		return amount, err
+	}
 	if !forceUnbond &&
-		periodDelegation.PeriodType != types.PeriodType_FLEXIBLE &&
+		periodDelegation.PeriodType != flexibleTokenType &&
 		periodDelegation.EndTime.After(sdk.UnwrapSDKContext(ctx).BlockTime()) {
 		return amount, types.ErrPeriodDelegationNotCompleted
 	}
@@ -1040,13 +1053,13 @@ func (k Keeper) Unbond(
 		return amount, err
 	}
 
-	tokenTypeInfo, ok := types.GetTokenTypeInfo(validator.SupportTokenType)
-	if !ok {
-		return amount, errors.New("invalid token type")
+	tokenTypeInfo, err := k.GetTokenTypeInfo(ctx, validator.SupportTokenType)
+	if err != nil {
+		return amount, err
 	}
-	periodInfo, ok := types.GetStakingPeriodInfo(periodDelegation.PeriodType)
-	if !ok {
-		return amount, errors.New("invalid period type")
+	periodInfo, err := k.GetPeriodInfo(ctx, periodDelegation.PeriodType)
+	if err != nil {
+		return amount, err
 	}
 	rewardsShares := shares.Mul(tokenTypeInfo.RewardsMultiplier).Mul(periodInfo.RewardsMultiplier)
 

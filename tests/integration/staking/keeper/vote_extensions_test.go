@@ -63,7 +63,7 @@ func TestValidateVoteExtensions(t *testing.T) {
 		assert.NilError(t, f.stakingKeeper.SetNewValidatorByPowerIndex(f.sdkCtx, v))
 		_, _, err := f.stakingKeeper.Delegate(
 			f.sdkCtx, sdk.AccAddress(privKeys[i].PubKey().Address()), v.Tokens, stakingtypes.Unbonded, v,
-			true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0),
+			true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.DefaultFlexiblePeriodType, time.Unix(0, 0),
 		)
 		assert.NilError(t, err)
 

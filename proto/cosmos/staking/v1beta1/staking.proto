@@ -79,14 +79,11 @@ message Description {
   string details = 5;
 }
 
-enum TokenType {
-  LOCKED   = 0;
-  UNLOCKED = 1;
-}
-
 message TokenTypeInfo {
-  TokenType token_type         = 1;
-  string    rewards_multiplier = 2 [
+  option (gogoproto.equal) = true;
+
+  int32  token_type         = 1;
+  string rewards_multiplier = 2 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false,
@@ -150,7 +147,7 @@ message Validator {
   // list of unbonding ids, each uniquely identifing an unbonding of this validator
   repeated uint64 unbonding_ids = 13;
 
-  TokenType support_token_type = 14;
+  int32 support_token_type = 14;
 
   string delegator_rewards_shares = 15 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
@@ -212,16 +209,12 @@ message DVVTriplets {
   repeated DVVTriplet triplets = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
-enum PeriodType {
-  FLEXIBLE        = 0;
-  THREE_MONTHS    = 1;
-  ONE_YEAR        = 2;
-  EIGHTEEN_MONTHS = 3;
-}
 // Message representing the Period
 message Period {
+  option (gogoproto.equal) = true;
+
   // type defines the type of the staking period.
-  PeriodType period_type = 1; // Enum for period type
+  int32 period_type = 1;
   // duration defines, if staked, the min time for the delegation.
   google.protobuf.Duration duration = 2
       [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdduration) = true];
@@ -249,7 +242,7 @@ message PeriodDelegation {
     (gogoproto.nullable)   = false
   ];
 
-  PeriodType period_type = 4;
+  int32 period_type = 4;
 
   google.protobuf.Timestamp end_time = 5
       [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];
@@ -402,12 +395,11 @@ message Params {
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable)   = false
   ];
-  // min_undelegation is the chain-wide minimum undelegation that an undelegation can set
-  string min_undelegation = 8 [
-    (cosmos_proto.scalar)  = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable)   = false
-  ];
+
+  int32           flexible_period_type = 8;
+  repeated Period periods              = 9 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+
+  repeated TokenTypeInfo token_types = 10 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
 // DelegationResponse is equivalent to Delegation except that it contains a

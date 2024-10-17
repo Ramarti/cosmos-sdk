@@ -212,7 +212,7 @@ func createValidator(rt *rapid.T, f *deterministicFixture, t *testing.T) staking
 		),
 		MinSelfDelegation:      math.NewInt(rapid.Int64Min(1).Draw(rt, "tokens")),
 		DelegatorRewardsShares: math.LegacyNewDecWithPrec(rapid.Int64Range(1, 100).Draw(rt, "commission"), 2),
-		SupportTokenType:       stakingtypes.TokenType_LOCKED,
+		SupportTokenType:       0,
 	}
 }
 
@@ -246,7 +246,7 @@ func setValidator(f *deterministicFixture, t *testing.T, validator stakingtypes.
 
 	_, _, err = f.stakingKeeper.Delegate(
 		f.ctx, delegatorAddress, validator.BondedTokens(), stakingtypes.Unbonded, validator,
-		true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0),
+		true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.DefaultFlexiblePeriodType, time.Unix(0, 0),
 	)
 	assert.NilError(t, err)
 }
@@ -280,7 +280,7 @@ func getStaticValidator(f *deterministicFixture, t *testing.T) stakingtypes.Vali
 		),
 		MinSelfDelegation:      math.NewInt(10),
 		DelegatorRewardsShares: math.LegacyNewDecWithPrec(5, 2),
-		SupportTokenType:       stakingtypes.TokenType_LOCKED,
+		SupportTokenType:       0,
 	}
 
 	setValidator(f, t, validator)
@@ -316,7 +316,7 @@ func getStaticValidator2(f *deterministicFixture, t *testing.T) stakingtypes.Val
 		),
 		MinSelfDelegation:      math.NewInt(1),
 		DelegatorRewardsShares: math.LegacyNewDecWithPrec(96, 2),
-		SupportTokenType:       stakingtypes.TokenType_LOCKED,
+		SupportTokenType:       0,
 	}
 	setValidator(f, t, validator)
 
@@ -338,7 +338,7 @@ func fundAccountAndDelegate(f *deterministicFixture, t *testing.T, delegator sdk
 
 	shares, _, err := f.stakingKeeper.Delegate(
 		f.ctx, delegator, amt, stakingtypes.Unbonded, validator,
-		true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.PeriodType_FLEXIBLE, time.Unix(0, 0),
+		true, stakingtypes.FlexiblePeriodDelegationID, stakingtypes.DefaultFlexiblePeriodType, time.Unix(0, 0),
 	)
 	return shares, err
 }
