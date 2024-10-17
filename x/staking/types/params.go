@@ -31,6 +31,8 @@ const (
 	DefaultHistoricalEntries uint32 = 10000
 
 	DefaultFlexiblePeriodType = 0
+
+	DefaultLockedTokenType = 0
 )
 
 // DefaultMinCommissionRate is set to 0%
@@ -75,7 +77,7 @@ var DefaultTokenTypes = []TokenTypeInfo{
 // NewParams creates a new Params instance
 func NewParams(
 	unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, minCommissionRate math.LegacyDec,
-	minDelegation math.Int, flexiblePeriodType int32, periods []Period, tokenTypes []TokenTypeInfo,
+	minDelegation math.Int, flexiblePeriodType int32, periods []Period, lockedTokenType int32, tokenTypes []TokenTypeInfo,
 ) Params {
 	return Params{
 		UnbondingTime:      unbondingTime,
@@ -87,6 +89,7 @@ func NewParams(
 		MinDelegation:      minDelegation,
 		FlexiblePeriodType: flexiblePeriodType,
 		Periods:            periods,
+		LockedTokenType:    lockedTokenType,
 		TokenTypes:         tokenTypes,
 	}
 }
@@ -103,6 +106,7 @@ func DefaultParams() Params {
 		DefaultMinDelegation,
 		DefaultFlexiblePeriodType,
 		DefaultPeriods,
+		DefaultLockedTokenType,
 		DefaultTokenTypes,
 	)
 }
@@ -158,6 +162,10 @@ func (p Params) Validate() error {
 	}
 
 	if err := validatePeriods(p.Periods); err != nil {
+		return err
+	}
+
+	if err := validateLockedTokenType(p.LockedTokenType); err != nil {
 		return err
 	}
 
@@ -291,6 +299,19 @@ func validatePeriods(i interface{}) error {
 		if !period.RewardsMultiplier.IsPositive() {
 			return fmt.Errorf("invalid period rewards multiplier: %s", period.RewardsMultiplier.String())
 		}
+	}
+
+	return nil
+}
+
+func validateLockedTokenType(i interface{}) error {
+	v, ok := i.(int32)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v < 0 {
+		return fmt.Errorf("invalid locked token type: %d", v)
 	}
 
 	return nil

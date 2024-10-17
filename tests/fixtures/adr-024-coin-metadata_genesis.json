@@ -226,6 +226,7 @@
             "rewards_multiplier": "1.34"
           }
         ],
+        "locked_token_type": 0,
         "token_types":[
           {
             "token_type": 0,

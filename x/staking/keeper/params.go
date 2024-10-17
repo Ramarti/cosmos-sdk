@@ -129,7 +129,7 @@ func (k Keeper) GetTokenTypes(ctx context.Context) ([]types.TokenTypeInfo, error
 }
 
 // GetFlexiblePeriodType gets the flexible period type from x/staking module parameters.
-func (k Keeper) GetFlexiblePeriodType(ctx context.Context) (periodType int32, err error) {
+func (k Keeper) GetFlexiblePeriodType(ctx context.Context) (int32, error) {
 	store := k.storeService.OpenKVStore(ctx)
 
 	bz, err := store.Get(types.ParamsKey)
@@ -145,6 +145,25 @@ func (k Keeper) GetFlexiblePeriodType(ctx context.Context) (periodType int32, er
 	}
 
 	return params.FlexiblePeriodType, nil
+}
+
+// GetLockedTokenType gets the locked token type from x/staking module parameters.
+func (k Keeper) GetLockedTokenType(ctx context.Context) (int32, error) {
+	store := k.storeService.OpenKVStore(ctx)
+
+	bz, err := store.Get(types.ParamsKey)
+	if err != nil {
+		return 0, err
+	} else if bz == nil {
+		return 0, nil
+	}
+
+	var params types.Params
+	if err := k.cdc.Unmarshal(bz, &params); err != nil {
+		return 0, err
+	}
+
+	return params.LockedTokenType, nil
 }
 
 // GetPeriodInfo gets the period info from x/staking module parameters.
