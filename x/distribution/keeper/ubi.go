@@ -8,36 +8,40 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/distribution/types"
 )
 
-func (k *Keeper) GetUbiBalanceByDenom(ctx context.Context, denom string) (math.LegacyDec, error) {
+func (k *Keeper) GetUbiBalanceByDenom(ctx context.Context, denom string) (math.Int, error) {
 	feePool, err := k.FeePool.Get(ctx)
 	if err != nil {
-		return math.LegacyDec{}, err
+		return math.Int{}, err
 	}
 
-	return feePool.Ubi.AmountOf(denom), nil
+	return feePool.Ubi.AmountOf(denom).TruncateInt(), nil
 }
 
-func (k *Keeper) WithdrawUbiByDenomToModule(ctx context.Context, denom string, recipientModule string) error {
+func (k *Keeper) WithdrawUbiByDenomToModule(ctx context.Context, denom string, recipientModule string) (sdk.Coin, error) {
 	feePool, err := k.FeePool.Get(ctx)
 	if err != nil {
-		return err
+		return sdk.Coin{}, err
 	}
 
-	amt := feePool.Ubi.AmountOf(denom).TruncateInt()
-	coins := sdk.NewCoins(sdk.NewCoin(denom, amt))
+	coin := sdk.NewCoin(denom, feePool.Ubi.AmountOf(denom).TruncateInt())
+	coins := sdk.NewCoins(coin)
 
 	// NOTE the ubi pool isn't a module account, however its coins
 	// are held in the distribution module account. Thus the ubi pool
 	// must be reduced separately from the SendCoinsFromModuleToModule call
 	newPool, negative := feePool.Ubi.SafeSub(sdk.NewDecCoinsFromCoins(coins...))
 	if negative {
-		return types.ErrBadDistribution
+		return sdk.Coin{}, types.ErrBadDistribution
 	}
 	feePool.Ubi = newPool
 
 	if err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, recipientModule, coins); err != nil {
-		return err
+		return sdk.Coin{}, err
 	}
 
-	return k.FeePool.Set(ctx, feePool)
+	if err := k.FeePool.Set(ctx, feePool); err != nil {
+		return sdk.Coin{}, err
+	}
+
+	return coin, nil
 }
