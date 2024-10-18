@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	storetypes "cosmossdk.io/store/types"
 	"errors"
 	"time"
 
@@ -34,6 +35,28 @@ func (k Keeper) ValidateNewPeriodDelegation(
 	}
 
 	return periodDelegation, nil
+}
+
+// GetAllPeriodDelegation returns all period delegation by delAddr and valAddr.
+func (k Keeper) GetAllPeriodDelegation(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) ([]types.PeriodDelegation, error) {
+	store := k.storeService.OpenKVStore(ctx)
+
+	periodDelegationsKey := types.GetPeriodDelegationsKey(delAddr, valAddr)
+	iterator, err := store.Iterator(periodDelegationsKey, storetypes.PrefixEndBytes(periodDelegationsKey))
+	if err != nil {
+		return nil, err
+	}
+
+	periodDelegations := make([]types.PeriodDelegation, 0)
+	for ; iterator.Valid(); iterator.Next() {
+		periodDelegation, err := types.UnmarshalPeriodDelegation(k.cdc, iterator.Value())
+		if err != nil {
+			return nil, err
+		}
+		periodDelegations = append(periodDelegations, periodDelegation)
+	}
+
+	return periodDelegations, nil
 }
 
 // GetPeriodDelegation returns a specific period delegation.
