@@ -102,7 +102,7 @@ func TestUpdateBondedValidatorsDecreaseCliff(t *testing.T) {
 	// validator and next in line cliff validator
 	f.stakingKeeper.DeleteValidatorByPowerIndex(f.sdkCtx, nextCliffVal)
 	shares := f.stakingKeeper.TokensFromConsensusPower(f.sdkCtx, 21)
-	nextCliffVal, _ = nextCliffVal.RemoveDelShares(math.LegacyNewDecFromInt(shares))
+	nextCliffVal, _ = nextCliffVal.RemoveDelShares(math.LegacyNewDecFromInt(shares), math.LegacyOneDec())
 	_ = keeper.TestingUpdateValidator(f.stakingKeeper, f.sdkCtx, nextCliffVal, true)
 
 	expectedValStatus := map[int]types.BondStatus{
@@ -399,7 +399,7 @@ func TestGetValidatorsEdgeCases(t *testing.T) {
 	// validator 3 kicked out temporarily
 	f.stakingKeeper.DeleteValidatorByPowerIndex(f.sdkCtx, validators[3])
 	rmTokens := validators[3].TokensFromShares(math.LegacyNewDec(201)).TruncateInt()
-	validators[3], _ = validators[3].RemoveDelShares(math.LegacyNewDec(201))
+	validators[3], _ = validators[3].RemoveDelShares(math.LegacyNewDec(201), math.LegacyOneDec())
 
 	bondedPool := f.stakingKeeper.GetBondedPool(f.sdkCtx)
 	assert.NilError(t, banktestutil.FundModuleAccount(f.sdkCtx, f.bankKeeper, bondedPool.GetName(), sdk.NewCoins(sdk.NewCoin(params.BondDenom, rmTokens))))
@@ -769,7 +769,7 @@ func TestApplyAndReturnValidatorSetUpdatesNewValidator(t *testing.T) {
 
 	f.stakingKeeper.SetValidator(f.sdkCtx, validator)
 
-	validator, _ = validator.RemoveDelShares(math.LegacyNewDecFromInt(amt))
+	validator, _ = validator.RemoveDelShares(math.LegacyNewDecFromInt(amt), math.LegacyOneDec())
 	f.stakingKeeper.SetValidator(f.sdkCtx, validator)
 	f.stakingKeeper.SetValidatorByPowerIndex(f.sdkCtx, validator)
 
@@ -857,7 +857,7 @@ func TestApplyAndReturnValidatorSetUpdatesBondTransition(t *testing.T) {
 	assert.NilError(t, err)
 
 	f.stakingKeeper.DeleteValidatorByPowerIndex(f.sdkCtx, validators[0])
-	validators[0], _ = validators[0].RemoveDelShares(validators[0].DelegatorShares)
+	validators[0], _ = validators[0].RemoveDelShares(validators[0].DelegatorShares, math.LegacyOneDec())
 	f.stakingKeeper.SetValidator(f.sdkCtx, validators[0])
 	f.stakingKeeper.SetValidatorByPowerIndex(f.sdkCtx, validators[0])
 	applyValidatorSetUpdates(t, f.sdkCtx, f.stakingKeeper, 0)

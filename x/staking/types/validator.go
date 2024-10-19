@@ -62,6 +62,7 @@ func NewValidator(operator string, pubKey cryptotypes.PubKey, description Descri
 		UnbondingOnHoldRefCount: 0,
 		SupportTokenType:        supportTokenType,
 		DelegatorRewardsShares:  math.LegacyZeroDec(),
+		RewardsTokens:           math.LegacyNewDecFromInt(math.ZeroInt()),
 	}, nil
 }
 
@@ -305,14 +306,14 @@ func (v Validator) InvalidExRate() bool {
 	return v.Tokens.IsZero() && v.DelegatorShares.IsPositive()
 }
 
-// calculate the token worth of provided rewards shares
-func (v Validator) TokensFromRewardsShares(rewardsShares math.LegacyDec) math.LegacyDec {
-	return (rewardsShares.MulInt(v.Tokens)).Quo(v.DelegatorRewardsShares)
+// calculate the rewards token worth of provided rewards shares
+func (v Validator) RewardsTokensFromRewardsShares(rewardsShares math.LegacyDec) math.LegacyDec {
+	return (rewardsShares.Mul(v.RewardsTokens)).Quo(v.DelegatorRewardsShares)
 }
 
-// calculate the token worth of provided rewards shares, truncated
-func (v Validator) TokensFromRewardsSharesTruncated(rewardsShares math.LegacyDec) math.LegacyDec {
-	return (rewardsShares.MulInt(v.Tokens)).QuoTruncate(v.DelegatorRewardsShares)
+// calculate the rewards token worth of provided rewards shares, truncated
+func (v Validator) RewardsTokensFromRewardsSharesTruncated(rewardsShares math.LegacyDec) math.LegacyDec {
+	return (rewardsShares.Mul(v.RewardsTokens)).QuoTruncate(v.DelegatorRewardsShares)
 }
 
 // calculate the token worth of provided shares
@@ -329,6 +330,14 @@ func (v Validator) TokensFromSharesTruncated(shares math.LegacyDec) math.LegacyD
 // up.
 func (v Validator) TokensFromSharesRoundUp(shares math.LegacyDec) math.LegacyDec {
 	return (shares.MulInt(v.Tokens)).QuoRoundUp(v.DelegatorShares)
+}
+
+func (v Validator) RewardsSharesFromRewardsTokens(amt math.LegacyDec) (math.LegacyDec, error) {
+	if v.RewardsTokens.IsZero() {
+		return math.LegacyZeroDec(), ErrInsufficientShares
+	}
+
+	return v.GetDelegatorRewardsShares().Mul(amt).Quo(v.GetRewardsTokens()), nil
 }
 
 // SharesFromTokens returns the shares of a delegation given a bond amount. It
@@ -384,23 +393,29 @@ func (v Validator) UpdateStatus(newStatus BondStatus) Validator {
 
 // AddTokensFromDel adds tokens to a validator
 func (v Validator) AddTokensFromDel(amount math.Int, rewardsMultiplier math.LegacyDec) (Validator, math.LegacyDec, math.LegacyDec) {
+	issuedRewardsTokens := math.LegacyNewDecFromInt(amount).Mul(rewardsMultiplier)
 	// calculate the shares to issue
-	var issuedShares math.LegacyDec
+	var issuedShares, issuedRewardsShares math.LegacyDec
 	if v.DelegatorShares.IsZero() {
 		// the first delegation to a validator sets the exchange rate to one
 		issuedShares = math.LegacyNewDecFromInt(amount)
+		issuedRewardsShares = issuedShares.Mul(rewardsMultiplier)
 	} else {
 		shares, err := v.SharesFromTokens(amount)
 		if err != nil {
 			panic(err)
 		}
+		rewardsShares, err := v.RewardsSharesFromRewardsTokens(issuedRewardsTokens)
+		if err != nil {
+			panic(err)
+		}
 
 		issuedShares = shares
+		issuedRewardsShares = rewardsShares
 	}
 
-	issuedRewardsShares := issuedShares.Mul(rewardsMultiplier)
-
 	v.Tokens = v.Tokens.Add(amount)
+	v.RewardsTokens = v.RewardsTokens.Add(issuedRewardsTokens)
 	v.DelegatorShares = v.DelegatorShares.Add(issuedShares)
 	v.DelegatorRewardsShares = v.DelegatorRewardsShares.Add(issuedRewardsShares)
 
@@ -417,8 +432,15 @@ func (v Validator) RemoveTokens(tokens math.Int) Validator {
 		panic(fmt.Sprintf("should not happen: only have %v tokens, trying to remove %v", v.Tokens, tokens))
 	}
 
-	v.Tokens = v.Tokens.Sub(tokens)
+	rewardsTokens := (math.LegacyNewDecFromInt(tokens).Mul(v.GetRewardsTokens())).Quo(
+		math.LegacyNewDecFromInt(v.GetTokens()),
+	)
+	if v.RewardsTokens.LT(rewardsTokens) {
+		panic(fmt.Sprintf("should not happen: only have %v rewards tokens, trying to remove %v", v.RewardsTokens, rewardsTokens))
+	}
 
+	v.Tokens = v.Tokens.Sub(tokens)
+	v.RewardsTokens = v.RewardsTokens.Sub(rewardsTokens)
 	return v
 }
 
@@ -426,7 +448,7 @@ func (v Validator) RemoveTokens(tokens math.Int) Validator {
 // NOTE: because token fractions are left in the valiadator,
 //
 //	the exchange rate of future shares of this validator can increase.
-func (v Validator) RemoveDelShares(delShares math.LegacyDec) (Validator, math.Int) {
+func (v Validator) RemoveDelShares(delShares math.LegacyDec, rewardsMultiplier math.LegacyDec) (Validator, math.Int) {
 	remainingShares := v.DelegatorShares.Sub(delShares)
 
 	var issuedTokens math.Int
@@ -434,18 +456,24 @@ func (v Validator) RemoveDelShares(delShares math.LegacyDec) (Validator, math.In
 		// last delegation share gets any trimmings
 		issuedTokens = v.Tokens
 		v.Tokens = math.ZeroInt()
+		v.RewardsTokens = math.LegacyZeroDec()
 	} else {
 		// leave excess tokens in the validator
 		// however fully use all the delegator shares
 		issuedTokens = v.TokensFromShares(delShares).TruncateInt()
 		v.Tokens = v.Tokens.Sub(issuedTokens)
+		v.RewardsTokens = v.RewardsTokens.Sub(v.RewardsTokensFromRewardsShares(delShares.Mul(rewardsMultiplier)))
 
 		if v.Tokens.IsNegative() {
 			panic("attempting to remove more tokens than available in validator")
 		}
+		if v.RewardsTokens.IsNegative() {
+			panic("attempting to remove more rewards tokens than available in validator")
+		}
 	}
 
 	v.DelegatorShares = remainingShares
+	v.DelegatorRewardsShares = v.DelegatorRewardsShares.Sub(delShares.Mul(rewardsMultiplier))
 
 	return v, issuedTokens
 }
@@ -535,3 +563,4 @@ func (v Validator) UnpackInterfaces(unpacker codectypes.AnyUnpacker) error {
 
 func (v Validator) GetSupportTokenType() int32                { return v.SupportTokenType }
 func (v Validator) GetDelegatorRewardsShares() math.LegacyDec { return v.DelegatorRewardsShares }
+func (v Validator) GetRewardsTokens() math.LegacyDec          { return v.RewardsTokens }

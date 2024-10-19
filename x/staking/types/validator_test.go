@@ -144,17 +144,18 @@ func TestRemoveDelShares(t *testing.T) {
 		DelegatorShares:        math.LegacyNewDec(100),
 		DelegatorRewardsShares: math.LegacyNewDec(100),
 		SupportTokenType:       0,
+		RewardsTokens:          math.LegacyNewDecFromInt(math.NewInt(100)),
 	}
 
 	// Remove delegator shares
-	valB, coinsB := valA.RemoveDelShares(math.LegacyNewDec(10))
+	valB, coinsB := valA.RemoveDelShares(math.LegacyNewDec(10), math.LegacyOneDec())
 	require.Equal(t, int64(10), coinsB.Int64())
 	require.Equal(t, int64(90), valB.DelegatorShares.RoundInt64())
 	require.Equal(t, int64(90), valB.BondedTokens().Int64())
 
 	// specific case from random tests
 	validator := mkValidator(5102, math.LegacyNewDec(115))
-	_, tokens := validator.RemoveDelShares(math.LegacyNewDec(29))
+	_, tokens := validator.RemoveDelShares(math.LegacyNewDec(29), math.LegacyOneDec())
 
 	require.True(math.IntEq(t, math.NewInt(1286), tokens))
 }
@@ -345,6 +346,7 @@ func mkValidator(tokens int64, shares math.LegacyDec) types.Validator {
 		DelegatorShares:        shares,
 		DelegatorRewardsShares: shares,
 		SupportTokenType:       0,
+		RewardsTokens:          math.LegacyNewDecFromInt(math.NewInt(tokens)),
 	}
 }
 

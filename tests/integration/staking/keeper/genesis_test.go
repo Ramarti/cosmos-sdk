@@ -42,6 +42,7 @@ func TestInitGenesis(t *testing.T) {
 		DelegatorRewardsShares: math.LegacyNewDecFromInt(valTokens),
 		Description:            types.NewDescription("hoop", "", "", "", ""),
 		SupportTokenType:       0,
+		RewardsTokens:          math.LegacyNewDecFromInt(valTokens),
 	}
 	assert.NilError(t, f.stakingKeeper.SetValidator(f.sdkCtx, bondedVal))
 
@@ -70,6 +71,7 @@ func TestInitGenesis(t *testing.T) {
 		DelegatorRewardsShares: math.LegacyNewDecFromInt(valTokens),
 		Description:            types.NewDescription("hoop", "", "", "", ""),
 		SupportTokenType:       0,
+		RewardsTokens:          math.LegacyNewDecFromInt(valTokens),
 	}
 	bondedVal2 := types.Validator{
 		OperatorAddress:        sdk.ValAddress(addrs[2]).String(),
@@ -80,6 +82,7 @@ func TestInitGenesis(t *testing.T) {
 		DelegatorRewardsShares: math.LegacyNewDecFromInt(valTokens),
 		Description:            types.NewDescription("bloop", "", "", "", ""),
 		SupportTokenType:       0,
+		RewardsTokens:          math.LegacyNewDecFromInt(valTokens),
 	}
 
 	// append new bonded validators to the list
@@ -155,6 +158,7 @@ func TestInitGenesis_PoolsBalanceMismatch(t *testing.T) {
 		DelegatorRewardsShares: math.LegacyNewDecFromInt(math.NewInt(10)),
 		Description:            types.NewDescription("bloop", "", "", "", ""),
 		SupportTokenType:       0,
+		RewardsTokens:          math.LegacyNewDecFromInt(math.NewInt(10)),
 	}
 
 	params := types.Params{

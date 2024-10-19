@@ -108,9 +108,9 @@ message Validator {
   // consensus_pubkey is the consensus public key of the validator, as a Protobuf Any.
   google.protobuf.Any consensus_pubkey = 2 [(cosmos_proto.accepts_interface) = "cosmos.crypto.PubKey"];
   // jailed defined whether the validator has been jailed from bonded status or not.
-  bool jailed = 3;
+  bool jailed = 3 [(amino.dont_omitempty) = true];
   // status is the validator status (bonded/unbonding/unbonded).
-  BondStatus status = 4;
+  BondStatus status = 4 [(amino.dont_omitempty) = true];
   // tokens define the delegated tokens (incl. self-delegation).
   string tokens = 5 [
     (cosmos_proto.scalar)  = "cosmos.Int",
@@ -147,9 +147,15 @@ message Validator {
   // list of unbonding ids, each uniquely identifing an unbonding of this validator
   repeated uint64 unbonding_ids = 13;
 
-  int32 support_token_type = 14;
+  int32 support_token_type = 14 [(amino.dont_omitempty) = true];
 
-  string delegator_rewards_shares = 15 [
+  string rewards_tokens = 15 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+
+  string delegator_rewards_shares = 16 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
@@ -242,7 +248,7 @@ message PeriodDelegation {
     (gogoproto.nullable)   = false
   ];
 
-  int32 period_type = 4;
+  int32 period_type = 4 [(amino.dont_omitempty) = true];
 
   google.protobuf.Timestamp end_time = 5
       [(gogoproto.nullable) = false, (amino.dont_omitempty) = true, (gogoproto.stdtime) = true];

@@ -34,13 +34,14 @@ type ValidatorI interface {
 	GetCommission() math.LegacyDec                      // validator commission rate
 	GetMinSelfDelegation() math.Int                     // validator minimum self delegation
 	GetDelegatorShares() math.LegacyDec
-	TokensFromRewardsShares(math.LegacyDec) math.LegacyDec          // token worth of provided delegator rewards shares
-	TokensFromRewardsSharesTruncated(math.LegacyDec) math.LegacyDec // token worth of provided delegator rewards shares, truncated                         // total outstanding delegator shares
-	TokensFromShares(math.LegacyDec) math.LegacyDec                 // token worth of provided delegator shares
-	TokensFromSharesTruncated(math.LegacyDec) math.LegacyDec        // token worth of provided delegator shares, truncated
-	TokensFromSharesRoundUp(math.LegacyDec) math.LegacyDec          // token worth of provided delegator shares, rounded up
-	SharesFromTokens(amt math.Int) (math.LegacyDec, error)          // shares worth of delegator's bond
-	SharesFromTokensTruncated(amt math.Int) (math.LegacyDec, error) // truncated shares worth of delegator's bond
+	RewardsTokensFromRewardsShares(math.LegacyDec) math.LegacyDec          // token worth of provided delegator rewards shares
+	RewardsTokensFromRewardsSharesTruncated(math.LegacyDec) math.LegacyDec // token worth of provided delegator rewards shares, truncated                         // total outstanding delegator shares
+	TokensFromShares(math.LegacyDec) math.LegacyDec                        // token worth of provided delegator shares
+	TokensFromSharesTruncated(math.LegacyDec) math.LegacyDec               // token worth of provided delegator shares, truncated
+	TokensFromSharesRoundUp(math.LegacyDec) math.LegacyDec                 // token worth of provided delegator shares, rounded up
+	SharesFromTokens(amt math.Int) (math.LegacyDec, error)                 // shares worth of delegator's bond
+	SharesFromTokensTruncated(amt math.Int) (math.LegacyDec, error)        // truncated shares worth of delegator's bond
 	GetSupportTokenType() int32
 	GetDelegatorRewardsShares() math.LegacyDec
+	GetRewardsTokens() math.LegacyDec
 }

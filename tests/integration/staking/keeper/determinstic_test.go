@@ -211,6 +211,7 @@ func createValidator(rt *rapid.T, f *deterministicFixture, t *testing.T) staking
 			math.LegacyNewDecWithPrec(rapid.Int64Range(0, 100).Draw(rt, "max-change-rate"), 2),
 		),
 		MinSelfDelegation:      math.NewInt(rapid.Int64Min(1).Draw(rt, "tokens")),
+		RewardsTokens:          math.LegacyNewDecFromInt(math.NewInt(rapid.Int64Min(10000).Draw(rt, "tokens"))),
 		DelegatorRewardsShares: math.LegacyNewDecWithPrec(rapid.Int64Range(1, 100).Draw(rt, "commission"), 2),
 		SupportTokenType:       0,
 	}
@@ -279,6 +280,7 @@ func getStaticValidator(f *deterministicFixture, t *testing.T) stakingtypes.Vali
 			math.LegacyNewDecWithPrec(5, 2),
 		),
 		MinSelfDelegation:      math.NewInt(10),
+		RewardsTokens:          math.LegacyNewDecFromInt(math.NewInt(100)),
 		DelegatorRewardsShares: math.LegacyNewDecWithPrec(5, 2),
 		SupportTokenType:       0,
 	}
@@ -315,6 +317,7 @@ func getStaticValidator2(f *deterministicFixture, t *testing.T) stakingtypes.Val
 			math.LegacyNewDecWithPrec(51, 2),
 		),
 		MinSelfDelegation:      math.NewInt(1),
+		RewardsTokens:          math.LegacyNewDecFromInt(math.NewInt(10012)),
 		DelegatorRewardsShares: math.LegacyNewDecWithPrec(96, 2),
 		SupportTokenType:       0,
 	}
