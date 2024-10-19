@@ -48,7 +48,7 @@ func NewMsgCreateValidator(
 }
 
 // Validate validates the MsgCreateValidator sdk msg.
-func (msg MsgCreateValidator) Validate(ac address.Codec) error {
+func (msg MsgCreateValidator) Validate(ac address.Codec, skipMinSelfDelValidation bool) error {
 	// note that unmarshaling from bech32 ensures both non-empty and valid
 	_, err := ac.StringToBytes(msg.ValidatorAddress)
 	if err != nil {
@@ -82,7 +82,7 @@ func (msg MsgCreateValidator) Validate(ac address.Codec) error {
 		)
 	}
 
-	if msg.Value.Amount.LT(msg.MinSelfDelegation) {
+	if msg.Value.Amount.LT(msg.MinSelfDelegation) && !skipMinSelfDelValidation {
 		return ErrSelfDelegationBelowMinimum
 	}
 

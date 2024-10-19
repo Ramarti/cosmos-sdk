@@ -411,7 +411,7 @@ func newBuildCreateValidatorMsg(clientCtx client.Context, txf tx.Factory, fs *fl
 	if err != nil {
 		return txf, nil, err
 	}
-	if err := msg.Validate(valAc); err != nil {
+	if err := msg.Validate(valAc, false); err != nil {
 		return txf, nil, err
 	}
 
