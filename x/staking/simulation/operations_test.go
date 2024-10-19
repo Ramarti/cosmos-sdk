@@ -310,6 +310,7 @@ func (s *SimTestSuite) TestSimulateMsgUndelegate() {
 	val0bz, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	s.Require().NoError(err)
 	require.NoError(s.stakingKeeper.SetPeriodDelegation(ctx, delegator.Address, val0bz, types.NewPeriodDelegation(
+		delegator.Address.String(), sdk.ValAddress(val0bz).String(),
 		types.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -363,6 +364,7 @@ func (s *SimTestSuite) TestSimulateMsgBeginRedelegate() {
 	valAddrBytes, err := s.stakingKeeper.ValidatorAddressCodec().StringToBytes(validator0.GetOperator())
 	require.NoError(err)
 	require.NoError(s.stakingKeeper.SetPeriodDelegation(ctx, delegator.Address, valAddrBytes, types.NewPeriodDelegation(
+		delegator.Address.String(), sdk.ValAddress(valAddrBytes).String(),
 		types.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,

@@ -13,9 +13,11 @@ const (
 )
 
 func NewPeriodDelegation(
-	periodDelegationID string, shares math.LegacyDec, rewardsShares math.LegacyDec, periodType int32, endTime time.Time,
+	delegatorAddr, validatorAddr, periodDelegationID string, shares math.LegacyDec, rewardsShares math.LegacyDec, periodType int32, endTime time.Time,
 ) PeriodDelegation {
 	return PeriodDelegation{
+		DelegatorAddress:   delegatorAddr,
+		ValidatorAddress:   validatorAddr,
 		PeriodDelegationId: periodDelegationID,
 		Shares:             shares,
 		RewardsShares:      rewardsShares,

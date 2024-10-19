@@ -46,6 +46,8 @@ func (s *KeeperTestSuite) TestDelegation() {
 		addrDels[0].String(), valAddrs[0].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
 	)
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[0], valAddrs[0], stakingtypes.NewPeriodDelegation(
+		addrDels[0].String(),
+		valAddrs[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
@@ -75,6 +77,8 @@ func (s *KeeperTestSuite) TestDelegation() {
 		addrDels[0].String(), valAddrs[1].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
 	)
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[0], valAddrs[1], stakingtypes.NewPeriodDelegation(
+		addrDels[0].String(),
+		valAddrs[1].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
@@ -85,6 +89,8 @@ func (s *KeeperTestSuite) TestDelegation() {
 		addrDels[0].String(), valAddrs[2].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
 	)
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[0], valAddrs[2], stakingtypes.NewPeriodDelegation(
+		addrDels[0].String(),
+		valAddrs[2].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
@@ -95,6 +101,8 @@ func (s *KeeperTestSuite) TestDelegation() {
 		addrDels[1].String(), valAddrs[0].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
 	)
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[1], valAddrs[0], stakingtypes.NewPeriodDelegation(
+		addrDels[1].String(),
+		valAddrs[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
@@ -105,6 +113,8 @@ func (s *KeeperTestSuite) TestDelegation() {
 		addrDels[1].String(), valAddrs[1].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
 	)
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[1], valAddrs[1], stakingtypes.NewPeriodDelegation(
+		addrDels[1].String(),
+		valAddrs[1].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
@@ -115,6 +125,8 @@ func (s *KeeperTestSuite) TestDelegation() {
 		addrDels[1].String(), valAddrs[2].String(), math.LegacyNewDec(9), math.LegacyNewDec(9),
 	)
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[1], valAddrs[2], stakingtypes.NewPeriodDelegation(
+		addrDels[1].String(),
+		valAddrs[2].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(9),
 		math.LegacyNewDec(9),
@@ -442,6 +454,8 @@ func (s *KeeperTestSuite) TestUnbondDelegation() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, delAddrs[0], valAddrs[0], stakingtypes.NewPeriodDelegation(
+		delAddrs[0].String(),
+		valAddrs[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -491,6 +505,8 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, sdk.AccAddress(addrVals[0].Bytes()), addrVals[0], stakingtypes.NewPeriodDelegation(
+		sdk.AccAddress(addrVals[0].Bytes()).String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -510,6 +526,8 @@ func (s *KeeperTestSuite) TestUndelegateSelfDelegationBelowMinSelfDelegation() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[0], addrVals[0], stakingtypes.NewPeriodDelegation(
+		addrDels[0].String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -556,6 +574,8 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[0], addrVals[0], stakingtypes.NewPeriodDelegation(
+		addrDels[0].String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -575,6 +595,8 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondingValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[1], addrVals[0], stakingtypes.NewPeriodDelegation(
+		addrDels[1].String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -651,6 +673,8 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, val0AccAddr, addrVals[0], stakingtypes.NewPeriodDelegation(
+		val0AccAddr.String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -669,6 +693,8 @@ func (s *KeeperTestSuite) TestUndelegateFromUnbondedValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[1], addrVals[0], stakingtypes.NewPeriodDelegation(
+		addrDels[1].String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -748,6 +774,8 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, val0AccAddr, addrVals[0], stakingtypes.NewPeriodDelegation(
+		val0AccAddr.String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -768,6 +796,8 @@ func (s *KeeperTestSuite) TestUnbondingAllDelegationFromValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[1], addrVals[0], stakingtypes.NewPeriodDelegation(
+		addrDels[1].String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -937,6 +967,8 @@ func (s *KeeperTestSuite) TestRedelegateToSameValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, val0AccAddr, addrVals[0], stakingtypes.NewPeriodDelegation(
+		val0AccAddr.String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -968,6 +1000,8 @@ func (s *KeeperTestSuite) TestRedelegationMaxEntries() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, val0AccAddr, addrVals[0], stakingtypes.NewPeriodDelegation(
+		val0AccAddr.String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -1032,6 +1066,8 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, val0AccAddr, addrVals[0], stakingtypes.NewPeriodDelegation(
+		val0AccAddr.String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -1058,6 +1094,8 @@ func (s *KeeperTestSuite) TestRedelegateSelfDelegation() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[0], addrVals[0], stakingtypes.NewPeriodDelegation(
+		addrDels[0].String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -1099,6 +1137,8 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, val0AccAddr, addrVals[0], stakingtypes.NewPeriodDelegation(
+		val0AccAddr.String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -1117,6 +1157,8 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondingValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[1], addrVals[0], stakingtypes.NewPeriodDelegation(
+		addrDels[1].String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -1198,6 +1240,8 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, selfDelegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, val0AccAddr, addrVals[0], stakingtypes.NewPeriodDelegation(
+		val0AccAddr.String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
@@ -1216,6 +1260,8 @@ func (s *KeeperTestSuite) TestRedelegateFromUnbondedValidator() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, delegation))
 	require.NoError(keeper.SetPeriodDelegation(ctx, addrDels[1], addrVals[0], stakingtypes.NewPeriodDelegation(
+		addrDels[1].String(),
+		addrVals[0].String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,

@@ -512,6 +512,8 @@ func TestGRPCDelegationRewards(t *testing.T) {
 	delegation := stakingtypes.NewDelegation(delAddr.String(), f.valAddr.String(), issuedShares, issuedShares)
 	assert.NilError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, delegation))
 	periodDel := stakingtypes.NewPeriodDelegation(
+		delAddr.String(),
+		f.valAddr.String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
