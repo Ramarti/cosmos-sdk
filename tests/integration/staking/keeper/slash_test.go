@@ -130,6 +130,8 @@ func TestSlashRedelegation(t *testing.T) {
 		addrDels[0].String(), addrVals[1].String(), math.LegacyNewDec(10), math.LegacyNewDec(10))
 	assert.NilError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, del))
 	periodDel := types.NewPeriodDelegation(
+		addrDels[0].String(),
+		addrVals[1].String(),
 		types.FlexiblePeriodDelegationID,
 		math.LegacyNewDec(10),
 		math.LegacyNewDec(10),
@@ -412,6 +414,8 @@ func TestSlashWithRedelegation(t *testing.T) {
 		addrDels[0].String(), addrVals[1].String(), math.LegacyNewDecFromInt(rdTokens), math.LegacyNewDecFromInt(rdTokens))
 	assert.NilError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, del))
 	periodDel := types.NewPeriodDelegation(
+		addrDels[0].String(),
+		addrVals[1].String(),
 		types.FlexiblePeriodDelegationID,
 		math.LegacyNewDecFromInt(rdTokens),
 		math.LegacyNewDecFromInt(rdTokens),
@@ -578,6 +582,8 @@ func TestSlashBoth(t *testing.T) {
 		addrDels[0].String(), addrVals[1].String(), math.LegacyNewDecFromInt(rdATokens), math.LegacyNewDecFromInt(rdATokens))
 	assert.NilError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, delA))
 	periodDel := types.NewPeriodDelegation(
+		addrDels[0].String(),
+		addrVals[1].String(),
 		types.FlexiblePeriodDelegationID,
 		math.LegacyNewDecFromInt(rdATokens),
 		math.LegacyNewDecFromInt(rdATokens),

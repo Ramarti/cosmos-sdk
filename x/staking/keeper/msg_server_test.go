@@ -588,6 +588,7 @@ func (s *KeeperTestSuite) TestMsgBeginRedelegate() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, del))
 	periodDel := stakingtypes.NewPeriodDelegation(
+		Addr.String(), srcValAddr.String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		shares,
 		shares,
@@ -754,6 +755,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 	)
 	require.NoError(keeper.SetDelegation(ctx, del))
 	periodDel := stakingtypes.NewPeriodDelegation(
+		Addr.String(), ValAddr.String(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		shares,
 		shares,

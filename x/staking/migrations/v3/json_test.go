@@ -83,6 +83,7 @@ func TestMigrateJSON(t *testing.T) {
 		],
 		"unbonding_time": "1814400s"
 	},
+	"period_delegations": [],
 	"redelegations": [],
 	"unbonding_delegations": [],
 	"validators": []

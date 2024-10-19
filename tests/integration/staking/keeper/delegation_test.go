@@ -55,6 +55,8 @@ func TestUnbondingDelegationsMaxEntries(t *testing.T) {
 		addrDel.String(), addrVal.String(), issuedShares, issuedShares)
 	assert.NilError(t, f.stakingKeeper.SetDelegation(ctx, delegation))
 	periodDel := types.NewPeriodDelegation(
+		addrDel.String(),
+		addrVal.String(),
 		types.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,

@@ -201,6 +201,8 @@ func TestMsgWithdrawDelegatorReward(t *testing.T) {
 	delegation := stakingtypes.NewDelegation(delAddr.String(), validator.GetOperator(), issuedShares, issuedShares)
 	require.NoError(t, f.stakingKeeper.SetDelegation(f.sdkCtx, delegation))
 	periodDel := stakingtypes.NewPeriodDelegation(
+		delAddr.String(),
+		validator.GetOperator(),
 		stakingtypes.FlexiblePeriodDelegationID,
 		issuedShares,
 		issuedShares,
