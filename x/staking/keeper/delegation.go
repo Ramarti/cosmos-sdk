@@ -1061,7 +1061,7 @@ func (k Keeper) Unbond(
 	if err != nil {
 		return amount, err
 	}
-	rewardsShares := shares.Mul(tokenTypeInfo.RewardsMultiplier).Mul(periodInfo.RewardsMultiplier)
+	rewardsMultiplier := tokenTypeInfo.RewardsMultiplier.Mul(periodInfo.RewardsMultiplier)
 
 	// ensure that we have enough shares to remove
 	if delegation.Shares.LT(shares) {
@@ -1074,6 +1074,7 @@ func (k Keeper) Unbond(
 		)
 	}
 	// ensure that we have enough rewards shares to remove
+	rewardsShares := shares.Mul(rewardsMultiplier)
 	if delegation.RewardsShares.LT(rewardsShares) {
 		return amount, errorsmod.Wrap(types.ErrNotEnoughDelegationRewardsShares, delegation.RewardsShares.String())
 	}
@@ -1144,7 +1145,7 @@ func (k Keeper) Unbond(
 
 	// remove the shares and coins from the validator
 	// NOTE that the amount is later (in keeper.Delegation) moved between staking module pools
-	validator, amount, err = k.RemoveValidatorTokensAndShares(ctx, validator, shares, rewardsShares)
+	validator, amount, err = k.RemoveValidatorTokensAndShares(ctx, validator, shares, rewardsMultiplier)
 	if err != nil {
 		return amount, err
 	}

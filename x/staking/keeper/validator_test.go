@@ -216,7 +216,7 @@ func (s *KeeperTestSuite) TestUpdateValidatorByPowerIndex() {
 
 	// burn half the delegator shares
 	require.NoError(keeper.DeleteValidatorByPowerIndex(ctx, validator))
-	validator, burned := validator.RemoveDelShares(delSharesCreated.Quo(math.LegacyNewDec(2)))
+	validator, burned := validator.RemoveDelShares(delSharesCreated.Quo(math.LegacyNewDec(2)), math.LegacyOneDec())
 	require.Equal(keeper.TokensFromConsensusPower(ctx, 50), burned)
 	stakingkeeper.TestingUpdateValidator(keeper, ctx, validator, true) // update the validator, possibly kicking it out
 	require.False(stakingkeeper.ValidatorByPowerIndexExists(ctx, keeper, power))
@@ -262,8 +262,8 @@ func (s *KeeperTestSuite) TestApplyAndReturnValidatorSetUpdatesPowerDecrease() {
 	// tendermintUpdate set: {c1, c3} -> {c1', c3'}
 	delTokens1 := keeper.TokensFromConsensusPower(ctx, 20)
 	delTokens2 := keeper.TokensFromConsensusPower(ctx, 30)
-	validators[0], _ = validators[0].RemoveDelShares(math.LegacyNewDecFromInt(delTokens1))
-	validators[1], _ = validators[1].RemoveDelShares(math.LegacyNewDecFromInt(delTokens2))
+	validators[0], _ = validators[0].RemoveDelShares(math.LegacyNewDecFromInt(delTokens1), math.LegacyOneDec())
+	validators[1], _ = validators[1].RemoveDelShares(math.LegacyNewDecFromInt(delTokens2), math.LegacyOneDec())
 	validators[0] = stakingkeeper.TestingUpdateValidator(keeper, ctx, validators[0], false)
 	validators[1] = stakingkeeper.TestingUpdateValidator(keeper, ctx, validators[1], false)
 
@@ -363,7 +363,7 @@ func (s *KeeperTestSuite) TestValidatorToken() {
 	validator, _ = keeper.GetValidator(ctx, valAddr)
 	require.Equal(math.LegacyNewDecFromInt(addTokens), validator.DelegatorShares)
 
-	_, _, err = keeper.RemoveValidatorTokensAndShares(ctx, validator, math.LegacyNewDecFromInt(delTokens), math.LegacyNewDecFromInt(delTokens))
+	_, _, err = keeper.RemoveValidatorTokensAndShares(ctx, validator, math.LegacyNewDecFromInt(delTokens), math.LegacyOneDec())
 	require.NoError(err)
 	validator, _ = keeper.GetValidator(ctx, valAddr)
 	require.Equal(delTokens, validator.Tokens)

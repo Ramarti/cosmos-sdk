@@ -17,6 +17,7 @@ func CreateValidator(pk cryptotypes.PubKey, stake math.Int) (stakingtypes.Valida
 	val.Tokens = stake
 	val.DelegatorShares = math.LegacyNewDecFromInt(val.Tokens)
 	val.DelegatorRewardsShares = math.LegacyNewDecFromInt(val.Tokens)
+	val.RewardsTokens = math.LegacyNewDecFromInt(stake)
 	return val, err
 }
 
@@ -98,6 +99,7 @@ func SlashValidator(
 	// Deduct from validator's bonded tokens and update the validator.
 	// Burn the slashed tokens from the pool account and decrease the total supply.
 	validator.Tokens = validator.Tokens.Sub(tokensToBurn)
+	validator.RewardsTokens = validator.RewardsTokens.Sub(math.LegacyNewDecFromInt(tokensToBurn))
 
 	return tokensToBurn
 }

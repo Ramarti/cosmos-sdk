@@ -49,7 +49,7 @@ func (k Keeper) AllocateTokens(ctx context.Context, bondedVotes []abci.VoteInfo)
 		}
 
 		validators[i] = val
-		totalRewardsShares = totalRewardsShares.Add(val.GetDelegatorRewardsShares())
+		totalRewardsShares = totalRewardsShares.Add(val.GetDelegatorRewardsShares()) // TODO(rayden): use rewards tokens instead
 	}
 
 	if totalPreviousPower == 0 {
@@ -76,7 +76,7 @@ func (k Keeper) AllocateTokens(ctx context.Context, bondedVotes []abci.VoteInfo)
 		// TODO: Consider micro-slashing for missing votes.
 		//
 		// Ref: https://github.com/cosmos/cosmos-sdk/issues/2525#issuecomment-430838701
-		powerFraction := validators[i].GetDelegatorRewardsShares().QuoTruncate(totalRewardsShares)
+		powerFraction := validators[i].GetDelegatorRewardsShares().QuoTruncate(totalRewardsShares) // TODO(rayden): use rewards tokens instead
 		reward := feeMultiplier.MulDecTruncate(powerFraction)
 
 		err = k.AllocateTokensToValidator(ctx, validators[i], reward)

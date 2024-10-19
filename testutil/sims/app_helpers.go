@@ -253,6 +253,7 @@ func GenesisStateWithValSet(
 			MinSelfDelegation:      sdkmath.ZeroInt(),
 			SupportTokenType:       0,
 			DelegatorRewardsShares: sdkmath.LegacyOneDec(),
+			RewardsTokens:          sdkmath.LegacyNewDecFromInt(bondAmt),
 		}
 		validators = append(validators, validator)
 		delegations = append(delegations, stakingtypes.NewDelegation(
