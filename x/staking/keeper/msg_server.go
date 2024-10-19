@@ -37,7 +37,11 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
 	}
 
-	if err := msg.Validate(k.validatorAddressCodec); err != nil {
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
+	// skip validation that if the token is greater than minimum self delegation amount at genesis block
+	skipMinSelfDelValidation := sdkCtx.BlockHeight() == 0
+	if err := msg.Validate(k.validatorAddressCodec, skipMinSelfDelValidation); err != nil {
 		return nil, err
 	}
 
@@ -79,7 +83,6 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, err
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	cp := sdkCtx.ConsensusParams()
 	if cp.Validator != nil {
 		pkType := pk.Type()
@@ -149,7 +152,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	}
 
 	// delegation amount must be greater than or equal to minimum self delegation when creating validator
-	if msg.Value.Amount.LT(validator.MinSelfDelegation) {
+	if msg.Value.Amount.LT(validator.MinSelfDelegation) && !skipMinSelfDelValidation {
 		return nil, types.ErrSelfDelegationBelowMinimum
 	}
 

@@ -238,7 +238,8 @@ func (s *KeeperTestSuite) TestMsgCreateValidator() {
 	for _, tc := range testCases {
 		tc := tc
 		s.T().Run(tc.name, func(t *testing.T) {
-			_, err := msgServer.CreateValidator(ctx, tc.input)
+			cachedCtx := ctx.WithBlockHeight(1)
+			_, err := msgServer.CreateValidator(cachedCtx, tc.input)
 			if tc.expErr {
 				require.Error(err)
 				require.Contains(err.Error(), tc.expErrMsg)
