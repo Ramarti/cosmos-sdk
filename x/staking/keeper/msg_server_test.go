@@ -262,7 +262,7 @@ func (s *KeeperTestSuite) TestMsgEditValidator() {
 
 	comm := stakingtypes.NewCommissionRates(math.LegacyNewDec(0), math.LegacyNewDec(0), math.LegacyNewDec(0))
 	msg, err := stakingtypes.NewMsgCreateValidator(
-		ValAddr.String(), pk, sdk.NewCoin("stake", math.NewInt(10)), stakingtypes.Description{Moniker: "NewVal"}, comm, math.OneInt(),
+		ValAddr.String(), pk, sdk.NewCoin("stake", math.NewInt(10)), stakingtypes.Description{Moniker: "NewVal"}, comm, math.NewInt(2),
 		0,
 	)
 	require.NoError(err)
