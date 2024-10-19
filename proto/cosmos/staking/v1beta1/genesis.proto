@@ -41,6 +41,9 @@ message GenesisState {
 
   // exported defines a bool to identify whether the chain dealing with exported or initialized genesis.
   bool exported = 8;
+
+  // period_delegations defines the period delegations active at genesis.
+  repeated PeriodDelegation period_delegations = 9 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
 }
 
 // LastValidatorPower required for validator set update logic.

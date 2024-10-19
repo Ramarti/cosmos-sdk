@@ -27,7 +27,13 @@ func (k Keeper) ValidateNewPeriodDelegation(
 			return types.PeriodDelegation{}, types.ErrPeriodDelegationExists
 		}
 	} else if errors.Is(err, types.ErrNoPeriodDelegation) {
+		delAddrStr, err := k.authKeeper.AddressCodec().BytesToString(delAddr)
+		if err != nil {
+			return types.PeriodDelegation{}, err
+		}
+		valAddrStr, err := k.validatorAddressCodec.BytesToString(valAddr)
 		periodDelegation = types.NewPeriodDelegation(
+			delAddrStr, valAddrStr,
 			periodDelegationID, math.LegacyZeroDec(), math.LegacyZeroDec(), periodType, endTime,
 		)
 	} else {
@@ -37,8 +43,8 @@ func (k Keeper) ValidateNewPeriodDelegation(
 	return periodDelegation, nil
 }
 
-// GetAllPeriodDelegation returns all period delegation by delAddr and valAddr.
-func (k Keeper) GetAllPeriodDelegation(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) ([]types.PeriodDelegation, error) {
+// GetAllPeriodDelegationsByDelAndValAddr returns all period delegations by delAddr and valAddr.
+func (k Keeper) GetAllPeriodDelegationsByDelAndValAddr(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) ([]types.PeriodDelegation, error) {
 	store := k.storeService.OpenKVStore(ctx)
 
 	periodDelegationsKey := types.GetPeriodDelegationsKey(delAddr, valAddr)
@@ -57,6 +63,27 @@ func (k Keeper) GetAllPeriodDelegation(ctx context.Context, delAddr sdk.AccAddre
 	}
 
 	return periodDelegations, nil
+}
+
+// GetAllPeriodDelegations returns all period delegations
+func (k Keeper) GetAllPeriodDelegations(ctx context.Context) (periodDelegations []types.PeriodDelegation, err error) {
+	store := k.storeService.OpenKVStore(ctx)
+
+	iterator, err := store.Iterator(types.PeriodDelegationKey, storetypes.PrefixEndBytes(types.PeriodDelegationKey))
+	if err != nil {
+		return nil, err
+	}
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		periodDelegation, err := types.UnmarshalPeriodDelegation(k.cdc, iterator.Value())
+		if err != nil {
+			return nil, err
+		}
+		periodDelegations = append(periodDelegations, periodDelegation)
+	}
+
+	return
 }
 
 // GetPeriodDelegation returns a specific period delegation.
