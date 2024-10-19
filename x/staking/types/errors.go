@@ -61,4 +61,5 @@ var (
 	ErrPeriodDelegationExists                 = errors.Register(ModuleName, 56, "period delegation already exists")
 	ErrNoTokenTypeFound                       = errors.Register(ModuleName, 57, "token type not found")
 	ErrNoPeriodTypeFound                      = errors.Register(ModuleName, 58, "period type not found")
+	ErrPeriodDelegationIDMismatch             = errors.Register(ModuleName, 59, "incorrect delegation id for related period")
 )
