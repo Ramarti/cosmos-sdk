@@ -1496,18 +1496,6 @@ func (k Keeper) ValidateUnbondAmount(
 		return shares, err
 	}
 
-	// SHOULD NOT HAPPEN
-	if shares.GT(validator.GetDelegatorShares()) {
-		k.Logger(ctx).Error(
-			"unexpected unbond shares",
-			"delAddr", delAddr.String(),
-			"valAddr", valAddr.String(),
-			"delShares", shares.String(),
-			"valShares", validator.GetDelegatorShares().String(),
-		)
-		return shares, errors.New("unbond shares are greater than validator shares")
-	}
-
 	// unbond all shares for following conditions:
 	// 1. the shares are greater than all period delegation shares
 	// 2. the tokens of remaining shares are less than the minimum delegation amount
