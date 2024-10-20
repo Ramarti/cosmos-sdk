@@ -2,9 +2,10 @@ package keeper
 
 import (
 	"context"
-	storetypes "cosmossdk.io/store/types"
 	"errors"
 	"time"
+
+	storetypes "cosmossdk.io/store/types"
 
 	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -32,6 +33,9 @@ func (k Keeper) ValidateNewPeriodDelegation(
 			return types.PeriodDelegation{}, err
 		}
 		valAddrStr, err := k.validatorAddressCodec.BytesToString(valAddr)
+		if err != nil {
+			return types.PeriodDelegation{}, err
+		}
 		periodDelegation = types.NewPeriodDelegation(
 			delAddrStr, valAddrStr,
 			periodDelegationID, math.LegacyZeroDec(), math.LegacyZeroDec(), periodType, endTime,

@@ -883,7 +883,7 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 	if (periodType == flexiblePeriodType) != (periodDelID == types.FlexiblePeriodDelegationID) {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), errors.New("incorrect delegation id for related period")
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), types.ErrPeriodDelegationIDMismatch
 	}
 
 	tokenTypeInfo, err := k.GetTokenTypeInfo(ctx, validator.GetSupportTokenType())
