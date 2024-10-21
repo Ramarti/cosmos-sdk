@@ -154,3 +154,5 @@ require (
 	pgregory.net/rapid v1.1.0 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
+
+replace github.com/cosmos/cosmos-sdk => github.com/piplabs/cosmos-sdk v0.50.8-0.20241021173134-3032e1bdd6bf
