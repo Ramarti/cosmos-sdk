@@ -12,8 +12,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-// ValidateNewPeriodDelegation validates a new period delegation.
-func (k Keeper) ValidateNewPeriodDelegation(
+// GetOrCreatePeriodDelegation gets the period delegation or creates a new one.
+func (k Keeper) GetOrCreatePeriodDelegation(
 	ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress,
 	periodDelegationID string,
 	periodType int32, endTime time.Time,

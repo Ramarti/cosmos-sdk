@@ -901,8 +901,8 @@ func (k Keeper) Delegate(
 	if subtractAccount {
 		endTime = sdkCtx.BlockTime().Add(periodInfo.Duration)
 	}
-	// check if the period delegation is valid
-	periodDelegation, err := k.ValidateNewPeriodDelegation(
+	// Get or create the period delegation object
+	periodDelegation, err := k.GetOrCreatePeriodDelegation(
 		ctx, delAddr, valbz,
 		periodDelID, periodType, endTime,
 	)
