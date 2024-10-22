@@ -186,7 +186,6 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
 	}
 
-	// check if the validator exists
 	validator, err := k.GetValidator(ctx, valAddr)
 	if err != nil {
 		return nil, err
