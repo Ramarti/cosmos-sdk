@@ -20,7 +20,7 @@ func (k Keeper) AllocateTokens(ctx context.Context, bondedVotes []abci.VoteInfo)
 	// (and distributed to the previous proposer)
 
 	for _, vote := range bondedVotes {
-		k.Logger(ctx).Info("[Hans] voted validator", "address", vote.Validator.GetAddress(), "power", vote.Validator.GetPower())
+		k.Logger(ctx).Info("[Hans] voted validator", "address", vote.Validator.GetAddress(), "power", vote.Validator.GetPower(), "tag", vote.GetBlockIdFlag())
 	}
 
 	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
