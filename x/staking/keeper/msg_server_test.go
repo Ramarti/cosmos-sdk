@@ -858,7 +858,7 @@ func (s *KeeperTestSuite) TestMsgUndelegate() {
 				Amount:             sdk.NewCoin(sdk.DefaultBondDenom, shares.RoundInt()),
 			},
 			expErr:    true,
-			expErrMsg: "period delegation does not exist",
+			expErrMsg: "no delegation",
 		},
 	}
 
