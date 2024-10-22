@@ -18,6 +18,11 @@ func (k Keeper) AllocateTokens(ctx context.Context, bondedVotes []abci.VoteInfo)
 	// fetch and clear the collected fees for distribution, since this is
 	// called in BeginBlock, collected fees will be from the previous block
 	// (and distributed to the previous proposer)
+
+	for _, vote := range bondedVotes {
+		k.Logger(ctx).Info("[Hans] voted validator", "address", vote.Validator.GetAddress(), "power", vote.Validator.GetPower())
+	}
+
 	feeCollector := k.authKeeper.GetModuleAccount(ctx, k.feeCollectorName)
 	feesCollectedInt := k.bankKeeper.GetAllBalances(ctx, feeCollector.GetAddress())
 	feesCollected := sdk.NewDecCoinsFromCoins(feesCollectedInt...)
