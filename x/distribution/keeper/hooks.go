@@ -123,6 +123,12 @@ func (h Hooks) AfterValidatorRemoved(ctx context.Context, _ sdk.ConsAddress, val
 
 // increment period
 func (h Hooks) BeforeDelegationCreated(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	h.k.Logger(ctx).Debug(
+		"BeforeDelegationCreated start",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", delAddr.String(),
+		"validator", valAddr.String(),
+	)
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		return err
@@ -134,6 +140,12 @@ func (h Hooks) BeforeDelegationCreated(ctx context.Context, delAddr sdk.AccAddre
 
 // withdraw delegation rewards (which also increments period)
 func (h Hooks) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	h.k.Logger(ctx).Debug(
+		"BeforeDelegationSharesModified start",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", delAddr.String(),
+		"validator", valAddr.String(),
+	)
 	val, err := h.k.stakingKeeper.Validator(ctx, valAddr)
 	if err != nil {
 		return err
@@ -153,6 +165,12 @@ func (h Hooks) BeforeDelegationSharesModified(ctx context.Context, delAddr sdk.A
 
 // create new delegation period record
 func (h Hooks) AfterDelegationModified(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) error {
+	h.k.Logger(ctx).Debug(
+		"AfterDelegationModified start",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", delAddr.String(),
+		"validator", valAddr.String(),
+	)
 	return h.k.initializeDelegation(ctx, valAddr, delAddr)
 }
 

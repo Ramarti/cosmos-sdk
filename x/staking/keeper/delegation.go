@@ -1372,6 +1372,15 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, err
 	}
 
+	k.Logger(ctx).Debug(
+		"Start unbond for BeginRedelegate",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", delAddr.String(),
+		"validator_src", valSrcAddr.String(),
+		"validator_dst", valDstAddr.String(),
+		"period_delegation_id", periodDelegationId,
+		"shares_amount", sharesAmount.String(),
+	)
 	returnAmount, err := k.Unbond(ctx, delAddr, valSrcAddr, true, periodDelegationId, sharesAmount)
 	if err != nil {
 		return time.Time{}, err
@@ -1381,6 +1390,15 @@ func (k Keeper) BeginRedelegation(
 		return time.Time{}, types.ErrTinyRedelegationAmount
 	}
 
+	k.Logger(ctx).Debug(
+		"Start delegate for BeginRedelegate",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", delAddr.String(),
+		"validator_src", valSrcAddr.String(),
+		"validator_dst", valDstAddr.String(),
+		"period_delegation_id", periodDelegationId,
+		"tokens_amount", returnAmount.String(),
+	)
 	sharesCreated, _, err := k.Delegate(
 		ctx, delAddr, returnAmount, srcValidator.GetStatus(), dstValidator, false,
 		periodDelegationId, periodDelegation.PeriodType,

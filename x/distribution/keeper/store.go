@@ -80,6 +80,12 @@ func (k Keeper) SetPreviousProposerConsAddr(ctx context.Context, consAddr sdk.Co
 
 // get the starting info associated with a delegator
 func (k Keeper) GetDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) (period types.DelegatorStartingInfo, err error) {
+	k.Logger(ctx).Debug(
+		"GetDelegatorStartingInfo Before",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", del.String(),
+		"validator", val.String(),
+	)
 	store := k.storeService.OpenKVStore(ctx)
 	b, err := store.Get(types.GetDelegatorStartingInfoKey(val, del))
 	if err != nil {
@@ -87,11 +93,30 @@ func (k Keeper) GetDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress
 	}
 
 	err = k.cdc.Unmarshal(b, &period)
+	k.Logger(ctx).Debug(
+		"GetDelegatorStartingInfo After",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", del.String(),
+		"validator", val.String(),
+		"previous_period", period.PreviousPeriod,
+		"rewards_stake", period.RewardsStake.String(),
+		"period_height", period.Height,
+	)
+
 	return period, err
 }
 
 // set the starting info associated with a delegator
 func (k Keeper) SetDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress, period types.DelegatorStartingInfo) error {
+	k.Logger(ctx).Debug(
+		"SetDelegatorStartingInfo",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", del.String(),
+		"validator", val.String(),
+		"previous_period", period.PreviousPeriod,
+		"rewards_stake", period.RewardsStake.String(),
+		"period_height", period.Height,
+	)
 	store := k.storeService.OpenKVStore(ctx)
 	b, err := k.cdc.Marshal(&period)
 	if err != nil {
@@ -109,6 +134,12 @@ func (k Keeper) HasDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress
 
 // delete the starting info associated with a delegator
 func (k Keeper) DeleteDelegatorStartingInfo(ctx context.Context, val sdk.ValAddress, del sdk.AccAddress) error {
+	k.Logger(ctx).Debug(
+		"DeleteDelegatorStartingInfo",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", del.String(),
+		"validator", val.String(),
+	)
 	store := k.storeService.OpenKVStore(ctx)
 	return store.Delete(types.GetDelegatorStartingInfoKey(val, del))
 }

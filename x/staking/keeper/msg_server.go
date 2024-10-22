@@ -274,6 +274,14 @@ func (k msgServer) EditValidator(ctx context.Context, msg *types.MsgEditValidato
 
 // Delegate defines a method for performing a delegation of coins from a delegator to a validator
 func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types.MsgDelegateResponse, error) {
+	k.Logger(ctx).Debug(
+		"Start processing Delegate",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", msg.DelegatorAddress,
+		"validator", msg.ValidatorAddress,
+		"period_delegation_id", msg.PeriodDelegationId,
+		"amount", msg.Amount.String(),
+	)
 	valAddr, valErr := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
 	if valErr != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", valErr)
@@ -355,6 +363,15 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 
 // BeginRedelegate defines a method for performing a redelegation of coins from a source validator to a destination validator of given delegator
 func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedelegate) (*types.MsgBeginRedelegateResponse, error) {
+	k.Logger(ctx).Debug(
+		"Start processing BeginRedelegate",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", msg.DelegatorAddress,
+		"validator_src", msg.ValidatorSrcAddress,
+		"validator_dst", msg.ValidatorDstAddress,
+		"period_delegation_id", msg.PeriodDelegationId,
+		"amount", msg.Amount.String(),
+	)
 	valSrcAddr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorSrcAddress)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid source validator address: %s", err)
@@ -440,6 +457,14 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 
 // Undelegate defines a method for performing an undelegation from a delegate and a validator
 func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*types.MsgUndelegateResponse, error) {
+	k.Logger(ctx).Debug(
+		"Start processing Undelegate",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", msg.DelegatorAddress,
+		"validator", msg.ValidatorAddress,
+		"period_delegation_id", msg.PeriodDelegationId,
+		"amount", msg.Amount.String(),
+	)
 	addr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
