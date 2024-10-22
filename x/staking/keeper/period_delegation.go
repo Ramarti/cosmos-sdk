@@ -12,22 +12,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
-// ValidateNewPeriodDelegation validates a new period delegation.
-func (k Keeper) ValidateNewPeriodDelegation(
+// GetOrCreatePeriodDelegation gets the period delegation or creates a new one.
+func (k Keeper) GetOrCreatePeriodDelegation(
 	ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress,
 	periodDelegationID string,
 	periodType int32, endTime time.Time,
 ) (types.PeriodDelegation, error) {
 	periodDelegation, err := k.GetPeriodDelegation(ctx, delAddr, valAddr, periodDelegationID)
-	if err == nil {
-		flexibleTokenType, err := k.GetFlexiblePeriodType(ctx)
-		if err != nil {
-			return types.PeriodDelegation{}, err
-		}
-		if periodType != flexibleTokenType {
-			return types.PeriodDelegation{}, types.ErrPeriodDelegationExists
-		}
-	} else if errors.Is(err, types.ErrNoPeriodDelegation) {
+	if errors.Is(err, types.ErrNoPeriodDelegation) {
 		delAddrStr, err := k.authKeeper.AddressCodec().BytesToString(delAddr)
 		if err != nil {
 			return types.PeriodDelegation{}, err
@@ -40,7 +32,7 @@ func (k Keeper) ValidateNewPeriodDelegation(
 			delAddrStr, valAddrStr,
 			periodDelegationID, math.LegacyZeroDec(), math.LegacyZeroDec(), periodType, endTime,
 		)
-	} else {
+	} else if err != nil {
 		return types.PeriodDelegation{}, err
 	}
 

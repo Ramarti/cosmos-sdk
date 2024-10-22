@@ -156,7 +156,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, types.ErrSelfDelegationBelowMinimum
 	}
 
-	flexibleTokenType, err := k.GetFlexiblePeriodType(ctx)
+	flexiblePeriodType, err := k.GetFlexiblePeriodType(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -165,7 +165,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 	// NOTE source will always be from a wallet which are unbonded
 	_, _, err = k.Keeper.Delegate(
 		ctx, sdk.AccAddress(valAddr), msg.Value.Amount, types.Unbonded, validator, true,
-		types.FlexiblePeriodDelegationID, flexibleTokenType, sdkCtx.BlockTime(),
+		types.FlexiblePeriodDelegationID, flexiblePeriodType, sdkCtx.BlockTime(),
 	)
 	if err != nil {
 		return nil, err

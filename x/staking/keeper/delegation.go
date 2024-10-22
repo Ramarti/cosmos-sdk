@@ -901,6 +901,14 @@ func (k Keeper) Delegate(
 	if subtractAccount {
 		endTime = sdkCtx.BlockTime().Add(periodInfo.Duration)
 	}
+	// Get or create the period delegation object
+	periodDelegation, err := k.GetOrCreatePeriodDelegation(
+		ctx, delAddr, valbz,
+		periodDelID, periodType, endTime,
+	)
+	if err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
+	}
 	// Get or create the delegation object and call the appropriate hook if present
 	delegation, err := k.GetDelegation(ctx, delAddr, valbz)
 	if err == nil {
@@ -920,14 +928,6 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 	// check err from BeforeDelegationCreated
-	if err != nil {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
-	}
-
-	periodDelegation, err := k.ValidateNewPeriodDelegation(
-		ctx, delAddr, valbz,
-		periodDelID, periodType, endTime,
-	)
 	if err != nil {
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
@@ -991,16 +991,17 @@ func (k Keeper) Delegate(
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
-	// Update period delegation
-	periodDelegation.Shares = periodDelegation.Shares.Add(newShares)
-	periodDelegation.RewardsShares = periodDelegation.RewardsShares.Add(newRewardsShares)
-	if err = k.SetPeriodDelegation(ctx, delAddr, valbz, periodDelegation); err != nil {
-		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
-	}
 	// Update delegation
 	delegation.Shares = delegation.Shares.Add(newShares)
 	delegation.RewardsShares = delegation.RewardsShares.Add(newRewardsShares)
 	if err = k.SetDelegation(ctx, delegation); err != nil {
+		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
+	}
+
+	// Update period delegation
+	periodDelegation.Shares = periodDelegation.Shares.Add(newShares)
+	periodDelegation.RewardsShares = periodDelegation.RewardsShares.Add(newRewardsShares)
+	if err = k.SetPeriodDelegation(ctx, delAddr, valbz, periodDelegation); err != nil {
 		return math.LegacyZeroDec(), math.LegacyZeroDec(), err
 	}
 
@@ -1025,19 +1026,23 @@ func (k Keeper) Unbond(
 	} else if err != nil {
 		return amount, err
 	}
-
 	// check if the period delegation exists
 	periodDelegation, err := k.GetPeriodDelegation(ctx, delAddr, valAddr, periodDelegationId)
 	if err != nil {
 		return amount, err
 	}
+	periodInfo, err := k.GetPeriodInfo(ctx, periodDelegation.PeriodType)
+	if err != nil {
+		return amount, err
+	}
+
 	// check if the period delegation reached the end time, ignore if it's a force unbond
-	flexibleTokenType, err := k.GetFlexiblePeriodType(ctx)
+	flexiblePeriodType, err := k.GetFlexiblePeriodType(ctx)
 	if err != nil {
 		return amount, err
 	}
 	if !forceUnbond &&
-		periodDelegation.PeriodType != flexibleTokenType &&
+		periodDelegation.PeriodType != flexiblePeriodType &&
 		periodDelegation.EndTime.After(sdk.UnwrapSDKContext(ctx).BlockTime()) {
 		return amount, types.ErrPeriodDelegationNotCompleted
 	}
@@ -1052,12 +1057,7 @@ func (k Keeper) Unbond(
 	if err != nil {
 		return amount, err
 	}
-
 	tokenTypeInfo, err := k.GetTokenTypeInfo(ctx, validator.SupportTokenType)
-	if err != nil {
-		return amount, err
-	}
-	periodInfo, err := k.GetPeriodInfo(ctx, periodDelegation.PeriodType)
 	if err != nil {
 		return amount, err
 	}
