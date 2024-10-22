@@ -114,6 +114,15 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 	if err != nil {
 		return
 	}
+	k.Logger(ctx).Debug(
+		"CalculateDelegationRewards starting info",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", del.GetDelegatorAddr(),
+		"validator", val.GetOperator(),
+		"previous_period", startingInfo.PreviousPeriod,
+		"rewards_stake", startingInfo.RewardsStake.String(),
+		"period_height", startingInfo.Height,
+	)
 
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	if startingInfo.Height == uint64(sdkCtx.BlockHeight()) {
@@ -161,6 +170,14 @@ func (k Keeper) CalculateDelegationRewards(ctx context.Context, val stakingtypes
 	// when multiplied by slash fractions (see above). We could only use equals if
 	// we had arbitrary-precision rationals.
 	currentRewardsStake := val.RewardsTokensFromRewardsShares(del.GetRewardsShares())
+	k.Logger(ctx).Debug(
+		"CalculateDelegationRewards after slashes",
+		"height", sdk.UnwrapSDKContext(ctx).BlockHeight(),
+		"delegator", del.GetDelegatorAddr(),
+		"validator", val.GetOperator(),
+		"rewards_stake", rewardsStake.String(),
+		"current_rewards_stake", currentRewardsStake.String(),
+	)
 
 	if rewardsStake.GT(currentRewardsStake) {
 		// AccountI for rounding inconsistencies between:
