@@ -1031,6 +1031,10 @@ func (k Keeper) Unbond(
 	if err != nil {
 		return amount, err
 	}
+	periodInfo, err := k.GetPeriodInfo(ctx, periodDelegation.PeriodType)
+	if err != nil {
+		return amount, err
+	}
 
 	// check if the period delegation reached the end time, ignore if it's a force unbond
 	flexiblePeriodType, err := k.GetFlexiblePeriodType(ctx)
@@ -1053,12 +1057,7 @@ func (k Keeper) Unbond(
 	if err != nil {
 		return amount, err
 	}
-
 	tokenTypeInfo, err := k.GetTokenTypeInfo(ctx, validator.SupportTokenType)
-	if err != nil {
-		return amount, err
-	}
-	periodInfo, err := k.GetPeriodInfo(ctx, periodDelegation.PeriodType)
 	if err != nil {
 		return amount, err
 	}
