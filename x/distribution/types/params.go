@@ -1,6 +1,7 @@
 package types
 
 import (
+	"errors"
 	"fmt"
 
 	"cosmossdk.io/math"
@@ -15,6 +16,22 @@ func DefaultParams() Params {
 		WithdrawAddrEnabled: true,
 		MaxUbi:              math.LegacyNewDecWithPrec(2, 1), // 20%
 	}
+}
+
+func (p Params) Validate() error {
+	if err := validateUbi(p.Ubi); err != nil {
+		return err
+	}
+
+	if err := validateMaxUbi(p.MaxUbi); err != nil {
+		return err
+	}
+
+	if p.Ubi.GT(p.MaxUbi) {
+		return errors.New("ubi must be less than or equal to max ubi")
+	}
+
+	return nil
 }
 
 // ValidateBasic performs basic validation on distribution parameters.

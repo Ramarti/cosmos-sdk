@@ -5,6 +5,7 @@ import (
 
 	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
+
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
@@ -25,11 +26,11 @@ func (k Keeper) SetUbi(ctx context.Context, newUbi math.LegacyDec) error {
 		return err
 	}
 
-	if newUbi.IsNil() || newUbi.IsNegative() || newUbi.GT(params.MaxUbi) {
-		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "ubi should either not be negative nor greater than max ubi")
-	}
-
 	params.Ubi = newUbi
+
+	if err := params.Validate(); err != nil {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+	}
 
 	return k.Params.Set(ctx, params)
 }
