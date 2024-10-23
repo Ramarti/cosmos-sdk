@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/go-metrics"
 
 	errorsmod "cosmossdk.io/errors"
-	"cosmossdk.io/math"
 
 	cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	"github.com/cosmos/cosmos-sdk/telemetry"
@@ -32,73 +31,20 @@ var _ types.MsgServer = msgServer{}
 
 // CreateValidator defines a method for creating a new validator
 func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateValidator) (*types.MsgCreateValidatorResponse, error) {
+	if err := k.ValidateCreateValidatorMsg(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+
 	valAddr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
 	}
 
-	sdkCtx := sdk.UnwrapSDKContext(ctx)
-
-	// skip validation that if the token is greater than minimum self delegation amount at genesis block
-	skipMinSelfDelValidation := sdkCtx.BlockHeight() == 0
-	if err := msg.Validate(k.validatorAddressCodec, skipMinSelfDelValidation); err != nil {
-		return nil, err
-	}
-
-	minCommRate, err := k.MinCommissionRate(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if msg.Commission.Rate.LT(minCommRate) {
-		return nil, errorsmod.Wrapf(types.ErrCommissionLTMinRate, "cannot set validator commission to less than minimum rate of %s", minCommRate)
-	}
-
-	// check to see if the pubkey or sender has been registered before
-	if _, err := k.GetValidator(ctx, valAddr); err == nil {
-		return nil, types.ErrValidatorOwnerExists
-	}
-
 	pk, ok := msg.Pubkey.GetCachedValue().(cryptotypes.PubKey)
 	if !ok {
 		return nil, errorsmod.Wrapf(sdkerrors.ErrInvalidType, "Expecting cryptotypes.PubKey, got %T", pk)
-	}
-
-	if _, err := k.GetValidatorByConsAddr(ctx, sdk.GetConsAddress(pk)); err == nil {
-		return nil, types.ErrValidatorPubKeyExists
-	}
-
-	bondDenom, err := k.BondDenom(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if msg.Value.Denom != bondDenom {
-		return nil, errorsmod.Wrapf(
-			sdkerrors.ErrInvalidRequest, "invalid coin denomination: got %s, expected %s", msg.Value.Denom, bondDenom,
-		)
-	}
-
-	if _, err := msg.Description.EnsureLength(); err != nil {
-		return nil, err
-	}
-
-	cp := sdkCtx.ConsensusParams()
-	if cp.Validator != nil {
-		pkType := pk.Type()
-		hasKeyType := false
-		for _, keyType := range cp.Validator.PubKeyTypes {
-			if pkType == keyType {
-				hasKeyType = true
-				break
-			}
-		}
-		if !hasKeyType {
-			return nil, errorsmod.Wrapf(
-				types.ErrValidatorPubKeyTypeNotSupported,
-				"got: %s, expected: %s", pk.Type(), cp.Validator.PubKeyTypes,
-			)
-		}
 	}
 
 	validator, err := types.NewValidator(msg.ValidatorAddress, pk, msg.Description, msg.SupportTokenType)
@@ -108,7 +54,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 
 	commission := types.NewCommissionWithTime(
 		msg.Commission.Rate, msg.Commission.MaxRate,
-		msg.Commission.MaxChangeRate, sdkCtx.BlockHeader().Time,
+		msg.Commission.MaxChangeRate, sdkCtx.BlockTime(),
 	)
 
 	validator, err = validator.SetInitialCommission(commission)
@@ -116,20 +62,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, err
 	}
 
-	minDelegation, err := k.MinDelegation(ctx)
-	if err != nil {
-		return nil, errorsmod.Wrap(err, "failed to get min delegation")
-	}
-	// minimum self delegation should be greater than or equal to chain-side min delegation
-	if msg.MinSelfDelegation.LT(minDelegation) {
-		return nil, types.ErrMinSelfDelegationBelowMinDelegation
-	}
 	validator.MinSelfDelegation = msg.MinSelfDelegation
-
-	// validate token type that the validator is supporting
-	if _, err := k.GetTokenTypeInfo(ctx, msg.SupportTokenType); err != nil {
-		return nil, err
-	}
 
 	err = k.SetValidator(ctx, validator)
 	if err != nil {
@@ -151,11 +84,7 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 		return nil, err
 	}
 
-	// delegation amount must be greater than or equal to minimum self delegation when creating validator
-	if msg.Value.Amount.LT(validator.MinSelfDelegation) && !skipMinSelfDelValidation {
-		return nil, types.ErrSelfDelegationBelowMinimum
-	}
-
+	// self delegation is flexible period delegation
 	flexiblePeriodType, err := k.GetFlexiblePeriodType(ctx)
 	if err != nil {
 		return nil, err
@@ -184,38 +113,15 @@ func (k msgServer) CreateValidator(ctx context.Context, msg *types.MsgCreateVali
 
 // EditValidator defines a method for editing an existing validator
 func (k msgServer) EditValidator(ctx context.Context, msg *types.MsgEditValidator) (*types.MsgEditValidatorResponse, error) {
+	if err := k.ValidateEditValidatorMsg(ctx, msg); err != nil {
+		return nil, err
+	}
+
 	valAddr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
 	}
 
-	if msg.Description == (types.Description{}) {
-		return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "empty description")
-	}
-
-	if msg.MinSelfDelegation != nil && !msg.MinSelfDelegation.IsPositive() {
-		return nil, errorsmod.Wrap(
-			sdkerrors.ErrInvalidRequest,
-			"minimum self delegation must be a positive integer",
-		)
-	}
-
-	if msg.CommissionRate != nil {
-		if msg.CommissionRate.GT(math.LegacyOneDec()) || msg.CommissionRate.IsNegative() {
-			return nil, errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "commission rate must be between 0 and 1 (inclusive)")
-		}
-
-		minCommissionRate, err := k.MinCommissionRate(ctx)
-		if err != nil {
-			return nil, errorsmod.Wrap(sdkerrors.ErrLogic, err.Error())
-		}
-
-		if msg.CommissionRate.LT(minCommissionRate) {
-			return nil, errorsmod.Wrapf(sdkerrors.ErrInvalidRequest, "commission rate cannot be less than the min commission rate %s", minCommissionRate.String())
-		}
-	}
-
-	// validator must already be registered
 	validator, err := k.GetValidator(ctx, valAddr)
 	if err != nil {
 		return nil, err
@@ -229,6 +135,10 @@ func (k msgServer) EditValidator(ctx context.Context, msg *types.MsgEditValidato
 
 	validator.Description = description
 
+	if msg.MinSelfDelegation != nil {
+		validator.MinSelfDelegation = *msg.MinSelfDelegation
+	}
+
 	if msg.CommissionRate != nil {
 		commission, err := k.UpdateValidatorCommission(ctx, validator, *msg.CommissionRate)
 		if err != nil {
@@ -241,18 +151,6 @@ func (k msgServer) EditValidator(ctx context.Context, msg *types.MsgEditValidato
 		}
 
 		validator.Commission = commission
-	}
-
-	if msg.MinSelfDelegation != nil {
-		if !msg.MinSelfDelegation.GTE(validator.MinSelfDelegation) {
-			return nil, types.ErrMinSelfDelegationDecreased
-		}
-
-		if msg.MinSelfDelegation.GT(validator.Tokens) {
-			return nil, types.ErrSelfDelegationBelowMinimum
-		}
-
-		validator.MinSelfDelegation = *msg.MinSelfDelegation
 	}
 
 	err = k.SetValidator(ctx, validator)
@@ -274,6 +172,10 @@ func (k msgServer) EditValidator(ctx context.Context, msg *types.MsgEditValidato
 
 // Delegate defines a method for performing a delegation of coins from a delegator to a validator
 func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types.MsgDelegateResponse, error) {
+	if err := k.ValidateDelegateMsg(ctx, msg); err != nil {
+		return nil, err
+	}
+
 	valAddr, valErr := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
 	if valErr != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", valErr)
@@ -284,36 +186,9 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
 	}
 
-	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return nil, errorsmod.Wrap(
-			sdkerrors.ErrInvalidRequest,
-			"invalid delegation amount",
-		)
-	}
-
-	minDelegation, err := k.MinDelegation(ctx)
-	if err != nil {
-		return nil, errorsmod.Wrap(err, "failed to get min delegation")
-	}
-	// delegation amount should be greater than or equal to chain-side min delegation
-	if msg.Amount.Amount.LT(minDelegation) {
-		return nil, types.ErrDelegationBelowMinimum
-	}
-
 	validator, err := k.GetValidator(ctx, valAddr)
 	if err != nil {
 		return nil, err
-	}
-
-	bondDenom, err := k.BondDenom(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if msg.Amount.Denom != bondDenom {
-		return nil, errorsmod.Wrapf(
-			sdkerrors.ErrInvalidRequest, "invalid coin denomination: got %s, expected %s", msg.Amount.Denom, bondDenom,
-		)
 	}
 
 	// NOTE: source funds are always unbonded
@@ -355,6 +230,10 @@ func (k msgServer) Delegate(ctx context.Context, msg *types.MsgDelegate) (*types
 
 // BeginRedelegate defines a method for performing a redelegation of coins from a source validator to a destination validator of given delegator
 func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedelegate) (*types.MsgBeginRedelegateResponse, error) {
+	if err := k.ValidateBeginRedelegateMsg(ctx, msg); err != nil {
+		return nil, err
+	}
+
 	valSrcAddr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorSrcAddress)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid source validator address: %s", err)
@@ -370,38 +249,11 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
 	}
 
-	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return nil, errorsmod.Wrap(
-			sdkerrors.ErrInvalidRequest,
-			"invalid shares amount",
-		)
-	}
-
-	minDelegation, err := k.MinDelegation(ctx)
-	if err != nil {
-		return nil, errorsmod.Wrap(err, "failed to get min delegation")
-	}
-	// redelegation amount should be greater than or equal to chain-side min delegation
-	if msg.Amount.Amount.LT(minDelegation) {
-		return nil, types.ErrRedelegationBelowMinimum
-	}
-
 	shares, err := k.ValidateUnbondAmount(
 		ctx, delegatorAddress, valSrcAddr, msg.PeriodDelegationId, msg.Amount.Amount,
 	)
 	if err != nil {
 		return nil, err
-	}
-
-	bondDenom, err := k.BondDenom(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if msg.Amount.Denom != bondDenom {
-		return nil, errorsmod.Wrapf(
-			sdkerrors.ErrInvalidRequest, "invalid coin denomination: got %s, expected %s", msg.Amount.Denom, bondDenom,
-		)
 	}
 
 	completionTime, err := k.BeginRedelegation(
@@ -440,7 +292,11 @@ func (k msgServer) BeginRedelegate(ctx context.Context, msg *types.MsgBeginRedel
 
 // Undelegate defines a method for performing an undelegation from a delegate and a validator
 func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*types.MsgUndelegateResponse, error) {
-	addr, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
+	if err := k.ValidateUndelegateMsg(ctx, msg); err != nil {
+		return nil, err
+	}
+
+	validatorAddress, err := k.validatorAddressCodec.StringToBytes(msg.ValidatorAddress)
 	if err != nil {
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid validator address: %s", err)
 	}
@@ -450,44 +306,14 @@ func (k msgServer) Undelegate(ctx context.Context, msg *types.MsgUndelegate) (*t
 		return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid delegator address: %s", err)
 	}
 
-	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return nil, errorsmod.Wrap(
-			sdkerrors.ErrInvalidRequest,
-			"invalid shares amount",
-		)
-	}
-
-	minUndelegation, err := k.MinDelegation(ctx)
-	if err != nil {
-		return nil, err
-	}
-	// undelegation amount must be greater than or equal to minimum undelegation
-	if msg.Amount.Amount.LT(minUndelegation) {
-		return nil, errorsmod.Wrap(
-			sdkerrors.ErrInvalidRequest,
-			"undelegation amount is less than the minimum undelegation amount",
-		)
-	}
-
-	bondDenom, err := k.BondDenom(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	if msg.Amount.Denom != bondDenom {
-		return nil, errorsmod.Wrapf(
-			sdkerrors.ErrInvalidRequest, "invalid coin denomination: got %s, expected %s", msg.Amount.Denom, bondDenom,
-		)
-	}
-
 	shares, err := k.ValidateUnbondAmount(
-		ctx, delegatorAddress, addr, msg.PeriodDelegationId, msg.Amount.Amount,
+		ctx, delegatorAddress, validatorAddress, msg.PeriodDelegationId, msg.Amount.Amount,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	completionTime, undelegatedAmt, err := k.Keeper.Undelegate(ctx, delegatorAddress, addr, msg.PeriodDelegationId, shares)
+	completionTime, undelegatedAmt, err := k.Keeper.Undelegate(ctx, delegatorAddress, validatorAddress, msg.PeriodDelegationId, shares)
 	if err != nil {
 		return nil, err
 	}

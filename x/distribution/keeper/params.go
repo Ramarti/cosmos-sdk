@@ -3,7 +3,10 @@ package keeper
 import (
 	"context"
 
+	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
+
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // GetUbi returns the current distribution ubi.
@@ -24,6 +27,10 @@ func (k Keeper) SetUbi(ctx context.Context, newUbi math.LegacyDec) error {
 	}
 
 	params.Ubi = newUbi
+
+	if err := params.Validate(); err != nil {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, err.Error())
+	}
 
 	return k.Params.Set(ctx, params)
 }

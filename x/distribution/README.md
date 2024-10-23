@@ -790,10 +790,11 @@ Example Output:
 ```json
 {
   "params": {
-    "ubi": "20000000000000000",
+    "ubi": "0.020000000000000000",
     "baseProposerReward": "00000000000000000",
     "bonusProposerReward": "00000000000000000",
-    "withdrawAddrEnabled": true
+    "withdrawAddrEnabled": true,
+    "max_ubi": "0.200000000000000000"
   }
 }
 ```
