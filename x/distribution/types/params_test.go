@@ -38,6 +38,7 @@ func TestParams_ValidateBasic(t *testing.T) {
 			p := types.Params{
 				Ubi:                 tt.fields.Ubi,
 				WithdrawAddrEnabled: tt.fields.WithdrawAddrEnabled,
+				MaxUbi:              tt.fields.MaxUbi,
 			}
 			if err := p.ValidateBasic(); (err != nil) != tt.wantErr {
 				t.Errorf("ValidateBasic() error = %v, wantErr %v", err, tt.wantErr)
