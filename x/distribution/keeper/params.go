@@ -3,7 +3,9 @@ package keeper
 import (
 	"context"
 
+	errorsmod "cosmossdk.io/errors"
 	"cosmossdk.io/math"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // GetUbi returns the current distribution ubi.
@@ -21,6 +23,10 @@ func (k Keeper) SetUbi(ctx context.Context, newUbi math.LegacyDec) error {
 	params, err := k.Params.Get(ctx)
 	if err != nil {
 		return err
+	}
+
+	if newUbi.IsNil() || newUbi.IsNegative() || newUbi.GT(params.MaxUbi) {
+		return errorsmod.Wrap(sdkerrors.ErrInvalidRequest, "ubi should either not be negative nor greater than max ubi")
 	}
 
 	params.Ubi = newUbi
