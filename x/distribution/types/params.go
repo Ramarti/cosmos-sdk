@@ -19,7 +19,11 @@ func DefaultParams() Params {
 
 // ValidateBasic performs basic validation on distribution parameters.
 func (p Params) ValidateBasic() error {
-	return validateUbi(p.Ubi)
+	if err := validateUbi(p.Ubi); err != nil {
+		return err
+	}
+
+	return validateMaxUbi(p.MaxUbi)
 }
 
 func validateUbi(i interface{}) error {
