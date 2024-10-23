@@ -32,7 +32,8 @@ const (
 
 	DefaultFlexiblePeriodType = 0
 
-	DefaultLockedTokenType = 0
+	DefaultLockedTokenType   = 0
+	DefaultSingularityHeight = 403200 // 14 days with 3 seconds block time
 )
 
 // DefaultMinCommissionRate is set to 0%
@@ -77,7 +78,7 @@ var DefaultTokenTypes = []TokenTypeInfo{
 // NewParams creates a new Params instance
 func NewParams(
 	unbondingTime time.Duration, maxValidators, maxEntries, historicalEntries uint32, bondDenom string, minCommissionRate math.LegacyDec,
-	minDelegation math.Int, flexiblePeriodType int32, periods []Period, lockedTokenType int32, tokenTypes []TokenTypeInfo,
+	minDelegation math.Int, flexiblePeriodType int32, periods []Period, lockedTokenType int32, tokenTypes []TokenTypeInfo, singulariyHeight uint64,
 ) Params {
 	return Params{
 		UnbondingTime:      unbondingTime,
@@ -91,6 +92,7 @@ func NewParams(
 		Periods:            periods,
 		LockedTokenType:    lockedTokenType,
 		TokenTypes:         tokenTypes,
+		SingularityHeight:  singulariyHeight,
 	}
 }
 
@@ -108,6 +110,7 @@ func DefaultParams() Params {
 		DefaultPeriods,
 		DefaultLockedTokenType,
 		DefaultTokenTypes,
+		DefaultSingularityHeight,
 	)
 }
 
@@ -170,6 +173,10 @@ func (p Params) Validate() error {
 	}
 
 	if err := validateTokenTypes(p.TokenTypes); err != nil {
+		return err
+	}
+
+	if err := validateSingularityHeight(p.SingularityHeight); err != nil {
 		return err
 	}
 
@@ -330,6 +337,19 @@ func validateTokenTypes(i interface{}) error {
 		if !tokenType.RewardsMultiplier.IsPositive() {
 			return fmt.Errorf("invalid token rewards multiplier: %s", tokenType.RewardsMultiplier.String())
 		}
+	}
+
+	return nil
+}
+
+func validateSingularityHeight(i interface{}) error {
+	v, ok := i.(uint64)
+	if !ok {
+		return fmt.Errorf("invalid parameter type: %T", i)
+	}
+
+	if v == 0 {
+		return fmt.Errorf("singularity height must be positive: %d", v)
 	}
 
 	return nil

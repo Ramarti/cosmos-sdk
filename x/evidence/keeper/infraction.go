@@ -28,7 +28,7 @@ func (k Keeper) handleEquivocationEvidence(ctx context.Context, evidence *types.
 	sdkCtx := sdk.UnwrapSDKContext(ctx)
 	logger := k.Logger(ctx)
 
-	singularityHeight, err := k.slashingKeeper.SingularityHeight(ctx)
+	singularityHeight, err := k.stakingKeeper.GetSingularityHeight(ctx)
 	if err != nil {
 		return err
 	}
