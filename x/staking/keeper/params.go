@@ -160,3 +160,12 @@ func (k Keeper) GetTokenTypeInfo(ctx context.Context, tokenType int32) (types.To
 
 	return types.TokenTypeInfo{}, types.ErrNoTokenTypeFound
 }
+
+func (k Keeper) GetSingularityHeight(ctx context.Context) (uint64, error) {
+	params, err := k.GetParams(ctx)
+	if err != nil {
+		return 0, err
+	}
+
+	return params.SingularityHeight, nil
+}

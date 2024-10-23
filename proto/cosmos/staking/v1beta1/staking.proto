@@ -412,6 +412,8 @@ message Params {
 
   int32                  locked_token_type = 10;
   repeated TokenTypeInfo token_types       = 11 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  // the block height until singularity is activated
+  uint64 singularity_height = 12;
 }
 
 // DelegationResponse is equivalent to Delegation except that it contains a

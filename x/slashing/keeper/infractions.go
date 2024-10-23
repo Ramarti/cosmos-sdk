@@ -109,7 +109,7 @@ func (k Keeper) HandleValidatorSignature(ctx context.Context, addr cryptotypes.A
 	minHeight := signInfo.StartHeight + signedBlocksWindow
 	maxMissed := signedBlocksWindow - minSignedPerWindow
 
-	singularityHeight, err := k.SingularityHeight(ctx)
+	singularityHeight, err := k.sk.GetSingularityHeight(ctx)
 	if err != nil {
 		return errors.Wrap(err, "failed to get params")
 	}

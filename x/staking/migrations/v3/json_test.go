@@ -71,6 +71,7 @@ func TestMigrateJSON(t *testing.T) {
 				"rewards_multiplier": "1.340000000000000000"
 			}
 		],
+		"singularity_height": "403200",
 		"token_types": [
 			{
 				"rewards_multiplier": "0.500000000000000000",

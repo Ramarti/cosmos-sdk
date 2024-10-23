@@ -54,6 +54,7 @@ func TestInitGenesis(t *testing.T) {
 
 	assert.Assert(t, len(validators) == 1)
 	var delegations []types.Delegation
+	var periodDelegations []types.PeriodDelegation
 
 	pk1, err := codectypes.NewAnyWithValue(PKs[1])
 	assert.NilError(t, err)
@@ -103,9 +104,12 @@ func TestInitGenesis(t *testing.T) {
 
 	genesisDelegations, err := f.stakingKeeper.GetAllDelegations(f.sdkCtx)
 	assert.NilError(t, err)
+	genesisPeriodDelegations, err := f.stakingKeeper.GetAllPeriodDelegations(f.sdkCtx)
+	assert.NilError(t, err)
 	delegations = append(delegations, genesisDelegations...)
+	periodDelegations = append(periodDelegations, genesisPeriodDelegations...)
 
-	genesisState := types.NewGenesisState(params, validators, delegations)
+	genesisState := types.NewGenesisState(params, validators, delegations, periodDelegations)
 	vals := (f.stakingKeeper.InitGenesis(f.sdkCtx, genesisState))
 
 	actualGenesis := (f.stakingKeeper.ExportGenesis(f.sdkCtx))
@@ -202,6 +206,7 @@ func TestInitGenesisLargeValidatorSet(t *testing.T) {
 	params, err := f.stakingKeeper.GetParams(f.sdkCtx)
 	assert.NilError(t, err)
 	delegations := []types.Delegation{}
+	periodDelegations := []types.PeriodDelegation{}
 	validators := make([]types.Validator, size)
 
 	bondedPoolAmt := math.ZeroInt()
@@ -228,7 +233,7 @@ func TestInitGenesisLargeValidatorSet(t *testing.T) {
 	}
 
 	validators = append(validators, genesisValidators...)
-	genesisState := types.NewGenesisState(params, validators, delegations)
+	genesisState := types.NewGenesisState(params, validators, delegations, periodDelegations)
 
 	// mint coins in the bonded pool representing the validators coins
 	assert.NilError(t,

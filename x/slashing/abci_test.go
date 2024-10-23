@@ -45,11 +45,11 @@ func TestBeginBlocker(t *testing.T) {
 
 	ctx := app.BaseApp.NewContext(false)
 
-	params, err := slashingKeeper.GetParams(ctx)
+	params, err := stakingKeeper.GetParams(ctx)
 	require.NoError(t, err)
 
 	params.SingularityHeight = 1
-	require.NoError(t, slashingKeeper.SetParams(ctx, params))
+	require.NoError(t, stakingKeeper.SetParams(ctx, params))
 
 	pks := simtestutil.CreateTestPubKeys(1)
 	simtestutil.AddTestAddrsFromPubKeys(bankKeeper, stakingKeeper, ctx, pks, stakingKeeper.TokensFromConsensusPower(ctx, 200))
