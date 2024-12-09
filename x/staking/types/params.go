@@ -54,7 +54,7 @@ var DefaultPeriods = []Period{
 	},
 	{
 		PeriodType:        2,
-		Duration:          time.Hour * 24 * 180,              // 180 days
+		Duration:          time.Hour * 24 * 360,              // 360 days
 		RewardsMultiplier: math.LegacyNewDecWithPrec(116, 2), // 1.16
 	},
 	{
