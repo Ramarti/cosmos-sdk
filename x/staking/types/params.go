@@ -44,7 +44,7 @@ var DefaultMinDelegation = math.NewInt(1)
 var DefaultPeriods = []Period{
 	{
 		PeriodType:        0,
-		Duration:          time.Duration(0),
+		Duration:          time.Duration(0),    // flexible
 		RewardsMultiplier: math.LegacyOneDec(), // 1
 	},
 	{
