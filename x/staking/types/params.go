@@ -49,17 +49,17 @@ var DefaultPeriods = []Period{
 	},
 	{
 		PeriodType:        1,
-		Duration:          time.Hour * 24 * 30,                // 3 months
+		Duration:          time.Hour * 24 * 90,                // 90 days
 		RewardsMultiplier: math.LegacyNewDecWithPrec(1051, 3), // 1.051
 	},
 	{
 		PeriodType:        2,
-		Duration:          time.Hour * 24 * 365,              // 1 year
+		Duration:          time.Hour * 24 * 180,              // 180 days
 		RewardsMultiplier: math.LegacyNewDecWithPrec(116, 2), // 1.16
 	},
 	{
 		PeriodType:        3,
-		Duration:          time.Hour * 24 * 30 * 18,          // 18 months
+		Duration:          time.Hour * 24 * 540,              // 540 days
 		RewardsMultiplier: math.LegacyNewDecWithPrec(134, 2), // 1.34
 	},
 }
